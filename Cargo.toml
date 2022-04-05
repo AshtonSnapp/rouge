@@ -13,22 +13,31 @@ categories = ["compilers", "command-line-utilities"]
 path = "src/runtime/mod.rs"
 
 [dependencies]
+# Lexer
 logos = "0.12"
+# Thing that lets the parser use the tokens from the lexer.
 logos-nom-bridge = "0.1"
+# Parser
 nom = "7.1"
-clap = "3.1"
+# Command line interface
+clap = { version = "3.1", features = ["cargo", "wrap_help"] }
+# Bytecode file compression and decompression.
 zstd = "0.11"
 
-# The following dependencies are only present in the CLI by default, as they are for GUI. Different libraries for different platforms.
+# The following dependencies are only present in the standalone utility, as they are for GUI apps. Different libraries for different platforms.
 
+# using gtk for linux gui
 [target.'cfg(linux)'.dependencies]
-ui = { version = "0.15", package = "gtk", optional = true }
+gui = { version = "0.15", package = "gtk", optional = true }
 
+# using orbtk for redox gui
 [target.'cfg(redox)'.dependencies]
-ui = { version = "0.2", package = "orbtk", optional = true }
+gui = { version = "0.2", package = "orbtk", optional = true }
 
+# using cacao for macos gui
 [target.'cfg(darwin)'.dependencies]
-ui = { version = "0.2", package = "cacao", optional = true }
+gui = { version = "0.2", package = "cacao", optional = true }
 
+# using native-windows-gui for windows gui
 [target.'cfg(windows)'.dependencies]
-ui = { version = "1.0", package = "native-windows-gui", optional = true }
+gui = { version = "1.0", package = "native-windows-gui", optional = true }
