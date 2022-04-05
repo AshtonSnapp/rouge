@@ -114,6 +114,7 @@ pub enum Wrd {
 	Enumeration,	// enum
 	Implement,		// impl
 	Trait,			// trait
+	Public,			// pub
 	TraitObject,	// dyn
 	Is,				// is
 	If,				// if
@@ -141,6 +142,7 @@ impl Token {
 		let mut toks = Vec::new();
 		let mut errs = Vec::new();
 
+		// Attempt to open the file.
 		match File::open(p) {
 			Ok(f) => {
 				for (lno, line) in BufReader::new(f).lines().enumerate() {
@@ -156,6 +158,7 @@ impl Token {
 							toks.push(Token::Newline);
 						},
 						Err(e) => match e.kind() {
+							// The only error I'm anticipating is invalid UTF-8 data.
 							LoadErr::InvalidData => errs.push(Error::new(format!("<ERR! {}:{}> Encountered invalid UTF-8 while trying to read this line.", p.display(), lno), false, ErrorInfo::Load(e.kind()))),
 							_ => errs.push(Error::new(format!("<ERR! {}:{}> Encountered unexpected IO error {:?} while trying to read this line.", p.display(), lno, e.kind()), false, ErrorInfo::Load(e.kind())))
 						}
@@ -163,6 +166,7 @@ impl Token {
 				}
 			},
 			Err(e) => match e.kind() {
+				// The only kinds of errors I'm anticipating here are the file not existing, and the file being inaccessible due to permissions.
 				LoadErr::NotFound => errs.push(Error::new(format!("<ERR! {}> Couldn't find this file.", p.display()), false, ErrorInfo::Load(e.kind()))),
 				LoadErr::PermissionDenied => errs.push(Error::new(format!("<ERR! {}> Denied permission to open this file.", p.display()), false, ErrorInfo::Load(e.kind()))),
 				_ => errs.push(Error::new(format!("<ERR! {}> Encountered unexpected IO error '{:?}' while trying to open this file.", p.display(), e.kind()), false, ErrorInfo::Load(e.kind())))
@@ -524,6 +528,7 @@ impl Wrd {
 			"enum" => Wrd::Enumeration,
 			"impl" => Wrd::Implement,
 			"trait" => Wrd::Trait,
+			"pub" => Wrd::Public,
 			"dyn" => Wrd::TraitObject,
 			"is" => Wrd::Is,
 			"if" => Wrd::If,
