@@ -11,7 +11,9 @@ While not entirely important to it's stated use cases, Rouge also aims to have t
 
 The custom runtime environment (RTE) for the Rouge programming language will be provided as a Rust library (and someone can probably work on making a wrapping cdylib for interfacing with other languages) for embedding, and as a standalone utility for applications. Both will simply be called `rouge` and contain everything necessary to run and compile Rouge code.
 
-Rouge is currently licensed under the GNU LGPL v3 (or later), a lesser copyleft license ensuring the language itself remains open-source while allowing proprietary programs to be written using it (either embedding the runtime or being written in the language). If you think this is a bad idea, please explain why and provide a suggestion for a replacement.
+Rouge is currently licensed under the GNU LGPL v3 (or later), a lesser copyleft license ensuring the language itself remains open-source while allowing proprietary programs to be written using it (either embedding the runtime or being written in the language). If you think this license is a bad match, please explain why and recommend a license which you think would be a better fit.
+
+For the project's Code of Conflict, please click [here](./CONFLICT.md).
 
 ## Current TODO List
 
