@@ -19,7 +19,8 @@ pub type ErrorList = Vec<Error>;
 
 #[derive(Clone)]
 pub struct Runtime {
-	hooks: Vec<Hook>
+	hooks: Vec<Hook>,
+	stack: Vec<Data>
 }
 
 pub struct Error {
@@ -40,8 +41,10 @@ pub struct StructField {}
 #[derive(PartialEq, Eq, Clone)]
 pub struct EnumVariant {}
 
+#[derive(Clone)]
 pub struct FuncPtr {}
 
+#[derive(Clone)]
 pub struct HeapPtr {}
 
 //--> Enums <--
@@ -80,6 +83,7 @@ pub enum DataType {
 	P(String),
 }
 
+#[derive(Clone)]
 enum Data {
 	U1(u8),
 	I1(i8),
@@ -121,7 +125,7 @@ enum Hook {
 //--> Functions <--
 
 impl Runtime {
-	pub fn new() -> Runtime { Runtime { hooks: Vec::new() } }
+	pub fn new() -> Runtime { Runtime { hooks: Vec::new(), stack: Vec::new() } }
 
 	pub fn hook_function(&mut self, name: String, args: Vec<DataType>, rets: DataType, func: fn()) -> Runtime {
 		let hook = Hook::Function{ name, args, rets, func };
