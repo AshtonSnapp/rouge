@@ -266,6 +266,11 @@ impl Lit {
 		// character stack
 		let mut chars = l.slice().strip_prefix("\"")?.strip_suffix("\"")?.chars().rev().collect::<Vec<char>>();
 
+		// If the character stack is empty, we want to return early with an empty string.
+		if chars.is_empty() {
+			return Some(Lit::CharStr(ret))
+		}
+
 		loop {
 			let c0 = chars.pop()?;
 
@@ -360,6 +365,11 @@ impl Lit {
 
 		// character stack
 		let mut chars = l.slice().strip_prefix("b\"")?.strip_suffix("\"b")?.chars().rev().collect::<Vec<char>>();
+
+		// If the character stack is empty, we'll want to return early with an empty byte list.
+		if chars.is_empty() {
+			return Some(Lit::ByteStr(ret))
+		}
 
 		loop {
 			let c0 = chars.pop()?;
