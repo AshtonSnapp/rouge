@@ -1,3 +1,3 @@
 pub func main():
-	outl("Hello world!")
+	outl!("Hello world!")
 end
