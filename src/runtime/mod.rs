@@ -230,7 +230,7 @@ impl Runtime {
 		println!("Rouge REPL: Type end or press Ctrl+C to exit.");
 		loop {
 			let mut input = String::new();
-			print!("stdin[{}]>> ", lno);
+			print!("stdin[{}]=> ", lno);
 			match stdin().read_line(&mut input) {
 				Ok(_) => match Token::lex_line(&input, lno) {
 					Ok(t) => {

@@ -107,6 +107,7 @@ pub enum Wrd {
 	StrSlice,		// str
 	Selff,			// self
 	InferType,		// var
+	Constant,		// const
 	Function,		// func
 	Closure,		// do
 	TypeAlias,		// type
@@ -531,6 +532,7 @@ impl Wrd {
 			"str" => Wrd::StrSlice,
 			"self" => Wrd::Selff,
 			"var" => Wrd::InferType,
+			"const" => Wrd::Constant,
 			"func" => Wrd::Function,
 			"do" => Wrd::Closure,
 			"type" => Wrd::TypeAlias,
