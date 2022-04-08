@@ -15,8 +15,6 @@ path = "src/runtime/mod.rs"
 [dependencies]
 # Lexer
 logos = "0.12"
-# Thing that lets the parser use the tokens from the lexer.
-logos-nom-bridge = "0.1"
 # Parser
 nom = "7.1"
 # Command line interface

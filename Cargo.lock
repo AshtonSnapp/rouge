@@ -827,16 +827,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "logos-nom-bridge"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "895f9bec5f5f8f0a756f03fa7172df533b2a9767e07a997c04fd6b93aa72e032"
-dependencies = [
- "logos",
- "nom",
-]
-
-[[package]]
 name = "lzw"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1460,7 +1450,6 @@ dependencies = [
  "clap",
  "gtk",
  "logos",
- "logos-nom-bridge",
  "native-windows-gui",
  "nom",
  "orbtk",
