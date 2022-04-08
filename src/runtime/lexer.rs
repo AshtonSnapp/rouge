@@ -7,9 +7,6 @@ use std::fs::File;
 use logos::{Lexer, Logos, skip};
 use std::str::FromStr;
 use std::io::{BufRead, BufReader};
-use nom::{InputIter, InputLength, Needed};
-use std::slice::Iter;
-use std::iter::Enumerate;
 
 //--> Type Aliases <--
 
@@ -18,13 +15,6 @@ pub type TokenStream = Vec<Token>;
 
 /// A stream of tokens with warnings, or errors and warnings.
 pub type TokenResult = Result<TokenStream, ErrorList>;
-
-//--> Structs <--
-
-// A wrapper around a TokenStream.
-pub struct Tokens {
-	tokens: TokenStream
-}
 
 //--> Enums <--
 
@@ -211,9 +201,6 @@ impl Token {
 		}
 	}
 }
-
-// For nom
-// TODO: Implement nom::InputIter and nom::InputLength for Tokens/TokenStream
 
 impl Lit {
 	pub fn char(l: &mut Lexer<Token>) -> Option<Lit> {
