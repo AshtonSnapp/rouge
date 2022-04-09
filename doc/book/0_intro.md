@@ -10,8 +10,7 @@ Rouge code will be placed into code blocks that look like this:
 
 ```rouge
 pub func main():
-	var name = prompt!("What's your name? ")
-	outl!("Hello, {}!", name)
+	# code goes here...
 end
 ```
 
