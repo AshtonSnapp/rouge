@@ -3,7 +3,7 @@
 mod runtime;
 
 use clap::{Arg, Command, command, ValueHint};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use runtime::{Runtime, CompileOptions};
 use std::str::FromStr;
 use std::process::exit;

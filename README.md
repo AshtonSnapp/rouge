@@ -30,7 +30,7 @@ For the project's Code of Conflict, please click [here](./CONFLICT.md).
 
 ### Medium Priority
 
- - [ ] Create a toolchain (e.g. dependency/project manager, doctool)
+ - [ ] Create a toolchain (e.g. dependency/project manager, doctool, language server)
 
 ### Low Priority
 

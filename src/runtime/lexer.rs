@@ -7,6 +7,9 @@ use std::fs::File;
 use logos::{Lexer, Logos, skip};
 use std::str::FromStr;
 use std::io::{BufRead, BufReader};
+use nom::{InputIter, InputLength, Needed};
+use std::slice::Iter;
+use std::iter::Enumerate;
 
 //--> Type Aliases <--
 
@@ -94,12 +97,14 @@ pub enum Wrd {
 	SignedByte,		// byte
 	UnsignedShort,	// ushort
 	SignedShort,	// short
-	UnsignedInt,	// uint
-	SignedInt,		// int
+	UnsignedWord,	// uword
+	SignedWord,		// word
 	Float,			// flt
 	UnsignedLong,	// ulong
 	SignedLong,		// long
 	Double,			// dbl
+	UnsignedInt,	// uint
+	SignedInt,		// int
 	Boolean,		// bool
 	True,			// true
 	False,			// false
@@ -519,12 +524,14 @@ impl Wrd {
 			"byte" => Wrd::SignedByte,
 			"ushort" => Wrd::UnsignedShort,
 			"short" => Wrd::SignedShort,
-			"uint" => Wrd::UnsignedInt,
-			"int" => Wrd::SignedInt,
+			"uword" => Wrd::UnsignedWord,
+			"word" => Wrd::SignedWord,
 			"flt" => Wrd::Float,
 			"ulong" => Wrd::UnsignedLong,
 			"long" => Wrd::SignedLong,
 			"dbl" => Wrd::Double,
+			"uint" => Wrd::UnsignedInt,
+			"int" => Wrd::SignedInt,
 			"bool" => Wrd::Boolean,
 			"true" => Wrd::True,
 			"false" => Wrd::False,
