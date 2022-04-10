@@ -1,7 +1,6 @@
 //--> Imports <--
 
-use nom::{};
-use super::lexer::{};
+use super::lexer::{Token, Lit, Op, Wrd};
 use super::{Error, ErrorInfo, ParseErr, ErrorList};
 
 //--> TODO <--
