@@ -35,3 +35,31 @@ For the project's Code of Conflict, please click [here](./CONFLICT.md).
 ### Low Priority
 
  - [ ] Branding.
+
+## Thoughts on Memory Management
+
+Originally, I planned to use an automatic memory management model similar to that of Rust's ownership and borrowing system. However, Rust's system isn't really intuitive and it's designed to give you a level of control over memory that you may need in a systems programming context. However, Rouge doesn't aim to be a systems programming language. It aims to be an embedded or general applications programming language. So, to simplify the memory management model, I'm thinking about going with a form of automatic reference counting with copy-on-write and possibly some idea of ownership (but not to the extent of Rust).
+
+But what do I mean with all of this? Well, let's go through an example. In your source code, let's create a string variable like so:
+
+```rouge
+str text = "Hello, world!"
+```
+
+When interpreted or compiled into bytecode, this would become some set of instructions that creates a heap object and puts the characters of the string into that heap object. Somehow. At time of writing I actually haven't decided on the instruction set. Now this is am immutable variable, and there will be compile-time/interpret-time checks to prevent creating a mutable reference to an immutable thing. But let's add a `mut` to the beginning of that statement to make it a mutable variable. Now, let's create a reference to that text.
+
+```rouge
+str text2 = text
+```
+
+Yep, pass by reference. Now, this is an immutable reference. But, again, add a `mut` and it's a mutable reference. Now what happens if you try to modify text2? Say, by changing that exclamation point to a period.
+
+```rouge
+text2[-1] = '.'
+```
+
+When that happens, the runtime will see that you're trying to modify something that has multiple references to it. You could just disallow that, but instead what happens is the runtime creates a copy of the object on the heap, changes the reference to the copy, and modifies the copy. And this would just be done automatically.
+
+The only question would be whether to implement ownership, and how. It would have to be a simple system, and I have no idea whether it would be implementable on the runtime architecture level. And what would mutating something owned do to any references to it? If we follow Rust, all of those references would be dumped/invalidated, but how would that be handled?
+
+Safe to say, ownership is a question for a later date.
