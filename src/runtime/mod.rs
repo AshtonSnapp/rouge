@@ -66,21 +66,40 @@ pub enum RunErr {}
 
 #[derive(PartialEq, Eq, Clone)]
 pub enum DataType {
+	/// Unsigned 1-byte (8-bit) integer
 	U1,
+	/// Signed 1-byte (8-bit) integer
 	I1,
+	/// Unsigned 2-byte (16-bit) integer
 	U2,
+	/// Signed 2-byte (16-bit) integer
 	I2,
+	/// Unsigned 4-byte (32-bit) integer
 	U4,
+	/// Signed 4-byte (32-bit) integer
 	I4,
+	/// 4-byte (32-bit) float
 	F4,
+	/// Unsigned 8-byte (32-bit) integer
 	U8,
+	/// Signed 8-byte (32-bit) integer
 	I8,
+	/// 8-byte (32-bit) float
 	F8,
+	/// Unsigned X-byte (register-sized) integer
+	UX,
+	/// Signed X-byte (register-sized) integer
+	IX,
+	/// Boolean
 	B,
+	/// UTF-8 character
 	C,
+	/// Tuple
 	T(Vec<DataType>),
+	/// Function pointer
 	F,
-	P(String),
+	/// Object pointer
+	P
 }
 
 #[derive(Clone)]
@@ -95,6 +114,8 @@ enum Data {
 	U8(u64),
 	I8(i64),
 	F8(f64),
+	UX(usize),
+	IX(isize),
 	B(bool),
 	C(char),
 	T(Vec<Data>),

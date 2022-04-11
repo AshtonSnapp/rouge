@@ -3,7 +3,7 @@
 Rouge (pronounced 'rooj') is a statically-typed programming language designed for two primary uses: applications (graphical and command-line), and embedding into native programs (plugins, config files). To be suitable for both use cases, Rouge aims to have the following feature set:
 
  - A memory management model that aims to be intuitive but with at least some guarantees towards memory and thread safety.
-	- Taking inspiration from Rust primarily in this regard.
+	- Current thoughts: reference counting with copy-on-write and maybe some idea of ownership?
  - A simple, easy-to-learn syntax inspired primarily by Ruby and Lua.
  - Interpreted for development and use in config files, bytecode-compiled for distribution.
 
