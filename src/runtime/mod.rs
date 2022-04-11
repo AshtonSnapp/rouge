@@ -9,7 +9,7 @@ use lexer::{Token, Lit, Op, Wrd, TokenStream};
 use std::fmt;
 use std::io::ErrorKind as LoadErr;
 use std::io::stdin;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 //--> Type Aliases <--
 
@@ -20,6 +20,8 @@ pub type ErrorList = Vec<Error>;
 #[derive(Clone)]
 pub struct Runtime {
 	hooks: Vec<Hook>,
+	code: Vec<CodeObject>,
+	heap: Vec<HeapObject>,
 	stack: Vec<Data>
 }
 
@@ -46,6 +48,19 @@ pub struct FuncPtr {}
 
 #[derive(Clone)]
 pub struct HeapPtr {}
+
+#[derive(Clone)]
+struct CodeObject {
+	source: PathBuf,
+	consts: Vec<Const>,
+	code: Vec<Instruction>
+}
+
+#[derive(Clone)]
+struct HeapObject {
+	references: usize,
+	data: Vec<Data>
+}
 
 //--> Enums <--
 
@@ -143,10 +158,16 @@ enum Hook {
 	}
 }
 
+#[derive(Clone)]
+enum Instruction {}
+
+#[derive(Clone)]
+enum Const {}
+
 //--> Functions <--
 
 impl Runtime {
-	pub fn new() -> Runtime { Runtime { hooks: Vec::new(), stack: Vec::new() } }
+	pub fn new() -> Runtime { Runtime { hooks: Vec::new(), code: Vec::new(), heap: Vec::new(), stack: Vec::new() } }
 
 	pub fn hook_function(&mut self, name: String, args: Vec<DataType>, rets: DataType, func: fn()) -> Runtime {
 		let hook = Hook::Function{ name, args, rets, func };
