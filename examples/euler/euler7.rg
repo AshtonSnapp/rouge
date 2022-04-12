@@ -1,8 +1,7 @@
 # https://projecteuler.net/problem=7
 
-func xPrimes(uint x) List<uint>:
-	mut var primes = List::new()
-	primes.push(2)
+func xPrimes(uint x) [uint]:
+	mut var primes = [2]
 	mut uint y = 2
 
 	`outer loop:

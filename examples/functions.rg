@@ -1,4 +1,4 @@
-func factorial(ulong n) ulong:
+func factorial(uint n) uint:
 	if n == 1:
 		return 1
 	else:
@@ -7,7 +7,7 @@ func factorial(ulong n) ulong:
 end
 
 pub func main() ubyte:
-	match prompt("Give me a positive whole number: ", ulong::from_str):
+	match uint::from_str(prompt!("Give me a positive whole number: ")):
 		Ok(num) then:
 			outl!("{}! = {}", num, factorial(num))
 			return 0

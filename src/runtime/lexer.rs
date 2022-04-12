@@ -34,7 +34,7 @@ pub enum Token {
 	#[regex(r"0[bB](?&bin)", Lit::bin)]
 	#[regex(r"0[oO](?&oct)", Lit::oct)]
 	#[regex(r"0[xX](?&hex)", Lit::hex)]
-	#[regex(r#"[+-]?(((?&dec)\.(?&dec)?(?&exp)?)|(\.(?&dec)(?&exp)?)|((?&dec)(?&exp))|((?&dec)(?&exp)?))"#, Lit::dec)]
+	#[regex(r#"[+-]?(((?&dec)\.(?&dec)?(?&exp)?)|((?&dec)(?&exp)?))"#, Lit::dec)]
 	Literal(Lit),
 
 	#[regex(r"[`!@%^&*()-=+\[]\{}|;:,.<>/?]", Op::new)]
