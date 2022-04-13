@@ -24,13 +24,25 @@ pub enum ASTNodeType {}
 
 //--> Functions <--
 
-pub fn parse(mut toks: TokenStream, p: &Path, werr: bool) -> ASTResult {
+pub fn parse(toks: TokenStream, p: &Path, werr: bool) -> ASTResult {
 	let mut tree = Vec::new();
 	let mut errs = Vec::new();
 	let mut wrns = Vec::new();
 
-	loop {
-		if toks.is_empty() { break; }
+	let mut tokstack = toks.iter().rev();
+
+	'outer: loop {
+		let mut tline: TokenStream = Vec::new();
+
+		loop {
+			let tok = match tokstack.next() { Some(t) => t, None => break 'outer };
+			if let Token::Newline = tok {
+				break;
+			}
+			tline.push(tok.clone());
+		}
+
+		
 	}
 
 	if errs.is_empty() {

@@ -1,3 +1,0 @@
-# Rouge Documentation
-
-WIP

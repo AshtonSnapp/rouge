@@ -18,7 +18,7 @@ pub type TokenResult = Result<TokenStream, ErrorList>;
 
 //--> Enums <--
 
-#[derive(Logos)]
+#[derive(Logos, Clone)]
 #[logos(subpattern bin = r"[01][_01]*")]
 #[logos(subpattern oct = r"[0-7][_0-7]*")]
 #[logos(subpattern dec = r"[0-9][_0-9]*")]
@@ -51,6 +51,7 @@ pub enum Token {
 	Error
 }
 
+#[derive(Clone)]
 pub enum Lit {
 	Char(char),
 	CharStr(String),
@@ -61,6 +62,7 @@ pub enum Lit {
 	Float(f64)
 }
 
+#[derive(Clone)]
 pub enum Op {
 	Tick,
 	Bang,
@@ -89,6 +91,7 @@ pub enum Op {
 	Question
 }
 
+#[derive(Clone)]
 pub enum Wrd {
 	UnsignedByte,	// ubyte
 	SignedByte,		// byte
