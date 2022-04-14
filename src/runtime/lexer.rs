@@ -109,7 +109,7 @@ pub enum Wrd {
 	True,			// true
 	False,			// false
 	Character,		// char
-	StrSlice,		// str
+	String,			// string
 	Selff,			// self
 	InferType,		// var
 	Constant,		// const
@@ -536,7 +536,7 @@ impl Wrd {
 			"true" => Wrd::True,
 			"false" => Wrd::False,
 			"char" => Wrd::Character,
-			"str" => Wrd::StrSlice,
+			"string" => Wrd::String,
 			"self" => Wrd::Selff,
 			"var" => Wrd::InferType,
 			"const" => Wrd::Constant,
