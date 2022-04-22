@@ -27,3 +27,7 @@ If you're using the regular Command Prompt on Windows, you'll want to pay attent
 > mkdir "%USERPROFILE%\projects\rouge"
 > cd /d "%USERPROFILE%\projects\rouge"
 ```
+
+## Installation
+
+TBD: Rouge really isn't mature yet...

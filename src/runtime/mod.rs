@@ -10,6 +10,7 @@ use std::fmt;
 use std::io::ErrorKind as LoadErr;
 use std::io::stdin;
 use std::path::{Path, PathBuf};
+use std::collections::HashMap;
 
 //--> Type Aliases <--
 
@@ -204,11 +205,38 @@ impl Runtime {
 		let mut errs = Vec::new();
 		let mut wrns = Vec::new();
 
-		let mut toks: Vec<TokenStream> = Vec::new();
+		let mut toks: HashMap<&Path, TokenStream> = HashMap::new();
 
-		match Token::lex_file(path) {
-			Ok(t) => toks.push(t),
-			Err(mut e) => errs.append(&mut e)
+		if let Some(os_ext) = path.extension() {
+			if let Some(ext) = os_ext.to_str() {
+				match ext {
+					"rg" => {
+						// source code
+						match Token::lex_file(path) {
+							Ok(t) => {
+								toks.insert(path, t);
+							},
+							Err(mut e) => {
+								errs.append(&mut e);
+							}
+						}
+					},
+					"robj" => {
+						// bytecode
+						// TODO
+					},
+					_ => {
+						wrns.push(Error::new(format!("[WARN {}] File extension not recognized! Runtime will have to guess what kind of file this is.", path.display()), false, ErrorInfo::Load(LoadErr::InvalidInput)));
+						// TODO
+					}
+				}
+			} else {
+				wrns.push(Error::new(format!("[WARN {}] File extension is not valid UTF-8! Runtime will have to guess what kind of file this is.", path.display()), false, ErrorInfo::Load(LoadErr::InvalidInput)));
+				// TODO
+			}
+		} else {
+			wrns.push(Error::new(format!("[WARN {}] No file extension! Runtime will have to guess what kind of file this is.", path.display()), false, ErrorInfo::Load(LoadErr::InvalidInput)));
+			// TODO
 		}
 
 		if errs.is_empty() {
@@ -223,16 +251,20 @@ impl Runtime {
 		let mut errs = Vec::new();
 		let mut wrns = Vec::new();
 
-		let actual_outfile = outfile.with_extension("robj").as_path();
-
-		let mut toks: Vec<TokenStream> = Vec::new();
+		let mut toks: HashMap<&Path, TokenStream> = HashMap::new();
 
 		for path in paths {
 			match Token::lex_file(path) {
-				Ok(t) => toks.push(t),
-				Err(mut e) => errs.append(&mut e)
+				Ok(t) => {
+					toks.insert(path, t);
+				},
+				Err(mut e) => {
+					errs.append(&mut e);
+				}
 			}
 		}
+
+		let actual_outfile = outfile.with_extension("robj").as_path();
 
 		if errs.is_empty() {
 			Ok(wrns)
@@ -247,16 +279,20 @@ impl Runtime {
 		let mut errs = Vec::new();
 		let mut wrns = Vec::new();
 
-		let actual_outfile = outfile.with_extension("robj").as_path();
-
-		let mut toks: Vec<TokenStream> = Vec::new();
+		let mut toks: HashMap<&Path, TokenStream> = HashMap::new();
 
 		for path in paths {
 			match Token::lex_file(path) {
-				Ok(t) => toks.push(t),
-				Err(mut e) => errs.append(&mut e)
+				Ok(t) => {
+					toks.insert(path, t);
+				},
+				Err(mut e) => {
+					errs.append(&mut e);
+				}
 			}
 		}
+
+		let actual_outfile = outfile.with_extension("robj").as_path();
 
 		if errs.is_empty() {
 			Ok((func, wrns))

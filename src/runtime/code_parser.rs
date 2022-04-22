@@ -29,20 +29,10 @@ pub fn parse(toks: TokenStream, p: &Path, werr: bool) -> ASTResult {
 	let mut errs = Vec::new();
 	let mut wrns = Vec::new();
 
-	let mut tokstack = toks.iter().rev();
+	'lines: for (lno, tline) in toks.split(|tok| if let Token::Newline = tok { true } else { false }).enumerate() {
+		let mut tl = tline.iter();
 
-	'outer: loop {
-		let mut tline: TokenStream = Vec::new();
-
-		loop {
-			let tok = match tokstack.next() { Some(t) => t, None => break 'outer };
-			if let Token::Newline = tok {
-				break;
-			}
-			tline.push(tok.clone());
-		}
-
-		
+		// TODO: how do I write a parser?
 	}
 
 	if errs.is_empty() {

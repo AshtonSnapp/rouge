@@ -120,8 +120,8 @@ pub enum Wrd {
 	Enumeration,	// enum
 	Implement,		// impl
 	Trait,			// trait
+	Protected,		// prt
 	Public,			// pub
-	TraitObject,	// dyn
 	Is,				// is
 	If,				// if
 	ElseIf,			// elif
@@ -547,8 +547,8 @@ impl Wrd {
 			"enum" => Wrd::Enumeration,
 			"impl" => Wrd::Implement,
 			"trait" => Wrd::Trait,
+			"prt" => Wrd::Protected,
 			"pub" => Wrd::Public,
-			"dyn" => Wrd::TraitObject,
 			"is" => Wrd::Is,
 			"if" => Wrd::If,
 			"elif" => Wrd::ElseIf,
