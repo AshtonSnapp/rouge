@@ -31,3 +31,5 @@ If you're using the regular Command Prompt on Windows, you'll want to pay attent
 ## Installation
 
 TBD: Rouge really isn't mature yet...
+
+[next->](1_start.md)

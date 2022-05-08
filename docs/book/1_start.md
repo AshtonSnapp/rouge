@@ -50,4 +50,10 @@ The `end` keyword indicates the end of a block of code - such as a function.
 
 ## REPL
 
-From this point on, unless told otherwise, we'll be using the Rouge REPL. REPL stands for Read-Eval-Print Loop - it _reads_ code from you via the command-line, it evaluates that code, it prints what the code did, and it repeats that until you tell it to stop. All you need to do to access the REPL is run the `rouge` command-line utility without any arguments. To exit the REPL, type `:q` like you would to get out of Vim.
+From this point on, unless told otherwise, we'll be using the Rouge REPL. REPL stands for Read-Eval-Print Loop - it _reads_ code from you via the command-line, it evaluates that code, it prints what the code did, and it repeats that until you tell it to stop. All you need to do to access the REPL is run the `rouge` command-line utility without any arguments. To exit the REPL, type `:q` like you would to get out of Vim. REPL prompts will be represented in this book like this:
+
+```
+main>=>
+```
+
+[<-prev](0_intro.md) | [next->](2_types.md)

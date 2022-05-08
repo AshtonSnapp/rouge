@@ -134,6 +134,8 @@ pub enum Wrd {
 	For,			// for
 	In,				// in
 	EndBlock,		// end
+	Skip,			// skip
+	BreakLoop,		// break
 	LogicalNot,		// not
 	LogicalAnd,		// and
 	LogicalOr,		// or
@@ -561,6 +563,8 @@ impl Wrd {
 			"for" => Wrd::For,
 			"in" => Wrd::In,
 			"end" => Wrd::EndBlock,
+			"skip" => Wrd::Skip,
+			"break" => Wrd::BreakLoop,
 			"not" => Wrd::LogicalNot,
 			"and" => Wrd::LogicalAnd,
 			"or" => Wrd::LogicalOr,
