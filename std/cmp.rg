@@ -1,4 +1,4 @@
-# == !=
+# x == y, x != y
 pub trait Equatable:
 	# equal ==
 	func eq(self, Self rhs) bool
@@ -18,7 +18,7 @@ pub enum Ordering:
 	Greater
 end
 
-# < > <= >=
+# x < y, x > y, x <= y, x >= y
 pub trait Comparable(Equatable):
 	func cmp(self, Self rhs) Ordering
 

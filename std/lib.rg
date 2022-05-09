@@ -47,22 +47,30 @@ end
 impl dbl:
 end
 
-# Boolean functions
+# Boolean Functions
 impl bool:
 end
 
-# Character functions
+# Character Functions
 impl char:
 end
 
-# List (and array) functions
+# List Functions
 impl [T]:
 end
 
-# Map (and array-map) functions
+# Array Functions
+impl [T; const uint N]:
+end
+
+# Map Functions
 impl [K: V]:
 end
 
-# String functions
+# Array-Map Functions
+impl [K: V; const uint N]:
+end
+
+# String Functions
 impl string:
 end
