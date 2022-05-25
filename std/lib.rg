@@ -1,76 +1,53 @@
-
-# 8-bit Unsigned Integer Functions
-impl ubyte:
-end
-
-# 16-bit Unsigned Integer Functions
-impl ushort:
-end
-
-# 32-bit Unsigned Integer Functions
-impl uword:
-end
-
-# 64-bit Unsigned Integer Functions
-impl ulong:
-end
-
-# Register-Sized Unsigned Integer Functions
-impl uint:
-end
-
-# 8-bit Integer Functions
-impl byte:
-end
-
-# 16-bit Integer Functions
-impl short:
-end
-
-# 32-bit Integer Functions
-impl word:
-end
-
-# 64-bit Integer Functions
-impl long:
-end
-
-# Register-Sized Integer Functions
-impl int:
-end
-
-# Single-Precision Floating Point Functions
-impl flt:
-end
-
-# Double-Precision Floating Point Functions
-impl dbl:
-end
-
-# Boolean Functions
 impl bool:
 end
 
-# Character Functions
 impl char:
 end
 
-# List Functions
-impl [T]:
+pub enum Option<T>:
+	Some(T)
+	None
 end
 
-# Array Functions
-impl [T; const uint N]:
+impl Option<T>:
 end
 
-# Map Functions
-impl [K: V]:
+impl Try for Option<T>:
+	type Output = T
+	type Residual = Option<!>
+
+	func from_output(T output) Self:
+		return Option::Some(output)
+	end
+
+	func branch(self) ControlFlow<Self::Output, Self::Residual>:
+		match self:
+			Option::Some(t) then return ControlFlow::Continue(t)
+			Option::None then return ControlFlow::Break(Option::None)
+		end
+	end
 end
 
-# Array-Map Functions
-impl [K: V; const uint N]:
+pub enum Result<T, E>:
+	Ok(T)
+	Err(E)
 end
 
-# String Functions
-impl string:
+impl Result<T, E>:
+end
+
+impl Try for Result<T, E>:
+	type Output = T
+	type Residual = Result<!, E>
+
+	func from_output(T output) Self:
+		return Result::Ok(output)
+	end
+
+	func branch(self) ControlFlow<Self::Output, Self::Residual>:
+		match self:
+			Result::Ok(t) then return ControlFlow::Continue(t)
+			Result::Err(e) then return ControlFlow::Break(Result::Err(e))
+		end
+	end
 end

@@ -29,7 +29,7 @@ main>=> age
 <=< 21
 ```
 
-Here I explicitly said that the type of this variable is an unsigned integer. Why? Well, when you tell Rouge to infer the type of a number it will default to the signed `int` type. However, a negative age makes no sense whatsoever. So, it makes sense here to explicitly mark this as an unsigned number. If we wanted we could even make it a `ubyte` instead, since most people don't even reach 100 years old (average life expectancy right now is 72 years old), but it isn't like we're doing anything important here.
+Here I explicitly said that the type of this variable is an unsigned integer. Why? Well, when you tell Rouge to infer the type of a number it will default to the signed `int` type (unless there's a decimal point or exponent, in which case it will default to the `dbl` type). However, a negative age makes no sense whatsoever. So, it makes sense here to explicitly mark this as an unsigned number. If we wanted we could even make it a `ubyte` instead, since most people don't even reach 100 years old (average life expectancy right now is 72 years old), but it isn't like we're doing anything important here.
 
 Now we can change the value in this variable however we wish. For example, say your birthday comes around and it's time to add another year to your age.
 

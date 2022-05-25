@@ -16,7 +16,7 @@ You can vote!
 <=< ()
 ```
 
-> **Notice that `...`?** The REPL will generally recognize things like `if` as starts of multi-line code blocks - the `...` is the secondary prompt (like Bash's PS2 prompt).
+> **Notice that `...`?** The REPL will generally recognize things like `if` as the starts of multi-line code blocks - the `...` is the secondary prompt (like Bash's PS2 prompt).
 
 Optionally, you can include an `else` expression at the end to execute different code if the condition is false.
 
@@ -44,7 +44,7 @@ else:
 end
 ```
 
-One important note is that conditions given to `if` and `elif` expressions must evaluate to booleans. Unlike Ruby, JavaScript, or PHP, Rouge isn't going to try and turn whatever you give it into a boolean value. You have to explicitly give it a boolean somehow, like the `>=` operator which compares two comparable things and returns `true` if the first thing is greater or equal to the second thing, returning `false` otherwise.
+One important note is that conditions given to `if` and `elif` expressions must evaluate to booleans. Unlike Ruby, JavaScript, or PHP, Rouge isn't going to try and turn whatever you give it into a boolean value. You have to explicitly give it a boolean somehow, like the `>=` operator which compares two Comparable things and returns `true` if the first thing is greater or equal to the second thing, returning `false` otherwise.
 
 ### Using `if`/`elif`/`else` in variable assignment.
 
@@ -174,4 +174,4 @@ Bob will have to repeat the school year.
 
 Notice that I used parentheses to define two variables in that example: one for the key and one for the value. This is because, when iterating through a map, each iteration yields a tuple of the key and value. What I did here was _destructure_ the tuple - pulling the different fields out of it and making them into independent variables.
 
-[<-prev](3_variables.md) | [next->](5_something.md)
+[<-prev](3_variables.md) | [next->](5_functions.md)
