@@ -55,3 +55,7 @@ pub struct BoundedLong<const RangeBounds<ubyte> R>(long)
 pub struct BoundedUint<const RangeBounds<ubyte> R>(uint)
 
 pub struct BoundedInt<const RangeBounds<ubyte> R>(int)
+
+pub struct BoundedFlt<const RangeBounds<flt> R>(flt)
+
+pub struct BoundedDbl<const RangeBounds<dbl> R>(dbl)

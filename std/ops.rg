@@ -115,11 +115,11 @@ pub struct Range<Idx>:
 end
 impl RangeBounds<T> for Range<T>:
 	func start_bound(self) Bound<T>:
-		return Included(self.start)
+		return Bound::Included(self.start)
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Excluded(self.stop)
+		return Bound::Excluded(self.stop)
 	end
 end
 
@@ -130,11 +130,11 @@ end
 
 impl RangeBounds<T> for RangeFrom<T>:
 	func start_bound(self) Bound<T>:
-		return Included(self.start)
+		return Bound::Included(self.start)
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Unbounded
+		return Bound::Unbounded
 	end
 end
 
@@ -143,11 +143,11 @@ pub struct RangeFull
 
 impl RangeBounds<T> for RangeFull:
 	func start_bound(self) Bound<T>:
-		return Unbounded
+		return Bound::Unbounded
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Unbounded
+		return Bound::Unbounded
 	end
 end
 
@@ -159,11 +159,11 @@ end
 
 impl RangeBounds<T> for RangeInclusive<T>:
 	func start_bound(self) Bound<T>:
-		return Included(self.start)
+		return Bound::Included(self.start)
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Included(self.stop)
+		return Bound::Included(self.stop)
 	end
 end
 
@@ -174,11 +174,11 @@ end
 
 impl RangeBounds<T> for RangeTo<T>:
 	func start_bound(self) Bound<T>:
-		return Unbounded
+		return Bound::Unbounded
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Excluded(self.stop)
+		return Bound::Excluded(self.stop)
 	end
 end
 
@@ -189,11 +189,11 @@ end
 
 impl RangeBounds<T> for RangeToInclusive<T>:
 	func start_bound(self) Bound<T>:
-		return Unbounded
+		return Bound::Unbounded
 	end
 
 	func stop_bound(self) Bound<T>:
-		return Included(self.stop)
+		return Bound::Included(self.stop)
 	end
 end
 

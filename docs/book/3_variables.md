@@ -17,6 +17,8 @@ main>=> name
 ```
 
 > **Note:** If you're used to programming languages like C, you may be wondering why we didn't say what type the variable we just made was. That's because the keyword `var` tells the runtime or compiler that it should be able to figure out the type of the variable without our help. This is called **type inferrence**. If you really wanted to though, you could've typed `string name = "Ashton"` (or whatever your name is) instead and that would have worked.
+>
+> There are some situations where the runtime or compiler won't be able to figure it out without help. You'll know when you encounter them because you'll get an error.
 
 Now, what can we do with our new variable? Just about anything - with one major exception. You see, variables are by default _immutable_ in Rouge. This means that, once they contain a value, that value cannot be changed. If you want to be able to change it (which you might want to do with a name variable since people change their names sometime), you need to make it _mutable_ by adding the `mut` keyword before the type or `var` keyword.
 
@@ -38,6 +40,14 @@ main>=> age += 1
 <=< ()
 main>=> age
 <=< 22
+```
+
+## Constants
+
+Sometimes you'll want to declare values as _constants_ - values that cannot be changed. However, these differ from immutable variables in that the value must be known _before any of your code actually runs._ Constants are declared using the `const` keyword, and they must have their type set explicitly - it _cannot_ be inferred.
+
+```rouge
+const ubyte MEANING_OF_LIFE = 42
 ```
 
 [<-prev](2_types.md) | [next->](4_flow.md)
