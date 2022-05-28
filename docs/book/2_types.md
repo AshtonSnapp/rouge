@@ -37,7 +37,7 @@ Rouge has two types for handling floating-point numbers. Floating point numbers 
 
 ### Booleans
 
-Booleans (written `bool`) are extremely simple: they are either true or false.
+Booleans (written `bool`) are extremely simple: they are either true or false. Not much else to it, really.
 
 ### Characters
 
@@ -45,13 +45,15 @@ Characters (written `char`) are single Unicode scalar values encoded in UTF-8. N
 
 One example that may confuse people is "é" versus "é". They look exactly the same, right? But, if you try to make the latter into a `char` it will throw an error. The first "é" is a single character - specifically the Unicode code point U+00E9 'latin small letter e with acute'. However, the second "é" is in fact two characters - U+0065 'latin small letter e' and U+0301 'combining acute accent'.
 
+Characters can be converted into `uword`s (32-bit integers) freely - every character coresponds to a particular number. However, any given `uword` is not guaranteed to correspond to a character. There is a gap in Unicode values - there are no characters corresponding to the values between 0xD800 and 0xDFFF and there are no characters corresponding to the values beyond 0x10FFFF.
+
 ## Compound Types
 
 ### Tuples
 
 A tuple is a fixed-size collection of multiple types of things. For example, a 2-element tuple containing an unsigned integer and a boolean would be written in code as `(uint, bool)`. You just write down a list of all the different elements and types, separated by commas. You access the individual members of the tuple with `.n` (where n is the number of the member you want to access).
 
-An empty tuple, written `()`, is equivalent to the `void` type in other languages. In the REPL, you'll see that anything that doesn't return a value will return `()`.
+An empty tuple, written `()`, is equivalent to `void` in other languages. In the REPL, you'll see that anything that doesn't return a value will return `()`. We'll generally refer to this as the _unit type_.
 
 ### Lists
 

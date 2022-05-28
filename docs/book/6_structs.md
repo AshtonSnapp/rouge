@@ -1,136 +1,156 @@
 # Structs
 
-In programming, you'll often find yourself using multiple different kinds of data to represent pieces of one larger bit of data. Rather than passing these values around individually, which can be error prone, you can bundle them together into a _struct_, short for structure.
+You'll often find yourself using multiple different values to represent one chunk of information. Rather than deal with them individually, which can be error-prone and generally tedious or annoying to handle, you can bundle them up into a _struct_ (short for structure). A struct is what's called a _custom data type_. THis is because it's defined by code, and not built into the language itself like primitives. A given struct contains a number of _fields_, or member variables if you prefer.
 
-A struct is defined using the `struct` keyword, as you may expect. When defining a struct, you specify the names and types of its different _fields_. For example, a struct that contains information about a student at a school may look like this:
+Let's define a struct that represents a student at a school. We'll need to know the student's name, what school year they're in, their GPA, and what classes they have.
 
-```rouge
-struct Student:
-	string name
-	flt gpa
-	uint year
-	[string] classes
-end
+```
+main>=> struct Student:
+		... string name
+		... ubyte year
+		... flt gpa
+		... [string] classes
+		... end
+<=< ()
 ```
 
-That struct definition itself doesn't do much though. It's just a blueprint of sorts - you need to create an _instance_ of the struct based on that blueprint. This is done with curly brace syntax, as follows:
+Notice how that didn't return anything? Well, when you define a struct, all you're really doing is writing a blueprint. In order to use your new struct, you need to _instantiate_ it, or create an instance of it. This can be done by stating the name of the struct (blueprint) followed by curly braces containing the contents, in the format of `field: value`. For example, let's make a struct for Alice from our for loop example in the control flow chapter.
 
-```rouge
-var bob = Student {
-	name: "Bob Baker"
-	gpa: 1.2
-	year: 10
-	classes: [
-		"English",
-		"Algebra",
-		"World Geography",
-		"Physical Science",
-		"PE",
-		"Spanish",
-		"Computer Science"
-	]
-}
+```
+main>=> var alice = Student {
+		... name: "Alice Anderson"
+		... year: 10
+		... gpa: 2.0
+		... classes: [
+		... ... "English II",
+		... ... "Algebra II",
+		... ... "Physical Science",
+		... ... "Physical Education",
+		... ... "World Geography",
+		... ... "Spanish I",
+		... ... "Art II"
+		... ... ]
+		... }
+<=< ()
+main>=> alice
+<=< <Student { name: "Alice Anderson", year: 10, gpa: 2.0, classes: [...] }>
 ```
 
-You can access the different fields of the struct using the dot syntax, like with tuples but using the name of the field: `bob.gpa`. Also, when the instance is mutable, any of the fields can be modified.
+So we now have an instance of a student. Great. We can access the different fields of our new struct using dot syntax, like how you access the elements in a tuple but using the name of the field instead of a number.
 
-```rouge
-mut var alice = Student {
-	name: "Alice Anderson"
-	gpa: 2.0
-	year: 11
-	classes: [
-		"English",
-		"Algebra",
-		"World History",
-		"Physics",
-		"Spanish",
-		"PE",
-		"Art"
-	]
-}
-
-alice.gpa = 2.5
+```
+main>=> alice.classes
+<=< ["English II", "Algebra II", "Physical Science", "Physical Education", "World Geography", "Spanish I", "Art II"]
 ```
 
-## Struct Update
+If the instance is declared as mutable, you can change a particular field's value using the same syntax.
 
-Sometimes you'll want to create a new instance of a struct that's slightly modified from an existing instance. You can do this using the struct update syntax, as follows:
-
-```rouge
-mut var mary = Student {
-	name: "Mary Miller"
-	gpa: 4.0
-	..alice
-}
 ```
+main>=> mut var bob = Student {
+		... name: "Bob Baker"
+		... year: 9
+		... gpa: 1.2
+		... classes: [
+		... ... "English I",
+		... ... "Algebra I",
+		... ... "Biology I",
+		... ... "Physical Education",
+		... ... "Civics",
+		... ... "Art I",
+		... ... "Computer Science I"
+		... }
+<=< ()
+main>=> bob.gpa = 1.5
+<=< ()
+```
+
+Note that the _entire instance_ must be mutable. There's no way to make only certain fields mutable or immutable - the entire thing has to be mutable or none of it is.
 
 ## Tuple Structs
 
-You can also create structs that work like tuples - the fields don't have names, but they are typed. This is useful for when you have a tuple with a specific meaning attached, or if naming the fields would be verbose or redundant.
+Structs can also have unnamed fields, like tuples. These are useful for when you want to have a name for a commonly-used tuple. As an example, let's make a tuple that represents a 24-bit RGB color.
 
-```rouge
-struct Color(ubyte, ubyte, ubyte)
 ```
-
-These are then instantiated like a tuple with a word attached to the opening parentheses:
-
-```rouge
-var lime = Color(0x55, 0xff, 0x00)
+main>=> struct Color (ubyte, ubyte, ubyte)
+<=< ()
+main>=> var lime_green = Color(50, 205, 50)
+<=< ()
+main>=> lime_green
+<=< <Color (50, 205, 50)>
 ```
 
 ## Unit Structs
 
-One kind of struct that has its uses, even though it seems like it shouldn't, is unit structs. These are structs that hold - guess what - no data! They're basically the unit type `()` but with a special name, and they can have methods defined on them which we will discuss shortly.
+Structs can also have... well, no fields at all. This may seem useless, but there are situations where it is useful.
 
-```rouge
-struct Thing
-
-# ...
-
-var item = Thing
+```
+main>=> struct Empty
+<=< ()
+main>=> var boi = Empty
+<=< ()
+main>=> boi
+<=< <Empty>
 ```
 
-## Methods
+## Associated Functions
 
-_Methods_ are essentially functions defined on a struct. Their first argument is always `self`, which refers to the particular instance of the struct that the function was called on using the dot syntax. There are two main ways of creating methods: either within an `impl` (short for _implementation_) block, or standalone. You'll usually want to use `impl` so we'll discuss that first.
+You'll often create functions that deal with a specific struct or other custom type. You can create these functions the normal way, but you can also make them into _associated functions_. This is done by either prepending the function name with the name of the type, separated by two colons, or by declaring them within an implementation block with the `impl` keyword. The latter is most often used. Let's create an associated function that will create a Student struct for us. Constructors are a common use for associated functions, after all.
 
-An `impl` block associates whatever it contains with a particular type. This is generally used for methods, but can also be used for constants - for example, the primitive `flt` and `dbl` types both have associated constants for `PI`, `TAU`, and `E` among others. The general `impl` syntax is as follows:
+```
+main>=> impl Student:
+Student::>=> pub func new(string name, ubyte year, flt gpa, ...string) Student:
+Student::new>=> return Student {
+		... name
+		... year
+		... gpa
+		... classes: vargs
+		... }
+Student::new>=> end
+<=< func(string, ubyte, flt, ...string) Student
+Student::>=> end
+<=< <impl on Student>
+main>=> mut var mary = Student::new("Mary Mallory", 12, 4.0, ["English IV", "Precalculus", "AP Physics", "AP Computer Science Principles"])
+<=< ()
+main>=> mary.classes[0]
+<=< "English IV"
+```
+
+### Methods
+
+A method is a special type of associated function that takes a specific instance of the struct, referred to using the `self` keyword, as its first argument. Methods can either have mutable or immutable access to the instance, depending on whether the first argument is just `self` or `mut self`.
+
+This time, let's make a method that sets the student's GPA based on their grades in their classes.
+
+```
+main>=> pub func Student::update_gpa(mut self, [string: flt] grades):
+Student::update_gpa>=> mut flt average = 0.0
+Student::update_gpa>=> for class in self.classes:
+		... if grades.get(class) is Some(grade):
+		... ... average += grade
+		... ... end
+		... end
+Student::update_gpa>=> average /= (grades.len() as flt)
+Student::update_gpa>=> self.gpa = average
+Studnet::update_gpa>=> end
+<=< <impl on Student>
+main>=> mary.update_gpa(["English IV": 4.0, "Precalculus": 3.8, "AP Physics": 3.6, "AP Computer Science Principles": 4.0])
+<=< ()
+main>=> mary.gpa
+<=< 3.85
+```
+
+### Associated Constants
+
+Functions aren't the only thing you can associate with a struct. You can also associate constants.
 
 ```rouge
+# You can do it like this...
 impl Type:
-	# items
+	const CONSTANT: ConstType = value
 end
-```
 
-Inside of this block, you can define your methods. For example, let's take our `Color` struct and define a method that returns the color as a single number.
-
-```rouge
-impl Color:
-	pub func as_num(self) uword:
-		return ((self.0 << 16) | (self.1 << 8) | (self.2)) as uword
-	end
-end
-```
-
-You can also define _associated functions_, which are like methods but they don't have self as an argument. They are commonly used for constructors - functions which are used to more easily create an instance of a given type.
-
-```rouge
-impl Color:
-	pub func new(ubyte red, ubyte green, ubyte blue) Color:
-		return Color(red, green, blue)
-	end
-end
-```
-
-Two final things to notice: first, a given type can always have new functions implemented on it. If you've ever used Ruby before, you know that classes in that languages are open - meaning they can always be modified. In Rouge, types are semi-open - you can always add new associated functions, constants, and methods, but you can't modify the fields. Note that if there are multiple conflicting implementations of a given function or constant on a given type, the runtime or compiler will produce an error.
-
-Second, you don't necessarily need an `impl` block to define a function on a type. You can also write a function normally, but prepend the function's name with the type and two colons like so:
-
-```rouge
-func Type::function(args) return:
-	# code
-end
+# Or like this...
+const Type::CONSTANT: ConstType = value
 ```
 
 [<-prev](5_functions.md) | [next->](7_enums.md)

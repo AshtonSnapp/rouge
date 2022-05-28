@@ -20,7 +20,7 @@ main>=> name
 >
 > There are some situations where the runtime or compiler won't be able to figure it out without help. You'll know when you encounter them because you'll get an error.
 
-Now, what can we do with our new variable? Just about anything - with one major exception. You see, variables are by default _immutable_ in Rouge. This means that, once they contain a value, that value cannot be changed. If you want to be able to change it (which you might want to do with a name variable since people change their names sometime), you need to make it _mutable_ by adding the `mut` keyword before the type or `var` keyword.
+Now, what can we do with our new variable? Just about anything - with one major exception. You see, variables are by default _immutable_ in Rouge. This means that, once they contain a value, that value cannot be changed. If you want to be able to change it (which you might want to do with a name variable since people change their names sometimes), you need to make it _mutable_ by adding the `mut` keyword before the type or `var` keyword.
 
 Let's make a new variable called `age` that will contain how old you are. This definitely needs to be mutable, since people grow older every year.
 
