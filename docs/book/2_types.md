@@ -18,7 +18,7 @@ Rouge has several types for storing whole numbers - or integers. Specifically, t
 | 64-bit | `ulong`  | `long`  |
 | arch.  | `uint`   | `int`   |
 
-The final two types are unique. Unlike the others, which have a fixed size on all platforms, the `uint` and `int` types are dependent on the platform the runtime is being ran on. On 32-bit systems, the `uint` and `int` types are equivalent to the `uword` and `word` types respectively. Likewise, they are equivalent to the `ulong` and `long` types on 64-bit systems. Type inferrence will prefer the `int` type. Moving along though, each size of integer can only hold certain values. This is as follows, with the knowledge that the unsigned minimum value is _always_ 0:
+The final two types are unique. Unlike the others, which have a fixed size on all platforms, the `uint` and `int` types are dependent on the platform the runtime is being ran on. On 32-bit systems, the `uint` and `int` types are equivalent to the `uword` and `word` types respectively. Likewise, they are equivalent to the `ulong` and `long` types on 64-bit systems. Type inferrence (which we will discuss in the next chapter) will prefer the `int` type. Moving along though, each size of integer can only hold certain values. This is as follows, with the knowledge that the unsigned minimum value is _always_ 0:
 
 | # Bits | Unsigned Maximum     | Signed Minimum       | Signed Maximum       |
 | ------ | -------------------- | -------------------- | -------------------- |
@@ -33,11 +33,11 @@ For the `uint` or `int` types, the maximums and minimum is the same as either th
 
 #### Floating-Point Types
 
-Rouge has two types for handling floating-point numbers. Floating point numbers are capable of handling fractional or decimal numbers - like 0.25 (or your circle constant of choice) - and extremely large numbers. There are two floating point types - the 32-bit single-precision type (written as `flt` in code) and the 64-bit double-precision type (written as `dbl` in code).
+Rouge has two types for handling floating-point numbers. Floating point numbers are capable of handling fractional or decimal numbers - like 0.25 (or your circle constant of choice) - and extremely large numbers like the speed of light. There are two floating point types - the 32-bit single-precision type (written as `flt` in code) and the 64-bit double-precision type (written as `dbl` in code). Type inferrence will prefer the `dbl` type as it is more precise.
 
 ### Booleans
 
-Booleans (written `bool`) are extremely simple: they are either true or false. Not much else to it, really.
+Booleans (written `bool`) are extremely simple: they are either `true` or `false`. Not much else to it, really.
 
 ### Characters
 

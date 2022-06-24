@@ -125,7 +125,7 @@ This time, let's make a method that sets the student's GPA based on their grades
 main>=> pub func Student::update_gpa(mut self, [string: flt] grades):
 Student::update_gpa>=> mut flt average = 0.0
 Student::update_gpa>=> for class in self.classes:
-		... if grades.get(class) is Some(grade):
+		... if grades.get(class) is Some(grade) then:
 		... ... average += grade
 		... ... end
 		... end

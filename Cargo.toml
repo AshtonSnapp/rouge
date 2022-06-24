@@ -1,6 +1,7 @@
 [package]
 name = "rouge"
 version = "0.1.0"
+authors = ["Ashton Scott Snapp <ashton@ashtonsnapp.com>"]
 edition = "2021"
 description = "A statically-typed programming language for applications, plugins, and config files."
 readme = "README.md"
@@ -10,7 +11,8 @@ categories = ["compilers", "command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-path = "src/runtime/mod.rs"
+# Library needs to produce both a C-loadable dynamic library and a Rust library.
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # Lexer
@@ -18,24 +20,8 @@ logos = "0.12"
 # Parser
 nom = "7.1"
 # Command line interface
-clap = { version = "3.1", features = ["cargo", "wrap_help"] }
+clap = { version = "3.2", features = ["cargo", "wrap_help"] }
 # Bytecode file compression and decompression.
 zstd = "0.11"
-
-# The following dependencies are only present in the standalone utility, as they are for GUI apps. Different libraries for different platforms.
-
-# using gtk for linux gui
-[target.'cfg(linux)'.dependencies]
-gui = { version = "0.15", package = "gtk", optional = true }
-
-# using orbtk for redox gui
-[target.'cfg(redox)'.dependencies]
-gui = { version = "0.2", package = "orbtk", optional = true }
-
-# using cacao for macos gui
-[target.'cfg(darwin)'.dependencies]
-gui = { version = "0.2", package = "cacao", optional = true }
-
-# using native-windows-gui for windows gui
-[target.'cfg(windows)'.dependencies]
-gui = { version = "1.0", package = "native-windows-gui", optional = true }
+# Used to dynamically load native libraries as hooks for Rouge programs.
+dlopen = { version = "0.1", optional = true }

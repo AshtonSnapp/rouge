@@ -9,7 +9,7 @@ It's a common thing to only run certain code so long as a given condition is met
 ```
 main>=> age = 21
 <=< ()
-main>=> if age >= 18:
+main>=> if age >= 18 then:
 		... outl!("You can vote!")
 		... end
 You can vote!
@@ -23,7 +23,7 @@ Optionally, you can include an `else` expression at the end to execute different
 ```
 main>=> age = 17
 <=< ()
-main>=> if age >= 18:
+main>=> if age >= 18 then:
 		... outl!("You can vote!")
 		... else
 		... outl!("You can't vote.")
@@ -35,9 +35,9 @@ You can't vote.
 If you want to chain checking conditions, you can use `elif` expressions: they're like `if` expressions in that they take a condition, but they're like `else` expressions in that they go after an existing `if` expression. Note that, if you have `if`, `elif`, _and_ `else` expressions put together, the `else` block _has_ to come last. Generally, the syntax is as follows:
 
 ```
-if condition:
+if condition then:
 	# code
-elif condition:
+elif condition then:
 	# code
 else:
 	# code
@@ -77,7 +77,7 @@ And it's just going to print 'One hop this time!' until the program is shut down
 main>=> mut var i = 0
 <=< ()
 main>=> loop:
-		... if i >= 5:
+		... if i >= 5 then:
 			... break
 			... end
 		... outl!("One hop this time!")
@@ -111,7 +111,7 @@ Rouge also has `until` loops. These are essentially inverse `while` loops: until
 ```rouge
 # while loop
 loop:
-	if not condition:
+	if not condition then:
 		break
 	end
 	# code
@@ -120,7 +120,7 @@ end
 # until loop
 loop:
 	# code
-	if condition:
+	if condition then:
 		break
 	end
 end
@@ -160,7 +160,7 @@ Now let's print out each student and their GPA. Let's also say whether they'll n
 ```
 main>=> for (student, gpa) in gpas:
 		... outl!("{} has a GPA of {}.", student, gpa)
-		... if gpa < 2.0:
+		... if gpa < 2.0 then:
 			... outl!("{} will have to repeat the school year.", student)
 			... end
 		... end

@@ -113,6 +113,7 @@ pub struct Range<Idx>:
 	pub Idx start
 	pub Idx stop
 end
+
 impl RangeBounds<T> for Range<T>:
 	func start_bound(self) Bound<T>:
 		return Bound::Included(self.start)

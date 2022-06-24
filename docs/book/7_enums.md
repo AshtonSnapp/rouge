@@ -42,25 +42,70 @@ One example is a function present on lists (including arrays and strings) and ma
 
 ## Pattern Matching
 
-When you have a function that returns an Option or similar enum, you can't just access the value contained in the variants directly. You first need to check what variant it is - and you do that via _pattern matching_. This is most commonly done using a `match` block. As an example, let's make a list of names and match whatever is returned from calling the get function on it.
+When you have a function that returns an Option or similar enum, you can't just access the value contained in the variants directly. You first need to check what variant it is - and you do that via _pattern matching_. This is done using the `is` keyword, which acts as an operator in an `if` expression. For example, let's make a list of names.
 
 ```
-main>=> var names = ["Ashton", "Chance", "John", "Trista"]
+main>=> var names = ["Ashton", "Bob", "Chance", "Drake"]
 <=< ()
-main>=> match names.get(2):
-		... Some(n) then outl!("Hello, {}!", n)
-		... None then errl!("No person!")
+```
+
+Now let's make a simple function that takes in this list and an index and prints a greeting if there's a name there, but prints something else if there isn't.
+
+```
+main>=> func greet([string] names, uint index):
+greet>=> if names.get(index) is Some(name) then:
+		... outl!("Hello, {}!", name)
+		... else:
+		... outl!("No person!")
 		... end
-Hello, John!
+greet>=> end
+<=< func([string], uint)
+```
+
+Then we can do some testing with this.
+
+```
+main>=> greet(names, 2)
+Hello, Chance!
 <=< ()
-main>=> match names.get(4):
-		... Some(n) then outl!("Hello, {}!", n)
-		... None then errl!("No person!")
-		... end
+main>=> greet(names, 4)
 No person!
 <=< ()
 ```
 
-You can see this in full effect if you have an enum with more than 2 variants, or if you match against something that isn't an enum. Yes, you can do that. One example is if you want to check if some user input string matches one of several pre-determined strings, or if a number is in one of many given ranges. If you're just checking if something is one variant of an enum, you can use `if is`. This is just an if expression, but the condition is `x is y` where x is some data and y is the pattern you want to match against.
+You can also invert this, although you can't get any sort of argument out of destructuring the pattern you're checking for. For example, let's say you're writing code to go in a vending machine and you want to reject any coins that aren't quarters. Assuming we have some struct that represents the vending machine, and you have that coin enum from an earlier example, you could write the following code:
+
+```rouge
+func on_coin_inserted(mut self, Coin coin):
+	if coin is not Coin::Quarter then:
+		self.dispense_coin(coin)
+	else:
+		self.cents_inserted += 25
+	end
+end
+```
+
+Finally, you can create a pattern matching _block_ by changing how you write the statement slightly. This is actually inspired by how Jai handles switch statments:
+
+```rouge
+if coin is:
+	Coin::Penny then self.cents_inserted += 1
+	Coin::Nickel then self.cents_inserted += 5
+	Coin::Dime then self.cents_inserted += 10
+	Coin::Quarter then self.cents_inserted += 25
+end
+```
+
+The only difference between doing things like this and using `is` as an operator is that, when you have a pattern matching block, you must be _exhaustive_. This means that you have to cover all possible patterns. Luckily, if you only care about some of the possible patterns, you can handle the rest using `else` as follows:
+
+```rouge
+if coin is:
+	Coin::Quarter then self.cents_inserted += 25
+	Coin::Dime then self.cents_inserted += 10
+	else self.dispense_coin(coin)
+end
+```
+
+And remember, you can put `:` after `then` or `else` to start a multi-line code block, which must be ended with the `end` keyword.
 
 [<-prev](6_structs.md) | [next->](8_projects.md)

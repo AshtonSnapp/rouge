@@ -41,7 +41,7 @@ Let's say that, for one reason or another, you want to compute factorials. One i
 
 ```rouge
 func factorial(uint num) uint:
-	if num <= 1:
+	if num <= 1 then:
 		return 1
 	else:
 		return num * factorial(num - 1)
