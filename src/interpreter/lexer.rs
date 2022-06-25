@@ -41,6 +41,7 @@ pub(crate) type Result = std::result::Result<TokenStream, ErrorList>;
 pub(crate) struct TokenWrapper {
 	pub inner: Token,
 	pub span: Span,
+	pub slice: String,
 }
 
 //--> Enums <--
@@ -343,16 +344,16 @@ impl Token {
 							for (token, span) in Token::lexer(&l).spanned() {
 								match token {
 									// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-									Token::Error => errs.push(Error::new(false, Some(p), Some(lno), Some(span), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-									_ => toks.push(TokenWrapper { inner: token, span })
+									Token::Error => errs.push(Error::new(false, Some(p), Some(lno), Some(span.clone()), Some(&l[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
+									_ => toks.push(TokenWrapper { inner: token, span: span.clone(), slice: String::from(&l[span]) })
 								}
 							}
 						},
-						Err(e) => errs.push(Error::new(false, Some(p), Some(lno), None, ErrorKind::IO(e.kind())))
+						Err(e) => errs.push(Error::new(false, Some(p), Some(lno), None, None, ErrorKind::IO(e.kind())))
 					}
 				}
 			},
-			Err(e) => errs.push(Error::new(false, Some(p), None, None, ErrorKind::IO(e.kind())))
+			Err(e) => errs.push(Error::new(false, Some(p), None, None, None, ErrorKind::IO(e.kind())))
 		}
 
 		if errs.is_empty() {
@@ -371,8 +372,8 @@ impl Token {
 		for (token, span) in Token::lexer(s).spanned() {
 			match token {
 				// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-				Token::Error => errs.push(Error::new(false, None, Some(lno), Some(span), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-				_ => toks.push(TokenWrapper { inner: token, span })
+				Token::Error => errs.push(Error::new(false, None, Some(lno), Some(span.clone()), Some(&s[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
+				_ => toks.push(TokenWrapper { inner: token, span: span.clone(), slice: String::from(&s[span]) })
 			}
 		}
 

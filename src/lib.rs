@@ -54,6 +54,7 @@ pub struct Error {
 	file: Option<PathBuf>,
 	line: Option<usize>,
 	span: Option<Span>,
+	slice: Option<String>,
 	kind: ErrorKind
 }
 
@@ -93,7 +94,7 @@ impl Runtime {
 
 impl Error {
 	/// Creates a new error object.
-	pub(crate) fn new(is_warning: bool, file: Option<&Path>, line: Option<usize>, span: Option<Span>, kind: ErrorKind) -> Error {
+	pub(crate) fn new(is_warning: bool, file: Option<&Path>, line: Option<usize>, span: Option<Span>, slice: Option<&str>, kind: ErrorKind) -> Error {
 		Error {
 			is_warning,
 			file: match file {
@@ -102,6 +103,10 @@ impl Error {
 			},
 			line,
 			span,
+			slice: match slice {
+				Some(s) => Some(String::from(s)),
+				None => None
+			},
 			kind
 		}
 	}
@@ -133,68 +138,16 @@ impl Error {
 		self.span.clone()
 	}
 
+	/// Contains the text that generated the error.
+	/// A return value of None indicates the error doesn't apply to a specific string of text.
+	#[no_mangle]
+	pub extern "C" fn slice(&self) -> Option<String> {
+		self.slice.clone()
+	}
+
 	/// Returns the kind of error that occurred.
 	#[no_mangle]
 	pub extern "C" fn kind(&self) -> ErrorKind {
 		self.kind.clone()
-	}
-}
-
-impl fmt::Display for Error {
-	fn fmt(&self, fmtr: &mut fmt::Formatter) -> fmt::Result {
-		let mut message = String::new();
-		
-		if self.is_warning {
-			message.push_str("WARN: ");
-		} else {
-			message.push_str("ERR: ");
-		}
-
-		if let Some(filename) = &self.file {
-			message.push_str(format!("{}: ", filename.display()));
-		} else {
-			message.push_str("stdin: ");
-		}
-
-		if let Some(lno) = &self.line {
-			message.push_str(format!("{}: ", lno));
-		}
-
-		if let Some(span) = &self.span {
-			message.push_str(format!("{}..{}: ", span.start, span.end));
-		}
-
-		match self.kind {
-			ErrorKind::Interpret(interp_err) => match interp_err {
-				InterpretError::Lex(lex_err) => match lex_err {
-					LexError::InvalidToken => message.push_str("Tried to turn something into a token, but failed to."),
-					LexError::NumberParseFail => message.push_str("Tried to turn something into a number literal, but failed to."),
-					LexError::UnknownEscapeSequence => message.push_str("Tried to turn something into a text literal, but encountered an unknown escape sequence."),
-					LexError::InvalidEscapeSequence => message.push_str("Tried to turn something into a text literal, but encountered an invalid escape sequence."),
-				},
-				InterpretError::Parse(parse_err) => match parse_err {
-					ParseError::UnexpectedToken => message.push_str("Ran into an unexpected token while parsing."),
-				},
-			},
-			ErrorKind::Compile => unreachable!(),
-			ErrorKind::Load => unreachable!(),
-			ErrorKind::IO(io_err) => match io_err {
-				IOError::NotFound => message.push_str("Tried to do something, but couldn't find the file."),
-				IOError::PermissionDenied => message.push_str("Tried to do something, but didn't have permission."),
-				IOError::BrokenPipe => message.push_str("Tried to do something, but a pipe broke."),
-				IOError::InvalidInput => message.push_str("Tried to do something, but did it wrong."),
-				IOError::InvalidData => message.push_str("Tried to do something, but got nonsense."),
-				IOError::TimedOut => message.push_str("Tried to do something, but ran out of time."),
-				IOError::WriteZero => message.push_str("Tried to do something, but nothing was written."),
-				IOError::Interrupted => message.push_str("Tried to do something, but was interrupted."),
-				IOError::Unsupported => message.push_str("Tried to do something, but it's impossible."),
-				IOError::UnexpectedEof => message.push_str("Tried to do something, but unexpectedly reached the end of the file."),
-				IOError::OutOfMemory => message.push_str("Tried to do something, buut ran out of memory."),
-				_ => message.push_str(format!("Tried to do something, but encountered this unexpected error: {}", io_err))
-			},
-			ErrorKind::Runtime => unreachable!(),
-		}
-
-		write!(fmtr, "{}", message)
 	}
 }

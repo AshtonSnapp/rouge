@@ -39,22 +39,43 @@ pub(crate) struct ConcreteSyntaxTree {
 }
 
 pub(crate) struct ConcreteSyntaxNode {
-	pub token: Token,
-	pub line: usize,
-	pub span: Span,
-	pub left_children: Option<Vec<ConcreteSyntaxNode>>,
-	pub right_children: Option<Vec<ConcreteSyntaxNode>>,
+	pub token: TokenWrapper,
+	pub lhs: Option<Vec<ConcreteSyntaxNode>>,
+	pub rhs: Option<Vec<ConcreteSyntaxNode>>,
 }
 
 //--> Enums <--
 
 enum Context {
-	FunctionSignature,
+	FunctionSig,
 	FunctionCode,
-	StructSignature,
+	ClosureSig,
+	ClosureCode,
+	StructSig,
 	StructContents,
-	EnumSignature,
+	EnumSig,
 	EnumContents,
+	TraitSig,
+	TraitContents,
+	ImplSig,
+	ImplContents,
+	IfExprSig,
+	ElifExprSig,
+	MatchArmSig,
+	WhileSig,
+	UntilSig,
+	ForSig,
+	CtrlFlowBlock,
+	VarDeclaration,
+	MutVarDeclaration,
+	ConstDeclaration,
+	FunctionCall,
+	TupleInit,
+	CollectionInit,
+	StructInit,
+	UseTree,
+	DecoratorLine,
+	CommentLine,
 }
 
 //--> Functions <--
@@ -67,15 +88,10 @@ impl ConcreteSyntaxTree {
 		let mut ctx_stack: Vec<Context> = Vec::new();
 
 		for (lno, token_line) in tokens.split_mut(|t| if let Token::Operator(Op::Newline) = t.inner { true } else { false }).enumerate() {
-			// The tokens in each line are to be used as a stack, so we'll reverse them and turn them into Vecs so we can `.pop()`
-			token_line.reverse();
-			let mut token_stack = Vec::from(token_line);
-			
-			if ctx_stack.is_empty() {
-				// We are in the top-level context.
-			} else {
-				// We have a context.
-			}
+			// skip the line if it doesn't contain anything
+			if token_line.is_empty() { continue; }
+
+			// TODO: Write CST generation code
 		}
 
 		if errs.is_empty() || errs.iter().all(|e| e.is_warning()) {
