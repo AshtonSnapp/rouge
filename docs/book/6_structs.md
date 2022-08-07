@@ -7,8 +7,8 @@ Let's define a struct that represents a student at a school. We'll need to know 
 ```
 main>=> struct Student:
 		... string name
-		... ubyte year
-		... flt gpa
+		... nat year
+		... float gpa
 		... [string] classes
 		... end
 <=< ()
@@ -71,7 +71,7 @@ Note that the _entire instance_ must be mutable. There's no way to make only cer
 Structs can also have unnamed fields, like tuples. These are useful for when you want to have a name for a commonly-used tuple. As an example, let's make a tuple that represents a 24-bit RGB color.
 
 ```
-main>=> struct Color (ubyte, ubyte, ubyte)
+main>=> struct Color (byte, byte, byte)
 <=< ()
 main>=> var lime_green = Color(50, 205, 50)
 <=< ()
@@ -94,11 +94,11 @@ main>=> boi
 
 ## Associated Functions
 
-You'll often create functions that deal with a specific struct or other custom type. You can create these functions the normal way, but you can also make them into _associated functions_. This is done by either prepending the function name with the name of the type, separated by two colons, or by declaring them within an implementation block with the `impl` keyword. The latter is most often used. Let's create an associated function that will create a Student struct for us. Constructors are a common use for associated functions, after all.
+You'll often create functions that deal with a specific struct or other custom type. You can create these functions the normal way, but you can also make them into _associated functions_. This is done by either prepending the function name with the name of the type, separated by two colons, or by declaring them within an implementation block with the `impl` keyword. Let's create an associated function that will create a Student struct for us. Constructors are a common use for associated functions, after all.
 
 ```
 main>=> impl Student:
-Student::>=> pub func new(string name, ubyte year, flt gpa, ...string) Student:
+Student::>=> pub func new(string name, nat year, float gpa, ...string) Student:
 Student::new>=> return Student {
 		... name
 		... year
@@ -106,7 +106,7 @@ Student::new>=> return Student {
 		... classes: vargs
 		... }
 Student::new>=> end
-<=< func(string, ubyte, flt, ...string) Student
+<=< func(string, nat, float, ...string) Student
 Student::>=> end
 <=< <impl on Student>
 main>=> mut var mary = Student::new("Mary Mallory", 12, 4.0, ["English IV", "Precalculus", "AP Physics", "AP Computer Science Principles"])
@@ -122,14 +122,14 @@ A method is a special type of associated function that takes a specific instance
 This time, let's make a method that sets the student's GPA based on their grades in their classes.
 
 ```
-main>=> pub func Student::update_gpa(mut self, [string: flt] grades):
-Student::update_gpa>=> mut flt average = 0.0
+main>=> pub func Student::update_gpa(mut self, [string: float] grades):
+Student::update_gpa>=> mut float average = 0.0
 Student::update_gpa>=> for class in self.classes:
 		... if grades.get(class) is Some(grade) then:
 		... ... average += grade
 		... ... end
 		... end
-Student::update_gpa>=> average /= (grades.len() as flt)
+Student::update_gpa>=> average /= (grades.len() as float)
 Student::update_gpa>=> self.gpa = average
 Studnet::update_gpa>=> end
 <=< <impl on Student>
@@ -146,11 +146,11 @@ Functions aren't the only thing you can associate with a struct. You can also as
 ```rouge
 # You can do it like this...
 impl Type:
-	const CONSTANT: ConstType = value
+	const ConstType CONSTANT = value
 end
 
 # Or like this...
-const Type::CONSTANT: ConstType = value
+const ConstType Type::CONSTANT = value
 ```
 
 [<-prev](5_functions.md) | [next->](7_enums.md)

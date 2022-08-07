@@ -91,14 +91,16 @@ One hop this time!
 <=< ()
 ```
 
-### `while` and `until` Loops
+> **Note:** The following loops utilize the `do` keyword to separate the loop 'signature' and the loop body. This allows them to be written on one line. Plain loops don't use the `do` keyword, and therefore cannot be single-line. This is on purpose, as a plain loop can run indefinitely due to having no built-in end condition.
+
+### Conditional Looping with `while` and `until`
 
 Since breaking out of a loop when a certain condition is met is extremely common, most programming languages (including Rouge) have an easier way to do this: `while` loops. The name hints as to how it works: while some condition is true, repeat this code. The syntax is nearly identical to that of an `if` expression, but with the `while` keyword. Let's rework our code from before:
 
 ```
 main>=> i = 0
 <=< ()
-main>=> while i < 5:
+main>=> while i < 5 do:
 		... outl!("One hop this time!")
 		... i += 1
 		... end
@@ -126,7 +128,7 @@ loop:
 end
 ```
 
-### `for` Loops
+### Looping through a collection with `for`
 
 There are also situations where you'll want to run some code on every element of a list, or every key-value pair of a map. An easy way to do this is a `for` loop. As an example, let's create a list. Let's say it's a list of teachers' names at a school.
 
@@ -138,7 +140,7 @@ main>=> var teachers = ["Campbell", "Harris", "Grey", "Woods"] # [string]
 Now let's create a for loop that prints out each teacher's name.
 
 ```
-main>=> for teacher in teachers:
+main>=> for teacher in teachers do:
 		... outl!("{} works here.", teacher)
 		... end
 Campbell works here.
@@ -158,7 +160,7 @@ main>=> var gpas = ["John": 3.2, "Mary": 4.0, "Alice": 2.0, "Bob": 1.2] # [strin
 Now let's print out each student and their GPA. Let's also say whether they'll need to repeat the school year (which we'll say is any student with a GPA below 2).
 
 ```
-main>=> for (student, gpa) in gpas:
+main>=> for (student, gpa) in gpas do:
 		... outl!("{} has a GPA of {}.", student, gpa)
 		... if gpa < 2.0 then:
 			... outl!("{} will have to repeat the school year.", student)
@@ -172,6 +174,18 @@ Bob will have to repeat the school year.
 <=< ()
 ```
 
-Notice that I used parentheses to define two variables in that example: one for the key and one for the value. This is because, when iterating through a map, each iteration yields a tuple of the key and value. What I did here was _destructure_ the tuple - pulling the different fields out of it and making them into independent variables.
+Notice that I used parentheses to define two variables in that example: one for the key and one for the value. This is because, when iterating through a map, each iteration yields a tuple of the key and value. What I did here was _destructure_ the tuple - pulling the different fields out of it and making them into independent variables. This can also be performed with custom types, which will be discussed in future chapters.
+
+> **Note:** A `for` loop, behind the scenes, utilizes something known as an `Iterator`. Certain types are iterators, and other types can be turned into iterators. It will call a function on this iterator until it returns a value that indicates it should stop.
+
+### Skipping iterations
+
+Sometimes you'll be running code in a loop and, for some reason or another, you cannot run the code in the rest of the loop for the current iteration. In this case, the `skip` keyword will do exactly what you think it does - it will skip the rest of current iteration of the loop. In other programming languages, this is the `continue` keyword. `skip` is used in Rouge instead of `continue` because it is more clear as to what it is doing.
+
+### Using loops in variable assignment.
+
+Since loops are also expressions, you can use them to assign values to variables. However, this works differently than with `if`, `elif`, and `else` - loops will create lists or maps, rather than a single value. Whatever is created depends on whether each iteration of the loop yields either a single value (creating a list) or a tuple of two values (creating a map, where the first value is the key and the second value is, well, the value). Yielding a value from an iteration of a loop is done with either the `yield` or `return` keyword. `yield` gives a value while also acting like a `skip`, while `return` gives a value and acts like a `break`.
+
+If you've used Python before, this essentially fills the role of a list or dictionary (the Python equivalent of a map) comprehension.
 
 [<-prev](3_variables.md) | [next->](5_functions.md)

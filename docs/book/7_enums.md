@@ -52,7 +52,7 @@ main>=> var names = ["Ashton", "Bob", "Chance", "Drake"]
 Now let's make a simple function that takes in this list and an index and prints a greeting if there's a name there, but prints something else if there isn't.
 
 ```
-main>=> func greet([string] names, uint index):
+main>=> func greet([string] names, nat index):
 greet>=> if names.get(index) is Some(name) then:
 		... outl!("Hello, {}!", name)
 		... else:
@@ -96,6 +96,24 @@ if coin is:
 end
 ```
 
+And, for comparison, here's roughly the same code in Jai (including an enum definition):
+
+```jai
+Coin :: enum {
+	Penny;
+	Nickel;
+	Dime;
+	Quarter;
+}
+
+if coin == {
+	case Coin.Penny; machine.cents_inserted += 1;
+	case Coin.Nickel; machine.cents_inserted += 5;
+	case Coin.Dime; machine.cents_inserted += 10;
+	case Coin.Quarter; machine.cents_inserted += 25;
+}
+```
+
 The only difference between doing things like this and using `is` as an operator is that, when you have a pattern matching block, you must be _exhaustive_. This means that you have to cover all possible patterns. Luckily, if you only care about some of the possible patterns, you can handle the rest using `else` as follows:
 
 ```rouge
@@ -107,5 +125,31 @@ end
 ```
 
 And remember, you can put `:` after `then` or `else` to start a multi-line code block, which must be ended with the `end` keyword.
+
+### Pattern Matching and Conditional Loops
+
+Pattern matching can also be used when writing conditional loops. This allows you to write a loop which only runs if, for example, you get a `Some` from a function that returns an `Option<T>`, or a loop that automatically runs different code depending on what it gets back from the function.
+
+```rouge
+var range = 1..=100
+
+while range.next() is Some(i) do outl!("{}", i)
+```
+
+Would you like to know a fun fact? The above is functionally identical to the following code:
+
+```rouge
+for i in 1..=100 do outl!("{}", i)
+```
+
+And, at a lower level, is equivalent to the following code using simple loops:
+
+```rouge
+var range = 1..=100
+
+loop:
+	if range.next() is Some(i) then outl!("{}", i) else break
+end
+```
 
 [<-prev](6_structs.md) | [next->](8_projects.md)

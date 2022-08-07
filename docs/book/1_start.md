@@ -40,7 +40,9 @@ pub func main():
 	outl!("Hello, world!")
 ```
 
-TBW: how do explain macros?
+The `!` marks this as a _macro call_. We'll discuss macros in greater depth later, but the basic idea is that it is a function that modifies your code (and therefore must be ran before it). In this case, the `outl!()` macro replaces itself with code that prints the provided text to the terminal.
+
+`outl!()` acts as Rouge's 'print line' function, and runs as a macro so string formatting errors are reported before your code actually runs. String formatting is handled by using `{}` in the string and placing everything you want to insert into the string after it, with everything separated by commas.
 
 ```rouge
 end

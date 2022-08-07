@@ -2,7 +2,7 @@
 
 Let's back out of the REPL for a bit and talk about projects. When you're first starting out in a programming language, you'll often be writing projects where all of your code is in one file, sometimes called a _script_. For simple programs and libaries, this isn't a big deal. In fact, sometimes it's actually preferrable. However, as your projects get bigger and more complicated, it will be impossible to keep track of the project's structure in your head. You can organize your code by splitting it up into multiple files - here each file is called a _module_. Each module will generally contain related code. Following this, all modules that are part of the same project form a single _package_.
 
-Let's make a practical example of how a project can be structured. Let's say you're writing a client for some online service - for this example we'll use a microblogging platform like Twitter or Mastodon. At a high level, you can split your code into two groups: the front-end (the code responsible for interacting with the user) and the back-end (the code responsible for interacting with the service). So, you can structure your project like this:
+Let's make a practical example of how a project can be structured. Let's say you're writing a client for some online service. At a high level, you can split your code into two groups: the front-end (the code responsible for interacting with the user) and the back-end (the code responsible for interacting with the service). So, you can structure your project like this:
 
 ```
 \src
@@ -17,7 +17,7 @@ This works, but you can split things up even further if desired. For example, it
 
 When you move code into a module, it is by default _private_. This means that it cannot be accessed by anything outside of the module. However, a module containing only private code isn't very useful. So, different items like functions, constants, structs, enums, and things we haven't covered yet can be marked as either _public_, using the `pub` keyword, or _protected_, using the `prt` keyword.
 
-Public is easy to explain - something made public is accessible from any module or package that can reach it. The last part is crucial - just because a function is public doesn't mean something can reach it. The module containing the function must also be public, same with any parent, grandparent, great-grandparent, and so on modules. Another thing is that _any_ public code can be directly accessed by code outside of the runtime - regardless of whether other Rouge code would or wouldn't be able to.
+Public is easy to explain - something made public is accessible from any module or package that can reach it. The last part is crucial - just because a function is public doesn't mean something can reach it. The module containing the function must also be public, same with any parent, grandparent, great-grandparent, and so on modules. Another thing is that _any_ public code can be directly accessed by code outside of the runtime - regardless of whether other Rouge code would or wouldn't be able to. This is why the `main()` function must be marked as `pub`.
 
 Protected is a bit more complicated. Essentially marking something as protected means it is public so long as the accessing code is within a certain _scope_. By default that scope is the package, however a smaller scope can be speicifed by putting it in parentheses attached to the `prt` keyword (like if it was a function - `prt(scope)`). What goes into those parentheses is a module path, which will be discussed next along with how one makes code from a module or another package accessible - `use` statements.
 
@@ -53,6 +53,7 @@ use std::fmt::Error as FormatError
 There are some situations where you want to import something from a module, and provide a public way to access it without making the containing module (or its parent modules) public as well. You can do this by using the `pub` keyword in front of `use`. This essentially creates a shortcut. It can also be used to re-export a package you're using.
 
 ```rouge
+# would be accessible by other packages as pkg_name::ThingThatNeedsToBePublic
 pub use self::private::ThingThatNeedsToBePublic
 ```
 

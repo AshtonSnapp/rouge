@@ -4,36 +4,15 @@ Rouge supports a set of so-called _primitive_ data types. They're called primiti
 
 ## Scalar Types
 
-### Numeric Types
+### Numbers
 
-#### Integer Types
+Rouge has three main types for handling numbers: `nat`, `int`, and `float`. The `nat` type holds a positive whole number. If you need to hold negative whole numbers, you use the `int` type. Finally, if you need to hold non-whole numbers, or really big numbers, you use the `float` type. The names for the types come from the kinds of numbers they hold. `nat` holds _natural (counting) numbers_, `int` holds _integers_, and `float` holds _floating-point numbers_.
 
-Rouge has several types for storing whole numbers - or integers. Specifically, there are 10. The distinction between the types is based on the amount of memory used to store the number and whether the number is signed (capable of holding negative numbers) or unsigned (incapable of holding negative numbers). They are indicated via keywords - those prefixed with u- are unsigned types, the rest are signed.
+All three types of numbers are represented using 64 bits (8 bytes, using Rust's `u64`, `i64`, and `f64` types respectively). Because of this, a `nat` can hold any number from 0 to 18,446,744,073,709,551,615, an `int` can hold any number from -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807, and a `float` can hold any number from -1.7976931348623157&times;10<sup>38</sup> to 1.7976931348623157&times;10<sup>38</sup> (with the smallest positive number it can hold being 2.2250738585072014&times;10<sup>-308</sup>).
 
-| Length | Unsigned | Signed  |
-| ------ | -------- | ------- |
-| 8-bit  | `ubyte`  | `byte`  |
-| 16-bit | `ushort` | `short` |
-| 32-bit | `uword`  | `word`  |
-| 64-bit | `ulong`  | `long`  |
-| arch.  | `uint`   | `int`   |
+You might be asking: why does Rouge have three different types for holding numbers? A `float` can hold larger numbers than anyone would realistically need, and can also handle fractions - why not just use those? An `int` can handle positive and negative numbers - why use `nat`s? The answer is simple: providing the right tool for the job. Floating point numbers have a huge range of values they can represent, but that comes at the cost of precision - rounding errors, basically. Plus, dealing with floating point is slower than dealing with plain integers. Similarly, there are some situations where it doesn't make sense to allow negative numbers - like if you're counting something. As said previously, use the right tool for the right job.
 
-The final two types are unique. Unlike the others, which have a fixed size on all platforms, the `uint` and `int` types are dependent on the platform the runtime is being ran on. On 32-bit systems, the `uint` and `int` types are equivalent to the `uword` and `word` types respectively. Likewise, they are equivalent to the `ulong` and `long` types on 64-bit systems. Type inferrence (which we will discuss in the next chapter) will prefer the `int` type. Moving along though, each size of integer can only hold certain values. This is as follows, with the knowledge that the unsigned minimum value is _always_ 0:
-
-| # Bits | Unsigned Maximum     | Signed Minimum       | Signed Maximum       |
-| ------ | -------------------- | -------------------- | -------------------- |
-| 8 	 | 255					| -128				   | -127				  |
-| 16	 | 65535				| -32768			   | -32765				  |
-| 32	 | 4294967295			| -2147483648		   | -2147483647		  |
-| 64	 | 18446744073709551615 | -9223372036854775808 | -9223372036854775807 |
-
-For the `uint` or `int` types, the maximums and minimum is the same as either the 32-bit row or the 64-bit row depending on your platform.
-
-> **Caution:** With smaller integer types, it becomes more likely that a value will wrap around. For example, if you have a `ubyte` with a value of 255 and you try to add 1, it will wrap around back to 0. This is called **integer overflow**. On the other side, if you have a `ubyte` with a value of 0 and you try to subtract 1, it will wrap around to 255. This is called **integer underflow**. The platform-dependent types `uint` and `int` should be sufficient for most use cases. If you need to use explicitly-sized types, for any reason, make sure the value you're trying to store is within the given bounds for the type you're using.
-
-#### Floating-Point Types
-
-Rouge has two types for handling floating-point numbers. Floating point numbers are capable of handling fractional or decimal numbers - like 0.25 (or your circle constant of choice) - and extremely large numbers like the speed of light. There are two floating point types - the 32-bit single-precision type (written as `flt` in code) and the 64-bit double-precision type (written as `dbl` in code). Type inferrence will prefer the `dbl` type as it is more precise.
+There is one other type, and I saved it for last because it's intended use case is different: the `byte` type holds a single 8-bit number, generally interpreted as an unsigned value - from 0 to 255. The `byte` type primarily exists because many file types store data as a series of bytes, rather than text. And some tasks, like communicating over the network, may involve turning your data into bytes. So it's useful to have a byte type.
 
 ### Booleans
 
@@ -45,13 +24,11 @@ Characters (written `char`) are single Unicode scalar values encoded in UTF-8. N
 
 One example that may confuse people is "é" versus "é". They look exactly the same, right? But, if you try to make the latter into a `char` it will throw an error. The first "é" is a single character - specifically the Unicode code point U+00E9 'latin small letter e with acute'. However, the second "é" is in fact two characters - U+0065 'latin small letter e' and U+0301 'combining acute accent'.
 
-Characters can be converted into `uword`s (32-bit integers) freely - every character coresponds to a particular number. However, any given `uword` is not guaranteed to correspond to a character. There is a gap in Unicode values - there are no characters corresponding to the values between 0xD800 and 0xDFFF and there are no characters corresponding to the values beyond 0x10FFFF.
-
 ## Compound Types
 
 ### Tuples
 
-A tuple is a fixed-size collection of multiple types of things. For example, a 2-element tuple containing an unsigned integer and a boolean would be written in code as `(uint, bool)`. You just write down a list of all the different elements and types, separated by commas. You access the individual members of the tuple with `.n` (where n is the number of the member you want to access).
+A tuple is a fixed-size collection of multiple types of things. For example, a 2-element tuple containing a natural number and a boolean would be written in code as `(nat, bool)`. You just write down a list of all the different elements and types, separated by commas. You access the individual members of the tuple with `.n` (where n is the number of the member you want to access).
 
 An empty tuple, written `()`, is equivalent to `void` in other languages. In the REPL, you'll see that anything that doesn't return a value will return `()`. We'll generally refer to this as the _unit type_.
 
@@ -63,7 +40,7 @@ Lists, written in code as `[T]`, are collections that contain things of some typ
 
 A string is just a list of characters (`[char]`) under the hood. However, it has extra functions and methods for dealing with usual text manipulation processes like making everything upper or lower case, or stripping prefixes and suffixes, or performing a Unicode normalization. Accessing the individual characters in the string is done like accessing the elements of a list.
 
-If, for some reason, you want to access the individual _bytes_ that make up a string (rather than the characters), you can call the `encode()` function which returns a `[ubyte]` containing the UTF-8 encoded bytes of the string.
+If, for some reason, you want to access the individual _bytes_ that make up a string (rather than the characters), you can call the `encode()` function which returns a `[byte]` containing the UTF-8 encoded bytes of the string.
 
 ### Maps
 

@@ -25,13 +25,13 @@ Now, what can we do with our new variable? Just about anything - with one major 
 Let's make a new variable called `age` that will contain how old you are. This definitely needs to be mutable, since people grow older every year.
 
 ```
-main>=> mut uint age = 21
+main>=> mut nat age = 21
 <=< ()
 main>=> age
 <=< 21
 ```
 
-Here I explicitly said that the type of this variable is an unsigned integer. Why? Well, when you tell Rouge to infer the type of a number it will default to the signed `int` type (unless there's a decimal point or exponent, in which case it will default to the `dbl` type). However, a negative age makes no sense whatsoever. So, it makes sense here to explicitly mark this as an unsigned number. If we wanted we could even make it a `ubyte` instead, since most people don't even reach 100 years old (average life expectancy right now is 72 years old), but it isn't like we're doing anything important here.
+Here I explicitly said that the type of the variable was `nat`. Why did I do that? Well, whenever Rouge tries to infer the type of a variable that's being set to a number, it will default to the `int` type unless it can't. However, having a negative age doesn't make any sense. So, it makes sense to set the age to a natural number rather than an integer.
 
 Now we can change the value in this variable however we wish. For example, say your birthday comes around and it's time to add another year to your age.
 
@@ -47,7 +47,7 @@ main>=> age
 Sometimes you'll want to declare values as _constants_ - values that cannot be changed. However, these differ from immutable variables in that the value must be known _before any of your code actually runs._ Constants are declared using the `const` keyword, and they must have their type set explicitly - it _cannot_ be inferred.
 
 ```rouge
-const ubyte MEANING_OF_LIFE = 42
+const byte MEANING_OF_LIFE = 42
 ```
 
 [<-prev](2_types.md) | [next->](4_flow.md)

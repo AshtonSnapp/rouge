@@ -17,15 +17,15 @@ The first line is the _function signature_. This tells the runtime:
 For example, we might want a function that adds a bunch of numbers together and returns whether those numbers meet or exceed some threshold. In fact, let's make this function in the REPL:
 
 ```
-main>=> func sum_threshold([uint] nums, uint threshold) bool:
-sum_threshold>=> mut uint sum = 0
+main>=> func sum_threshold([nat] nums, nat threshold) bool:
+sum_threshold>=> mut nat sum = 0
 sum_threshold>=> for num in nums:
 		... sum += num
 		... end
 sum_threshold>=> return sum >= threshold
 sum_threshold>=> end
-<=< func([uint], uint) bool
-main>=> [uint] nums = [21, 42, 84]
+<=< func([nat], nat) bool
+main>=> [nat] nums = [21, 42, 84]
 <=< ()
 main>=> sum_threshold(nums, 128)
 <=< true
@@ -40,7 +40,7 @@ main>=> sum_threshold(nums, 160)
 Let's say that, for one reason or another, you want to compute factorials. One interesting thing about factorials, is that 5! = 5 * 4!. And 4! = 4 * 3!. And so on. So, following that logic, you can implement factorials as follows:
 
 ```rouge
-func factorial(uint num) uint:
+func factorial(nat num) uint:
 	if num <= 1 then:
 		return 1
 	else:
@@ -64,7 +64,7 @@ end
 All of the extra arguments at the end (or in this case, all of the arguments) are collected into a list with the given type called `vargs`. This has several uses. For example, we can redo our `sum_threshold()` function from earlier:
 
 ```rouge
-func sum_threshold(uint threshold, ...uint) bool:
+func sum_threshold(nat threshold, ...nat) bool:
 	mut uint sum = 0
 
 	for varg in vargs:
@@ -83,8 +83,8 @@ sum_threshold(25, 1, 2, 4, 8, 16)
 
 > **Why use variadic functions?** Certain kinds of operations can be more naturally implemented as variadic functions, such as summing numbers and concatenating strings. Also, using variadic functions means you don't have to create list variables that are only used for a single function call.
 >
-> On the lower level of things, variadic functions work by having the runtime collect the arguments into a list which the function is given a reference to. This does mean a slight performance hit as this collection process has to occur, but it also means the list will likely be wiped from the heap as the reference is invalidated when the function returns.
+> On the lower level of things, variadic functions work by having the runtime collect the arguments into a list which the function is given a reference to. This does mean a slight performance hit as this collection process has to occur, but it also means the list will be automatically destroyed whenever the function returns.
 >
-> In short, whether you use variadic functions depends entirely on what's more important to your use case: performance, or memory efficiency.
+> In short, whether you use variadic functions depends on whether that performance hit is a bigger problem than the list persisting in memory after the function returns.
 
 [<-prev](4_flow.md) | [next->](6_structs.md)
