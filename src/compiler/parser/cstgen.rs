@@ -50,8 +50,8 @@ enum Context {
 	FunctionCode,
 	ClosureSig,
 	ClosureCode,
-	StructSig,
-	StructContents,
+	ClassSig,
+	ClassContents,
 	EnumSig,
 	EnumContents,
 	TraitSig,
@@ -161,8 +161,8 @@ impl ConcreteSyntaxTree {
 								rhs: Some(Vec::new())
 							}
 						)),
-						Word::Structure => ctx_stack.push((
-							Context::StructSig,
+						Word::Class => ctx_stack.push((
+							Context::ClassSig,
 							ConcreteSyntaxNode {
 								token: tok,
 								lhs: None,
@@ -244,8 +244,8 @@ impl ConcreteSyntaxTree {
 					Context::FunctionCode => {},
 					Context::ClosureSig => {},
 					Context::ClosureCode => {},
-					Context::StructSig => {},
-					Context::StructContents => {},
+					Context::ClassSig => {},
+					Context::ClassContents => {},
 					Context::EnumSig => {},
 					Context::EnumContents => {},
 					Context::TraitSig => {},

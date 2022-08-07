@@ -206,7 +206,12 @@ pub(crate) enum Word {
 	///  - The type of an implementor of a trait
 	///  - The instance of a custom type that a method was called/invoked on
 	Selff,
-	/// `super` keyword used to represent the parent module of the module you're working on
+	/// `super` keyword used to represent the parent module of the module you're working on, or a parent type.
+	/// 
+	/// In cases of multiple inheritance, the exact parent type must be specified in angle brackets after the super keyword.
+	/// ```rouge
+	/// super<TypeA>::clean()
+	/// ```
 	Super,
 	/// `mut` keyword that marks a value as mutable, able to be changed
 	Mutable,
@@ -216,14 +221,20 @@ pub(crate) enum Word {
 	Constant,
 	/// `func` keyword that starts a function
 	Function,
-	/// `struct` keyword that starts a structure definition
-	Structure,
+	/// `class` keyword that starts a class definition
+	Class,
 	/// `enum` keyword that starts an enumeration definition
 	Enumeration,
 	/// `trait` keyword that starts a trait definition
 	Trait,
 	/// `impl` keyword that starts a block to implement things onto a structure or enumerationnnnnn
 	Implementation,
+	/// By default, only data - fields or enum variants - is inherited.
+	/// Associated constants, functions, methods, and trait implementations are not inherited unless specifically requested using the `from` keyword.
+	/// ```rouge
+	/// 
+	/// ```
+	From,
 	/// `pub` keyword that marks something as public, directly accessible by any code outside of the package or even the runtime
 	Public,
 	/// `prt` keyword that marks something as protected, only accessible within a certain bound. This bound is, by default, the package
@@ -239,7 +250,7 @@ pub(crate) enum Word {
 	/// The `do` keyword serves multiple purposes.
 	/// 
 	/// First, it can be used to start a generic code block. For example: (Rust equivalent in comments)
-	/// ```
+	/// ```rouge
 	/// var x = do:			#	let x = {
 	/// 	outl!("Hello!")	#		println!("Hello!");
 	/// 	return 42		#		42
@@ -247,7 +258,7 @@ pub(crate) enum Word {
 	/// ```
 	/// 
 	/// Second, it can be used alongside two pipe characters to create a _closure_ - an anonymous function, essentially.
-	/// ```
+	/// ```rouge
 	/// var sum = |x, y| do x + y
 	/// 
 	/// # Closures can use variables from the context they are defined in.
@@ -261,14 +272,13 @@ pub(crate) enum Word {
 	/// ```
 	/// 
 	/// Finally, it is used to end the signatures of while, until, and for loop expressions.
-	/// ```
+	/// ```rouge
 	/// for i in 1..=100 do outl!("{}", i)
 	/// ```
 	Do,
 	/// `then` separates the condition from the code that should be run if that condition is met.
 	/// 
-	/// ## `if`/`elif` example:
-	/// ```
+	/// ```rouge
 	/// if condition then code() elif condition then other_code()
 	/// ```
 	Then,
@@ -293,7 +303,7 @@ pub(crate) enum Word {
 	/// The `yield` keyword is used to return a value from an iteration of a loop while simultaneously skipping to the next iteration like the `skip` keyword.
 	/// In the future, when async/await gets added, `yield` will be used to return a value from a co-routine while not ending the co-routine entirely.
 	Yield,
-	/// `extern` marks runtime hooks - functions or types that come from the runtime or program embedding the runtime.
+	/// `extern` marks types and functions which originate from outside of Rouge.
 	External,
 	/// `use` is used to import modules, types, and functions from other packages and/or modules.
 	Use,
@@ -818,7 +828,7 @@ impl Word {
 			"mut" => Word::Mutable,
 			"const" => Word::Constant,
 			"func" => Word::Function,
-			"struct" => Word::Structure,
+			"class" => Word::Class,
 			"enum" => Word::Enumeration,
 			"trait" => Word::Trait,
 			"impl" => Word::Implementation,

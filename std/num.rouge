@@ -1,61 +1,39 @@
 use self::ops::RangeBounds
 
-impl ubyte:
-end
-
-impl byte:
-end
-
-impl ushort:
-end
-
-impl short:
-end
-
-impl uword:
-end
-
-impl word:
-end
-
-impl ulong:
-end
-
-impl long:
-end
-
-impl uint:
+impl nat:
+	pub const nat MIN = 0
+	pub const nat MAX = 18_446_744_073_709_551_615
+	pub const nat BITS = 64
 end
 
 impl int:
+	pub const int MIN = -9_223_372_036_854_775_808
+	pub const int MAX = 9_223_372_036_854_775_807
+	pub const nat BITS = 64
 end
 
-impl flt:
+impl float:
+	pub const nat BITS = 64
+	pub const nat RADIX = 2
+	pub const nat MANTISSA_DIGITS = 53
+	pub const nat DIGITS = 15
+	pub const float EPSILON = 2.2204460492503131E-16
+	pub const float MIN = -1.7976931348623157E+308
+	pub const float MIN_POSITIVE = 2.2250738585072014E-308
+	pub const float MAX = 1.7976931348623157E+308
+	pub const int MIN_EXP = -1021
+	pub const int MAX_EXP = 1024
+	pub const int MIN_10_EXP = -307
+	pub const int MAX_10_EXP = 308
+	pub const float NAN = NaN
+	pub const float INFINITY = +Inf
+	pub const float NEGATIVE_INFINITY = -Inf
 end
 
-impl dbl:
+pub enum ParseNumError:
+	Empty
+	Invalid
+	Overflow
+	Underflow
+	Zero
 end
-
-pub struct BoundedUbyte<const RangeBounds<ubyte> R>(ubyte)
-
-pub struct BoundedByte<const RangeBounds<ubyte> R>(byte)
-
-pub struct BoundedUshort<const RangeBounds<ubyte> R>(ushort)
-
-pub struct BoundedShort<const RangeBounds<ubyte> R>(short)
-
-pub struct BoundedUword<const RangeBounds<ubyte> R>(uword)
-
-pub struct BoundedWord<const RangeBounds<ubyte> R>(word)
-
-pub struct BoundedUlong<const RangeBounds<ubyte> R>(ulong)
-
-pub struct BoundedLong<const RangeBounds<ubyte> R>(long)
-
-pub struct BoundedUint<const RangeBounds<ubyte> R>(uint)
-
-pub struct BoundedInt<const RangeBounds<ubyte> R>(int)
-
-pub struct BoundedFlt<const RangeBounds<flt> R>(flt)
-
-pub struct BoundedDbl<const RangeBounds<dbl> R>(dbl)

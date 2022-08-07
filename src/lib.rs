@@ -40,18 +40,11 @@ use logos::Span;
 /// Represents a collection of errors and/or warnings.
 pub type ErrorList = Vec<Error>;
 
-/// Represents the type of data contained in a slot.
-pub type SlotType = Option<DataType>;
-
-type Slot = Option<Data>;
-
 //--> Structs <--
 
 /// The Rouge runtime itself.
 #[repr(C)]
-pub struct Runtime {
-	slots: Vec<Slot>,
-}
+pub struct Runtime {}
 
 /// Contains information about some kind of error that occurred while trying to run a program.
 /// 
@@ -98,38 +91,38 @@ pub enum ErrorKind {
 	Runtime,
 }
 
-/// An enum representing the different datatypes that can be present in a slot.
+/// An enum representing different data types.
 #[repr(u8)]
 pub enum DataType {
-	/// Indicates a slot containing a byte value (Rust `u8`, C/C++ `unsigned char` or `uint8_t`)
+	/// Indicates a byte value (Rust `u8`, C/C++ `unsigned char` or `uint8_t`)
 	Byte,
-	/// Indicates a slot containing a natural value (Rust `u64`, C/C++ `unsigned long` or `uint64_t`)
+	/// Indicates a natural value (Rust `u64`, C/C++ `unsigned long` or `uint64_t`)
 	Nat,
-	/// Indicates a slot containing an integer value (Rust `i64`, C/C++ `long` or `int64_t`)
+	/// Indicates an integer value (Rust `i64`, C/C++ `long` or `int64_t`)
 	Int,
-	/// Indicates a slot containing a floating-point value (Rust `f64`, C/C++ `double`)
+	/// Indicates a floating-point value (Rust `f64`, C/C++ `double`)
 	Float,
-	/// Indicates a slot containing a boolean value (`bool`)
+	/// Indicates a boolean value (`bool`)
 	Bool,
-	/// Indicates a slot containing a UTF-8 character (Rust `char`, C/C++ `wchar_t` on non-Windows platforms because Windows uses UTF-16 for some reason)
+	/// Indicates a UTF-8 character (Rust `char`, C/C++ `wchar_t` on non-Windows platforms because Windows uses UTF-16 for some reason)
 	Char,
-	/// Indicates a slot containing a tuple of values. The type of each element of the tuple is further specified.
+	/// Indicates a tuple of values. The type of each element of the tuple is further specified.
 	Tuple(Vec<DataType>),
-	/// Indicates a slot containing a (dynamic) list of values. The type of the list is further specified.
+	/// Indicates a (dynamic) list of values. The type of the list is further specified.
 	List(Box<DataType>),
-	/// Indicates a slot containnig a string of UTF-8 characters.
+	/// Indicates a string of UTF-8 characters.
 	String,
-	/// Indicates a slot containing a map of key/value pairs. The types of the keys and values are further specified.
+	/// Indicates a map of key/value pairs. The types of the keys and values are further specified.
 	Map{
 		key_type: Box<DataType>,
 		value_type: Box<DataType>
 	},
-	/// Indicates a slot containing a function handle. The types of the arguments and return value are further specified.
+	/// Indicates a function handle. The types of the arguments and return value are further specified.
 	Handle{
 		arg_types: Vec<DataType>,
 		return_type: Box<DataType>
 	},
-	/// Indicates a slot containing an object reference.
+	/// Indicates an object reference.
 	/// The exact type referenced is specified via a C-compatible (null-terminated) UTF-8 string.
 	Reference(CString),
 }
@@ -154,9 +147,7 @@ enum Data {
 impl Runtime {
 	#[no_mangle]
 	pub extern "C" fn new() -> Runtime {
-		Runtime {
-			slots: Vec::new(),
-		}
+		Runtime {}
 	}
 }
 
