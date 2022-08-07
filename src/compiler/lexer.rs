@@ -178,30 +178,14 @@ pub(crate) enum Op {
 /// Keywords and identifiers
 #[derive(Clone)]
 pub(crate) enum Word {
-	/// `ubyte` keyword used to represent the type of an unsigned 8-bit integer
-	UnsignedByte,
-	/// `byte` keyword used to represent the type of a signed 8-bit integer
+	/// `byte` keyword used to represent the type of an unsigned 8-bit integer (aka a byte)
 	Byte,
-	/// `ushort` keyord used to represent the type of an unsigned 16-bit integer
-	UnsignedShort,
-	/// `short` keyword used to represent the type of a signed 16-bit integer
-	Short,
-	/// `uword` keyword used to represent the type of an unsigned 32-bit integer
-	UnsignedWord,
-	/// `word` keyword used to represent the type of a signed 32-bit integer
-	Word,
-	/// `ulong` keyword used to represent the type of an unsigned 64-bit integer
-	UnsignedLong,
-	/// `long` keyword used to represent the type of a signed 64-bit integer
-	Long,
-	/// `uint` keyword used to represent the type of an unsigned integer whose size is platform-dependent
-	UnsignedInteger,
-	/// `int` keyword used to represent the type of a signed integer whose size is platform-dependent
+	/// `nat` keyword used to represent the type of an unsigned 64-bit integer (aka natural number)
+	Natural,
+	/// `int` keyword used to represent the type of a signed 64-bit integer
 	Integer,
-	/// `flt` keyword used to represent the type of a 32-bit floating-point number
+	/// `float` keyword used to represent the type of a 64-bit floating-point number
 	Float,
-	/// `dbl` keyword used to represent the type of a 64-bit floating-point number
-	Double,
 	/// `bool` keyword used to represent the type of a true or false value
 	Boolean,
 	/// `true` keyword that represents a true or positive boolean value
@@ -252,21 +236,40 @@ pub(crate) enum Word {
 	ElseIf,
 	/// `else` acts as the final 'arm' of an `if` or `match` expression.
 	Else,
-	/// `|| do x` == Rust's `|| x`
-	Closure,
+	/// The `do` keyword serves multiple purposes.
+	/// 
+	/// First, it can be used to start a generic code block. For example: (Rust equivalent in comments)
+	/// ```
+	/// var x = do:			#	let x = {
+	/// 	outl!("Hello!")	#		println!("Hello!");
+	/// 	return 42		#		42
+	/// end					#	};
+	/// ```
+	/// 
+	/// Second, it can be used alongside two pipe characters to create a _closure_ - an anonymous function, essentially.
+	/// ```
+	/// var sum = |x, y| do x + y
+	/// 
+	/// # Closures can use variables from the context they are defined in.
+	/// var fruit = "Banana"
+	/// var g = || do return fruit[0] # returns 'B'
+	/// 
+	/// # Closures can also be multi-line.
+	/// var repeat = |times| do:
+	/// 	return fruit.repeated_with(times, ' ')
+	/// end
+	/// ```
+	/// 
+	/// Finally, it is used to end the signatures of while, until, and for loop expressions.
+	/// ```
+	/// for i in 1..=100 do outl!("{}", i)
+	/// ```
+	Do,
 	/// `then` separates the condition from the code that should be run if that condition is met.
 	/// 
 	/// ## `if`/`elif` example:
 	/// ```
 	/// if condition then code() elif condition then other_code()
-	/// ```
-	/// 
-	/// ## `match` example:
-	/// ```
-	/// match expression:
-	/// 	pattern then code()
-	/// 	else other_code()
-	/// end
 	/// ```
 	Then,
 	/// `loop` creates a loop that runs forever without intervention.
@@ -285,6 +288,11 @@ pub(crate) enum Word {
 	Break,
 	/// `end` marks the end of a multi-line code block.
 	End,
+	/// The `return` keyword is used to explicitly return a value from a control flow expression or function, or to return a value from an iteration of a loop while simultaneously ending the loop like the `break` keyword.
+	Return,
+	/// The `yield` keyword is used to return a value from an iteration of a loop while simultaneously skipping to the next iteration like the `skip` keyword.
+	/// In the future, when async/await gets added, `yield` will be used to return a value from a co-routine while not ending the co-routine entirely.
+	Yield,
 	/// `extern` marks runtime hooks - functions or types that come from the runtime or program embedding the runtime.
 	External,
 	/// `use` is used to import modules, types, and functions from other packages and/or modules.
@@ -795,18 +803,10 @@ impl Word {
 		let slice = l.slice();
 
 		match slice {
-			"ubyte" => Word::UnsignedByte,
 			"byte" => Word::Byte,
-			"ushort" => Word::UnsignedShort,
-			"short" => Word::Short,
-			"uword" => Word::UnsignedWord,
-			"word" => Word::Word,
-			"ulong" => Word::UnsignedLong,
-			"long" => Word::Long,
-			"uint" => Word::UnsignedInteger,
+			"nat" => Word::Natural,
 			"int" => Word::Integer,
-			"flt" => Word::Float,
-			"dbl" => Word::Double,
+			"float" => Word::Float,
 			"bool" => Word::Boolean,
 			"true" => Word::True,
 			"false" => Word::False,
@@ -828,7 +828,7 @@ impl Word {
 			"is" => Word::Is,
 			"elif" => Word::ElseIf,
 			"else" => Word::Else,
-			"do" => Word::Closure,
+			"do" => Word::Do,
 			"then" => Word::Then,
 			"loop" => Word::Loop,
 			"while" => Word::While,
@@ -838,6 +838,8 @@ impl Word {
 			"skip" => Word::Skip,
 			"break" => Word::Break,
 			"end" => Word::End,
+			"return" => Word::Return,
+			"yield" => Word::Yield,
 			"extern" => Word::External,
 			"use" => Word::Use,
 			"as" => Word::As,

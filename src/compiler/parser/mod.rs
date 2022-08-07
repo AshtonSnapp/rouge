@@ -26,6 +26,10 @@ use std::{
 #[derive(Clone)]
 #[repr(u8)]
 pub enum ParseError {
+	/// The parser didn't have anything to parse.
+	NoTokens,
+	
+	/// The parser ran across a token it wasn't expecting.
 	UnexpectedToken,
 }
 

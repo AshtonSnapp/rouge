@@ -29,7 +29,7 @@ pub enum InterpretError {
 
 //--> Functions <--
 
-pub fn interpret(paths: Vec<&Path>) {
+pub fn compile(paths: Vec<&Path>) {
 	// We need at least one path!
 	if paths.is_empty() {}
 
