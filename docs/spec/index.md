@@ -2,33 +2,20 @@
 
 The Rouge specification is split into multiple parts which cover different aspects of the language.
 
- - The first part covers the language's syntax.
- - The second part covers how the bytecode compiler should handle different bits of syntax.
- - The third part covers the instruction set for the runtime environment.
- - The fourth part covers the file format used to hold pre-compiled bytecode.
- - The fifth part covers how the runtime environment should behave.
- - The sixth part covers how the runtime environment should interact with native code.
+## Part 1. The Language
 
-## Part 1. Syntax
+This part describes the specifics of the language's syntax and grammar - how to write Rouge code.
 
-To be written...
+[Overview](./1_language/0_overview.md)
 
-## Part 2. Compilation
+## Part 2. The Compiler
 
-To be written...
+This part describes how the compiler should generate bytecode based on the syntax defined in the previous part - how Rouge code is understood.
 
-## Part 3. Runtime Instruction Set
+## Part 3. The Runtime
 
-To be written...
+This part describes how the Rouge runtime environment (RTE, also virtual machine or VM) functions.
 
-## Part 4. Bytecode File Format
+## Part 4. The Object File
 
-To be written...
-
-## Part 5. Runtime Behavior
-
-To be written...
-
-## Part 6. Runtime Native Interface
-
-To be written...
+This part describe the Rouge Object (.robj) file format, which is used to contain pre-compiled bytecode that can be immediately executed by the RTE.

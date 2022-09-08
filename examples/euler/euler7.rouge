@@ -1,6 +1,6 @@
 # https://projecteuler.net/problem=7
 
-func xPrimes(uint x) [uint]:
+func xPrimes(nat x) [nat]:
 	mut var primes = [2]
 	mut uint y = 2
 

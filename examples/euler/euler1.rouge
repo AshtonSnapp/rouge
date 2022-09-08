@@ -1,6 +1,6 @@
 # https://projecteuler.net/problem=1
 
-func sumMultiplesBelow([uint] factors, uint max) uint:
+func sumMultiplesBelow([nat] factors, nat max) nat:
 	mut var sum = 0
 
 	for i in 0..=max:

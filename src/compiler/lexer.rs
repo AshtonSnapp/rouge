@@ -61,7 +61,7 @@ pub(crate) enum Token {
 	#[regex(r##"br#"[\x00-\x7F]*"#rb"##, Lit::raw_byte_str)]
 	#[regex(r"[+-]?0(B|b)[01][_01]*", Lit::bin)]
 	#[regex(r"[+-]?0(O|o)[0-7][_0-7]*", Lit::oct)]
-	#[regex(r"[+-]?[0-9][_0-9]*(.[0-9][_0-9]+)?((E|e)[0-9][_0-9]+)?", Lit::dec)]
+	#[regex(r"[+-]?[0-9][_0-9]*(.[0-9][_0-9]*)?((E|e)[0-9][_0-9]*)?", Lit::dec)]
 	#[regex(r"[+-]?0(X|x)[0-9a-fA-F][_0-9a-fA-F]*", Lit::hex)]
 	Literal(Lit),
 
@@ -92,7 +92,7 @@ pub(crate) enum Lit {
 	/// Byte character literal, b'x'b
 	ByteCharacter(u8),
 
-	/// Byte string literal, b"x" or br#"x"#rb
+	/// Byte string literal, b"x"b or br#"x"#rb
 	ByteString(Vec<u8>),
 	
 	/// Unsigned integer, in decimal/hexadecimal/octal/binary
@@ -216,14 +216,14 @@ pub(crate) enum Word {
 	/// `mut` keyword that marks a value as mutable, able to be changed
 	Mutable,
 	/// `const` keyword that marks a value as constant, needing to be known before any code runs and unable to be changed.
-	/// It also marks functions that don't have side-effects.
+	/// It also marks functions that don't have side-effects, such as input/output.
 	/// Constant functions must have a return value and must not take mutable arguments. In addition, they cannot call non-constant functions.
 	Constant,
-	/// `func` keyword that starts a function
+	/// `func` keyword that starts a function. 
 	Function,
-	/// `class` keyword that starts a class definition
+	/// `class` keyword that starts a class definition.
 	Class,
-	/// `enum` keyword that starts an enumeration definition
+	/// `enum` keyword that starts an enumerated class definition.
 	Enumeration,
 	/// `trait` keyword that starts a trait definition
 	Trait,
@@ -601,7 +601,7 @@ impl Lit {
 	pub fn byte_str(l: &mut Lexer<Token>) -> Option<Lit> {
 		// Stripping the delimiting quotes so we don't have to deal with them.
 		// Also, using this as a stack so we need to reverse it before collecting the characters into a Vec.
-		let mut chars = l.slice().strip_prefix('"')?.strip_suffix('"')?.chars().rev().collect::<Vec<char>>();
+		let mut chars = l.slice().strip_prefix("b\"")?.strip_suffix("\"b")?.chars().rev().collect::<Vec<char>>();
 
 		if !chars.is_empty() {
 			let mut return_string = Vec::new();
@@ -854,8 +854,8 @@ impl Word {
 			"use" => Word::Use,
 			"as" => Word::As,
 			"and" => Word::LogicalAnd,
-			"or" => Word::LogicalExclusiveOr,
-			"xor" => Word::LogicalOr,
+			"or" => Word::LogicalOr,
+			"xor" => Word::LogicalExclusiveOr,
 			"not" => Word::Not,
 			_ => Word::Identifier(String::from(slice))
 		}

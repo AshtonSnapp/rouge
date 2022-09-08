@@ -1,6 +1,6 @@
 # https://projecteuler.net/problem=2
 
-func fibonacci(uint one, uint two, uint max) [uint]:
+func fibonacci(nat one, nat two, nat max) [nat]:
 	mut var sequence = [one, two]
 
 	loop:

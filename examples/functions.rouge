@@ -1,4 +1,4 @@
-func factorial(uint n) uint:
+func factorial(nat n) nat:
 	if n == 1:
 		return 1
 	else:

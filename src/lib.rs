@@ -24,7 +24,10 @@ use compiler::{
 };
 
 use std::{
-	ffi::CString,
+	ffi::{
+		CStr,
+		CString
+	},
 	fmt,
 	io::ErrorKind as IOError,
 	path::{
@@ -145,6 +148,12 @@ enum Data {
 //--> Functions <--
 
 impl Runtime {
+	/// The semantic version of the Rouge runtime, as a tuple.
+	pub const ROUGE_VERSION_TUPLE: (u8, u8, u8) = (0, 1, 0);
+	/// A human-friendly string representatino of the version.
+	/// C/C++ programs may be able to treat this string as a standard C-style string by ignoring the pre-pended length.
+	pub const ROUGE_VERSION_STRING: &'static str = "0.1.0\0";
+	
 	#[no_mangle]
 	pub extern "C" fn new() -> Runtime {
 		Runtime {}
