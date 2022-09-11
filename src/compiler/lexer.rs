@@ -231,9 +231,6 @@ pub(crate) enum Word {
 	Implementation,
 	/// By default, only data - fields or enum variants - is inherited.
 	/// Associated constants, functions, methods, and trait implementations are not inherited unless specifically requested using the `from` keyword.
-	/// ```rouge
-	/// 
-	/// ```
 	From,
 	/// `pub` keyword that marks something as public, directly accessible by any code outside of the package or even the runtime
 	Public,
@@ -242,6 +239,12 @@ pub(crate) enum Word {
 	/// An `if` expression takes a condition (returns a bool) and runs code if the condition is met.
 	If,
 	/// `if x is y` == Rust's `if let y = x`
+	/// 
+	/// `is` is also used to separate class signatures from their contents.
+	/// 
+	/// ```rouge
+	/// class Point2D is (float, float)
+	/// ```
 	Is,
 	/// `elif` extends an `if` expression, adding another 'arm' that takes another condition. If all preceeding conditions are false, this 'arm' runs its code if its condition is met.
 	ElseIf,
