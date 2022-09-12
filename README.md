@@ -276,7 +276,7 @@ pub func main() do:
 		age = 22,
 	end
 
-	# Here's another way:
+	# Here's another way: (This is the only place curly braces are ever used)
 	var ranodm_dude = Person { name = "Bob", age = 33 }
 
 	# Members of a class are accessed using dot syntax with the name of the member.
@@ -290,5 +290,165 @@ pub func main() do:
 
 	# Unit classes are instantiated by writing the name of the class. Simple, really.
 	var blankity = Empty
+
+	# Variants of enumerated classes are accessed using double-colon syntax.
+	mut var state = Status::Healthy
+end
+```
+
+### Implementing on Classes
+
+```rouge
+class Person is:
+	string name,
+	nat age,
+end
+
+# Items can be associated with a class by placing them inside an implementation block, like this.
+impl for Person is:
+	# An associated function like this is usually used as a constructor. It can be more complicated for certain classes.
+	pub func new(string name, nat age) Person do return Person { name, age }
+
+	# An associated function with a `self` argument is called a method, and operates on a specific instance of the class.
+	# They are called on an instance using dot syntax, as if they were a member.
+	pub func name(self) string do return self.name
+
+	pub func age(self) nat do return self.age
+
+	# Some methods can change an instance's data. This is explicitly marked, and these methods can't be called on immutable (unchanging) instances.
+	pub func birthday(mut self) do self.age += 1
+end
+
+pub func main():
+	# Calling an associated function, such as our constructor, is done using double-colon syntax.
+	var me = Person::new("Ashton", 22)
+
+	# Calling a method on a class is done using dot syntax.
+	outl!("{} is {} years old.", me.name, me.age)
+
+	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
+	#me.birthay()
+
+	mut var you = Person::new("Your Name Here", 42)
+	# Now we can run the birthday method without raising any errors.
+	you.birthday()
+end
+```
+
+### Inheritance
+
+```rouge
+class Vec2 is (float, float)
+
+# Inheritance is done by putting the name of the class(es) being inherited from (the super-class) in parentheses before the `is` keyword, usually connected to the class name.
+# When inheriting from a tuple class, ONLY the additional members of the class have their types declared.
+class Vec3(Vec2) is (float)
+
+class Person is:
+	string name,
+	nat age,
+end
+
+impl for Person is:
+	# -- snip --
+	# Pretend the impl block from the previous example is here. I don't feel like re-writing it.
+end
+
+# Similarly, when inheriting from a normal class, you only need to declare the additional class members.
+class Student(Person) is:
+	float gpa,
+	[string: float] classes,
+end
+
+# By default, only data (members of most classes, variants of enumerated classes) is inherited. Implemented items can be inherited using `from`.
+impl for Student from Person is:
+	pub func name(self) string
+
+	pub func age(self) nat
+
+	pub func birthday(mut self)
+end
+
+impl for Student is:
+	pub func new(string name, nat age, [string: float] classes) Student do:
+		mut float grade_sum = 0.0
+		for (_, grade) in classes do grade_sum += grade
+		return Student:
+			name,
+			age,
+			gpa = grade_sum / classes.len(),
+			classes
+		end
+	end
+
+	pub func gpa(self) float do return self.gpa
+
+	pub func get_grade(self, string class_name) float do return self.classes[class_name]
+
+	pub func set_grade(mut self, string class_name, float grade) do:
+		self.classes.insert(class_name, grade)
+		self.calculate_gpa()
+	end
+
+	func calculate_gpa(mut self) float do:
+		mut float sum = 0.0
+		for (_, grade) in self.classes do sum += grade
+		self.gpa = sum / self.classes.len()
+	end
+end
+
+# This function obviously won't take an instance of Person.
+func determine_eligibility(Student student) bool do return student.gpa() >= 2.5
+
+# This function won't take a Student though. This is necessary due to the fact that only data is inherited by default - you can't rely on a class having all the behavior of a class it inherits from.
+func can_vote(Person person) bool do person.age() >= 18
+
+# One option for remedying this is function overloading.
+func can_vote(Student person) bool do person.age() >= 18
+
+pub func main() do:
+	mut var person = Person::new("Ashton", 22)
+
+	mut var student = Student::new("Alice", 17, ["ENG101": 3.2, "MATH101": 3.5, "CS101": 4.0])
+
+	outl!("{} can vote: {}", person.name(), can_vote(person))
+	
+	outl!("{} can vote: {}", student.name(), can_vote(student))
+	
+	outl!("{} has scholarship: {}", student.name(), determine_eligibility(student))
+
+	# This line will fail, because there isn't a version of determine_eligibility() that can take a Person argument.
+	#outl!("{} has scholarship: {}", person.name(), determine_eligibility(person))
+end
+```
+
+### Generics and Traits
+
+```rouge
+# Generics are a way to automatically generate multiple versions of a function.
+# It's essentially a placeholder type. Here, T is a generic. Generics are declared between < angle brackets >.
+func sum<T>([T] items) T do:
+	# Within the context of the function, T is used as if it was any other type.
+	mut T sum = 0
+	# When you try to run this code, it will make sure that whatever type you try to use can be added.
+	for item in items do sum += item
+	return sum
+end
+
+# You can also use generics to create classes that can contain any other type.
+pub class Vec2<T> is (T, T)
+
+# A trait is a way to implement shared behavior on multiple types or classes.
+# An example is the Add trait, used to implement addition.
+impl Add for Vec2<T> is:
+	func add(self, Vec2<T> other) Vec2<T> do:
+		return Vec2(self.0 + other.0, self.1 + other.1)
+	end
+end
+
+pub func main() do:
+	[Vec2<float>] list = [Vec2(1.0, 2.0), Vec2(3.5, 6.9), Vec2(10.4, 42.0)]
+
+	outl!("{}", sum(list))
 end
 ```
