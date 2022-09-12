@@ -1,13 +1,13 @@
-func factorial(nat n) nat:
-	if n == 1:
+func factorial(nat n) nat do:
+	if n == 1 then:
 		return 1
 	else:
 		return n * factorial(n - 1)
 	end
 end
 
-pub func main() ubyte:
-	match uint::from_str(prompt!("Give me a positive whole number: ")):
+pub func main() ubyte do:
+	if uint::from_str(prompt!("Give me a positive whole number: ")) is:
 		Ok(num) then:
 			outl!("{}! = {}", num, factorial(num))
 			return 0

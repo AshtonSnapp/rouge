@@ -1,18 +1,18 @@
 # https://projecteuler.net/problem=7
 
-func xPrimes(nat x) [nat]:
+func xPrimes(nat x) [nat] do:
 	mut var primes = [2]
 	mut uint y = 2
 
 	`outer loop:
 		y += 1
-		for prime in primes:
+		for prime in primes do:
 			if y % prime == 0:
 				continue outer
 			end
 		end
 		primes.push(y)
-		if primes.len() == x + 1:
+		if primes.len() == x + 1 then:
 			break
 		end
 	end
