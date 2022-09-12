@@ -30,7 +30,7 @@ use logos::{
 
 //--> Type Aliases <--
 
-pub(crate) type TokenStream = Vec<TokenWrapper>;
+pub(crate) type TokenStream = Vec<Token>;
 
 pub(crate) type Result = std::result::Result<TokenStream, ErrorList>;
 
@@ -38,8 +38,8 @@ pub(crate) type Result = std::result::Result<TokenStream, ErrorList>;
 
 /// Wrapper around a token, providing the character span of the token.
 #[derive(Clone)]
-pub(crate) struct TokenWrapper {
-	pub inner: Token,
+pub(crate) struct Token {
+	pub inner: TokenInner,
 	pub span: Span,
 	pub slice: String,
 }
@@ -48,7 +48,7 @@ pub(crate) struct TokenWrapper {
 
 /// Tokens!
 #[derive(Logos, Clone)]
-pub(crate) enum Token {
+pub(crate) enum TokenInner {
 	
 	/// Literal values.
 	/// The `\u{0}-\u{10FFFE}\u{10FFFF}` in the UTF character and string regexes is there to hopefully circumvent a bug in Logos.
@@ -362,11 +362,11 @@ impl Token {
 				for (lno, line) in BufReader::new(f).lines().enumerate() {
 					match line {
 						Ok(l) => {
-							for (token, span) in Token::lexer(&l).spanned() {
+							for (token, span) in TokenInner::lexer(&l).spanned() {
 								match token {
 									// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-									Token::Error => errs.push(Error::new(false, Some(p), Some(lno), Some(span.clone()), Some(&l[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-									_ => toks.push(TokenWrapper { inner: token, span: span.clone(), slice: String::from(&l[span]) })
+									TokenInner::Error => errs.push(Error::new(false, Some(p), Some(lno), Some(span.clone()), Some(&l[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
+									_ => toks.push(Token { inner: token, span: span.clone(), slice: String::from(&l[span]) })
 								}
 							}
 						},
@@ -390,11 +390,11 @@ impl Token {
 		let mut toks = Vec::new();
 		let mut errs = Vec::new();
 
-		for (token, span) in Token::lexer(s).spanned() {
+		for (token, span) in TokenInner::lexer(s).spanned() {
 			match token {
 				// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-				Token::Error => errs.push(Error::new(false, None, Some(lno), Some(span.clone()), Some(&s[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-				_ => toks.push(TokenWrapper { inner: token, span: span.clone(), slice: String::from(&s[span]) })
+				TokenInner::Error => errs.push(Error::new(false, None, Some(lno), Some(span.clone()), Some(&s[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
+				_ => toks.push(Token { inner: token, span: span.clone(), slice: String::from(&s[span]) })
 			}
 		}
 
@@ -408,7 +408,7 @@ impl Token {
 
 impl Lit {
 	/// Callback function to construct a Unicode character from a character literal.
-	pub fn utf_char(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn utf_char(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		// Stripping the delimiting apostrophes so we don't have to worry about dealing with them.
 		// Turning this into a character list so we can index individual characters, rather than the underlying bytes.
 		let chars = l.slice().strip_prefix("'")?.strip_suffix("'")?.chars().collect::<Vec<char>>();
@@ -469,7 +469,7 @@ impl Lit {
 	}
 
 	/// Callback function to construct a Unicode string from a string literal.
-	pub fn utf_str(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn utf_str(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		// Stripping the delimiting quotes so we don't have to deal with them.
 		// Also, using this as a stack so we need to reverse it before collecting the characters into a Vec.
 		let mut chars = l.slice().strip_prefix('"')?.strip_suffix('"')?.chars().rev().collect::<Vec<char>>();
@@ -540,7 +540,7 @@ impl Lit {
 	}
 
 	/// Callback function to construct a Unicode string from a raw string literal.
-	pub fn raw_utf_str(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn raw_utf_str(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		// Since raw strings don't process escape sequences, we just need to strip the delimiters and we're basically done.
 		let slice = l.slice().strip_prefix("r#\"")?.strip_suffix("\"#r")?;
 
@@ -558,7 +558,7 @@ impl Lit {
 	}
 
 	/// Callback function to construct a byte from a byte character literal.
-	pub fn byte_char(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn byte_char(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		// Stripping the delimiting apostrophes and b's so we don't have to worry about dealing with them.
 		// Turning this into a character list so we can index individual characters, rather than the underlying bytes.
 		let chars = l.slice().strip_prefix("b'")?.strip_suffix("'b")?.chars().collect::<Vec<char>>();
@@ -601,7 +601,7 @@ impl Lit {
 	}
 
 	/// Callback function to construct a byte string from a byte string literal.
-	pub fn byte_str(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn byte_str(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		// Stripping the delimiting quotes so we don't have to deal with them.
 		// Also, using this as a stack so we need to reverse it before collecting the characters into a Vec.
 		let mut chars = l.slice().strip_prefix("b\"")?.strip_suffix("\"b")?.chars().rev().collect::<Vec<char>>();
@@ -650,7 +650,7 @@ impl Lit {
 	}
 
 	/// Callback function to construct a byte string from a raw byte string literal.
-	pub fn raw_byte_str(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn raw_byte_str(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		let chars = l.slice().strip_prefix("br#\"")?.strip_suffix("\"#rb")?.chars().collect::<Vec<char>>();
 		let mut return_string = Vec::new();
 
@@ -662,7 +662,7 @@ impl Lit {
 	}
 
 	/// Callback function to parse a binary number literal.
-	pub fn bin(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn bin(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		let mut slice = l.slice();
 
 		let is_negative = slice.starts_with('-');
@@ -694,7 +694,7 @@ impl Lit {
 	}
 
 	/// Callback function to parse an octal number literal.
-	pub fn oct(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn oct(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		let mut slice = l.slice();
 
 		let is_negative = slice.starts_with('-');
@@ -726,7 +726,7 @@ impl Lit {
 	}
 
 	/// Callback function to parse a decimal number literal.
-	pub fn dec(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn dec(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		let slice = l.slice();
 
 		if slice.contains('.') || slice.contains('e') || slice.contains("E") {
@@ -742,7 +742,7 @@ impl Lit {
 	}
 
 	/// Callback function to parse a hexadecimal number literal.
-	pub fn hex(l: &mut Lexer<Token>) -> Option<Lit> {
+	pub fn hex(l: &mut Lexer<TokenInner>) -> Option<Lit> {
 		let mut slice = l.slice();
 
 		let is_negative = slice.starts_with('-');
@@ -776,7 +776,7 @@ impl Lit {
 
 impl Op {
 	/// Callback function to recognize special characters as operators.
-	pub fn new(l: &mut Lexer<Token>) -> Filter<Op> {
+	pub fn new(l: &mut Lexer<TokenInner>) -> Filter<Op> {
 		match l.slice() {
 			"`" => Filter::Emit(Op::Tick),
 			"!" => Filter::Emit(Op::Bang),
@@ -812,7 +812,7 @@ impl Op {
 
 impl Word {
 	/// Callback function to recognize keywords and custom identifiers.
-	pub fn new(l: &mut Lexer<Token>) -> Word {
+	pub fn new(l: &mut Lexer<TokenInner>) -> Word {
 		let slice = l.slice();
 
 		match slice {

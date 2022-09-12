@@ -4,8 +4,6 @@ use std::{
 	path::Path,
 };
 
-use rouge::Runtime;
-
 use clap::{};
 
 //--> Type Aliases <--
