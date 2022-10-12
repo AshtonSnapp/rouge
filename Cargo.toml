@@ -14,23 +14,14 @@ categories = ["compilers", "command-line-utilities"]
 # Library needs to produce both a C-loadable dynamic library and a Rust library.
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["interpreter"]
-# Allows parsing and interpreting Rouge source code, instead of just dealing with bytecode.
-interpreter = []
-# Allows saving an interpreted Rouge program as a bytecode file.
-compiler = ["interpreter"]
-# Allows running Rouge code through a Read-Evaluate-Print-Loop (REPL), or interactive interpreter.
-repl = ["interpreter"]
-
 [dependencies]
 # Lexer
 logos = "0.12"
 # Parser
 nom = "7.1"
 # Command line interface
-clap = { version = "3.2", features = ["cargo", "wrap_help"] }
+clap = { version = "4.0", features = ["cargo", "unicode"] }
 # Bytecode file compression and decompression.
 zstd = "0.11"
-# Used to dynamically load native libraries as hooks for Rouge programs.
+# Used to dynamically load native libraries for Rouge programs to use.
 dlopen = { version = "0.1", optional = true }

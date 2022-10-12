@@ -1,11 +1,11 @@
 # https://projecteuler.net/problem=2
 
-func fibonacci(nat one, nat two, nat max) [nat] do:
+func fibonacci(nat one, nat two, nat max) [nat] do
 	mut var sequence = [one, two]
 
-	loop:
+	loop
 		var next = sequence[-1] + sequence[-2]
-		if next > max then:
+		if next > max then
 			break
 		else:
 			sequence += next
@@ -15,6 +15,6 @@ func fibonacci(nat one, nat two, nat max) [nat] do:
 	return sequence
 end
 
-pub func main() do:
+pub func main() do
 	outl!("{}", fibonacci(1, 2, 4000000).iter.filter(|x| x % 2 == 0).sum())
 ends

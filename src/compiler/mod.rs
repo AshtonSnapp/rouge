@@ -42,7 +42,7 @@ pub fn compile(paths: Vec<&Path>) {
 
 	for file_path in paths.iter().filter(|p| p.is_file()) {
 		match Token::lex_file(file_path) {
-			Ok(t) => {
+			Ok(t) => if !t.is_empty() {
 				tok_files.insert(file_path, t);
 			},
 			Err(e) => {

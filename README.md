@@ -42,7 +42,7 @@ Rouge isn't really implemented yet, and a lot of things are probably going to ch
 ### "Hello, world!" but in French
 
 ```rouge
-pub func main() do:
+pub func main() do
 	outl!("Bonjour le monde!")
 end
 ```
@@ -52,7 +52,7 @@ end
 ### Variables and Primitive Data Types
 
 ```rouge
-pub func main() do:
+pub func main() do
 	# An `int` can contain a positive or negative whole number.
 	int year = 2022
 	
@@ -109,22 +109,22 @@ end
 ### Control Flow
 
 ```rouge
-pub func main() do:
+pub func main() do
 	var name = prompt!("What's your name? ")
 
 	# Simple control flow using `if`, `elif` (else if), and `else`.
-	if name == "Rouge" then:
+	if name == "Rouge" then
 		outl!("Hey, that's MY name!")
-	elif name == "Ashton" then:
+	elif name == "Ashton" then
 		outl!("Isn't that the name of the guy who created me?")
 	else outl!("Nice to meet you, {}.", name)
 
 	var num = prompt!("What's your favorite number? ")
 
 	# Using the `is` keyword, you can check if whatever's on the left matches some pattern on the right. Variables will be bound if possible.
-	if num.parse::<nat>() is Ok(n) then:
+	if num.parse::<nat>() is Ok(n) then
 		# You can also do this using `is` - it's like a Rust `match` block. Using it like this means you have to handle any possible case - hence the else branch.
-		if n is:
+		if n is
 			42 then outl!("I see you're a fan of Douglas Adams. Did you bring a towel?")
 			0..=9 then outl!("Single digit club, huh?")
 			100.. then outl!("I mean, who doesn't like big numbers?")
@@ -135,7 +135,7 @@ pub func main() do:
 	mut nat count = 5
 
 	# The `loop` keyword creates an infinite loop. It will continue running forever, unless you stop it yourself or add code to break out of the loop.
-	loop:
+	loop
 		outl!("This will print forever!")
 		count -= 1
 		if count == 0 then:
@@ -146,14 +146,14 @@ pub func main() do:
 
 	# `while` will loop while some condition is true.
 	count = 10
-	while count != 0 do:
+	while count != 0 do
 		outl!("One hop this time!")
 		count -= 1
 	end
 
 	# It's equivalent to the following simple loop:
 	count = 10
-	loop:
+	loop
 		if not count != 0 then break # `if count == 0 then break` would be more concise, but this line is more clear as to how `while` works.
 		outl!("One hop this time!")
 		count -= 1
@@ -161,14 +161,14 @@ pub func main() do:
 
 	# `until` is like while, but it loops until some condition is true
 	count = 10
-	until count == 0 do:
+	until count == 0 do
 		outl!("!emit siht poh enO") # "One hop this time!" but reversed
 		count -= 1
 	end
 
 	# It's equivalent to the following simple loop:
 	count = 10
-	loop:
+	loop
 		outl!("!emit siht poh enO")
 		count -= 1
 		if count == 0 then break
@@ -183,7 +183,7 @@ pub func main() do:
 
 	# And is therefore equivalent to the following simple loop:
 	range = 0..10
-	loop:
+	loop
 		if range.next() is Some(_) then outl!("One hop this time!")
 		else break
 	end
@@ -197,15 +197,15 @@ end
 func do_something() do outl!("Did something!")
 
 # Sometimes you want to pass data into a function. For this, you need to specify what arguments you want.
-func double_it(float number) do:
+func double_it(float number) do
 	float doubled = number * 2
 	outl!("{} doubled is {}", number, doubled)
 end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
 # The `return` keyword is used to return data from a function.
-func multiply_case(int case, float number) float do:
-	if case is:
+func multiply_case(int case, float number) float do
+	if case is
 		0..10 then return number * 2
 		10..100 then return number * 3
 		100..1_000 then return number * 4
@@ -216,14 +216,14 @@ func multiply_case(int case, float number) float do:
 end
 
 # Functions can call themselves. This is called recursion.
-func factorial(int number) int do:
+func factorial(int number) int do
 	if number == 2 then return number # optimization: short-circuiting the base case, look it up on the Wikipedia page for recursion
 
 	return number * factorial(number - 1)
 end
 
 # Any function named 'main' is considered an entrypoint function. The standalone version of the Rouge runtime expects this function to have no arguments, and return either nothing, an `int`, or a class that implements `Try`.
-pub func main() do:
+pub func main() do
 	do_something()
 	double_it(42.0)
 	outl!("{}", multiply_case(999, 6.9))
@@ -231,7 +231,7 @@ pub func main() do:
 
 	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
 	mut nat test_num = 64
-	var closure = func() do:
+	var closure = func() do
 		nat old_test_num = test_num
 		test_num *= 2
 		outl!("{}", old_test_num)
@@ -242,86 +242,94 @@ pub func main() do:
 end
 ```
 
-### Classes
+### Type Aliases
 
 ```rouge
-# There are a few different kinds of classes.
+# A type alias is a way to simplify your code by assigning a name to a commonly used type, without necessarily creating a new type.
+type MessageList = [string]
+```
 
-# Empty, or unit, classes contain no data. They are useful in situations where you want to implement some common behavior but don't have any data you need to deal with in that implementation.
-class Empty
+### Custom Types
 
-# Unstructured, or tuple, classes contain unnamed data. They essentially act as named tuples.
-class Point2D is (float, float)
+```rouge
+# Custom data types are also made using the type keyword.
 
-# Structured, or normal, classes contain multiple named data fields.
-class Person is:
-	string name,
-	nat age,
+# The simplest custom data type is the unit-like type. These don't actually contain any data. They exist because sometimes you need to implement a trait (discussed later) but have no need for actual data for that trait to work with.
+type Empty
+
+# Most custom data types will actually contain data though. In the simplest cases, you just list out the types of the different fields of your custom type within parentheses. These are called tuple-like types.
+type Vec2 is float and float # & is also valid instead of and
+
+# Other times, you'll want to give a name to each field. These are called record-like types.
+type Person is string name & nat age
+
+# And sometimes, you'll want a data type that can be in different states. These are called variant types, and their states are called variants.
+type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
+
+# Variants of a type can hold data.
+type Option<T> is None | Some T
+
+# Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
+type Vec3 is
+	float
+	and float
+	and float
 end
 
-# Enumerated classes contain multiple variants. Each variant may be empty, or contain unstructured or structured data. They are defined using the `enum` keyword instead of the `class` keyword.
-enum Status is:
-	Healthy,
-	Unhealthy:
-		[string] diseases,
-		[string] wounds,
-	end,
-	Down(string),
+type Student is
+	string name
+	and nat year
+	and [string: float] grades
 end
 
-pub func main() do:
-	# This is one way you can instantiate a normal class.
-	var me = Person:
-		name = "Ashton",
-		age = 22,
-	end
-
-	# Here's another way: (This is the only place curly braces are ever used)
-	var ranodm_dude = Person { name = "Bob", age = 33 }
-
-	# Members of a class are accessed using dot syntax with the name of the member.
-	outl!("{} is {} years old", me.name, me.age)
-
-	# Tuple classes are instantiated like a tuple, but with the name of the class prefixed.
-	var pos = Point2D(42.0, 6.9)
-
-	# I think you can figure out how members of tuple classes are accessed...
-	outl!("({}, {})", pos.0, pos.1)
-
-	# Unit classes are instantiated by writing the name of the class. Simple, really.
-	var blankity = Empty
-
-	# Variants of enumerated classes are accessed using double-colon syntax.
-	mut var state = Status::Healthy
+type Element is
+	Fire
+	or Water
+	or Grass
+	or Electric
+	or Wind
 end
 ```
 
-### Implementing on Classes
+### Associated Items on Types
 
 ```rouge
-class Person is:
-	string name,
-	nat age,
-end
+# Items may be included in a type's definition in order to associate them with that type.
+type Person is
+	string name
+	and nat age
 
-# Items can be associated with a class by placing them inside an implementation block, like this.
-impl for Person is:
-	# An associated function like this is usually used as a constructor. It can be more complicated for certain classes.
+	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
 	pub func new(string name, nat age) Person do return Person { name, age }
 
-	# An associated function with a `self` argument is called a method, and operates on a specific instance of the class.
-	# They are called on an instance using dot syntax, as if they were a member.
+	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
 	pub func name(self) string do return self.name
 
 	pub func age(self) nat do return self.age
 
-	# Some methods can change an instance's data. This is explicitly marked, and these methods can't be called on immutable (unchanging) instances.
+	# Methods which modify an instance's data must specify as such, and can't be called on immutable instances of the type.
 	pub func birthday(mut self) do self.age += 1
 end
 
-pub func main():
-	# Calling an associated function, such as our constructor, is done using double-colon syntax.
-	var me = Person::new("Ashton", 22)
+# Further items may be associated through the use of implementation, or impl, blocks like this one.
+impl for Person is
+	# Constants may be associated with a type.
+	const nat AVERAGE_LIFESPAN = 73
+
+	# Types may be associated with other types. Nesting types like this is useful in some situations.
+	pub type LifeStage is
+		Infant
+		or Toddler
+		or Child
+		or Teenager
+		or Adult
+		or Elder
+	end
+end
+
+pub func main() do
+	# Calling an associated function, such as our constructor, is done using colon syntax.
+	var me = Person:new("Ashton", 22)
 
 	# Calling a method on a class is done using dot syntax.
 	outl!("{} is {} years old.", me.name, me.age)
@@ -329,126 +337,86 @@ pub func main():
 	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
 	#me.birthay()
 
-	mut var you = Person::new("Your Name Here", 42)
+	mut var you = Person:new("Your Name Here", 42)
 	# Now we can run the birthday method without raising any errors.
 	you.birthday()
+
+	# Dealing with nested types is also handled through colon syntax.
+	# Tengentially, accessing the variants of a type is also handled through colon syntax.
+	var stage = Person:LifeStage:Adult
 end
 ```
 
-### Inheritance
+### Generics
 
 ```rouge
-class Vec2 is (float, float)
-
-# Inheritance is done by putting the name of the class(es) being inherited from (the super-class) in parentheses before the `is` keyword, usually connected to the class name.
-# When inheriting from a tuple class, ONLY the additional members of the class have their types declared.
-class Vec3(Vec2) is (float)
-
-class Person is:
-	string name,
-	nat age,
-end
-
-impl for Person is:
-	# -- snip --
-	# Pretend the impl block from the previous example is here. I don't feel like re-writing it.
-end
-
-# Similarly, when inheriting from a normal class, you only need to declare the additional class members.
-class Student(Person) is:
-	float gpa,
-	[string: float] classes,
-end
-
-# By default, only data (members of most classes, variants of enumerated classes) is inherited. Implemented items can be inherited using `from`.
-impl for Student from Person is:
-	pub func name(self) string
-
-	pub func age(self) nat
-
-	pub func birthday(mut self)
-end
-
-impl for Student is:
-	pub func new(string name, nat age, [string: float] classes) Student do:
-		mut float grade_sum = 0.0
-		for (_, grade) in classes do grade_sum += grade
-		return Student:
-			name,
-			age,
-			gpa = grade_sum / classes.len(),
-			classes
-		end
+# A generic type, or simply generic for short, is essentially a placeholder for a type.
+# When used with functions, generic types allow a function to handle multiple different types without having to redefine the function over and over again.
+# A function's 'generic arguments' are defined in angle brackets.
+func largest<T>([T] list) T do
+	mut T largest = list[0]
+	for item in list do
+		if item > largest then largest = item
 	end
-
-	pub func gpa(self) float do return self.gpa
-
-	pub func get_grade(self, string class_name) float do return self.classes[class_name]
-
-	pub func set_grade(mut self, string class_name, float grade) do:
-		self.classes.insert(class_name, grade)
-		self.calculate_gpa()
-	end
-
-	func calculate_gpa(mut self) float do:
-		mut float sum = 0.0
-		for (_, grade) in self.classes do sum += grade
-		self.gpa = sum / self.classes.len()
-	end
+	return largest
 end
 
-# This function obviously won't take an instance of Person.
-func determine_eligibility(Student student) bool do return student.gpa() >= 2.5
-
-# This function won't take a Student though. This is necessary due to the fact that only data is inherited by default - you can't rely on a class having all the behavior of a class it inherits from.
-func can_vote(Person person) bool do person.age() >= 18
-
-# One option for remedying this is function overloading.
-func can_vote(Student person) bool do person.age() >= 18
-
-pub func main() do:
-	mut var person = Person::new("Ashton", 22)
-
-	mut var student = Student::new("Alice", 17, ["ENG101": 3.2, "MATH101": 3.5, "CS101": 4.0])
-
-	outl!("{} can vote: {}", person.name(), can_vote(person))
-	
-	outl!("{} can vote: {}", student.name(), can_vote(student))
-	
-	outl!("{} has scholarship: {}", student.name(), determine_eligibility(student))
-
-	# This line will fail, because there isn't a version of determine_eligibility() that can take a Person argument.
-	#outl!("{} has scholarship: {}", person.name(), determine_eligibility(person))
+# Types can also have generic arguments, which is useful for container or wrapper types.
+type TaggedBox<T> is
+	T contents
+	and [string: string] tags
 end
 ```
 
-### Generics and Traits
+### Traits
 
 ```rouge
-# Generics are a way to automatically generate multiple versions of a function.
-# It's essentially a placeholder type. Here, T is a generic. Generics are declared between < angle brackets >.
-func sum<T>([T] items) T do:
-	# Within the context of the function, T is used as if it was any other type.
-	mut T sum = 0
-	# When you try to run this code, it will make sure that whatever type you try to use can be added.
-	for item in items do sum += item
-	return sum
+# A trait is a way to define a set of behavior that may be implemented by multiple types.
+trait Drawable is
+	func draw(self)
 end
 
-# You can also use generics to create classes that can contain any other type.
-pub class Vec2<T> is (T, T)
+type Button is
+	string label
+	func() callback
+end
 
-# A trait is a way to implement shared behavior on multiple types or classes.
-# An example is the Add trait, used to implement addition.
-impl Add for Vec2<T> is:
-	func add(self, Vec2<T> other) Vec2<T> do:
-		return Vec2(self.0 + other.0, self.1 + other.1)
+# Traits are always implemented using impl blocks.
+impl Drawable for Button is
+	func draw(self) do
+		# -- code goes here --
 	end
 end
+```
 
-pub func main() do:
-	[Vec2<float>] list = [Vec2(1.0, 2.0), Vec2(3.5, 6.9), Vec2(10.4, 42.0)]
+### Type Inlining
 
-	outl!("{}", sum(list))
+```rouge
+type Vec3 is
+	float x
+	float y
+	float z
+end
+
+type Quat is
+	float x
+	float y
+	float z
+	float w
+end
+
+type Transform3 is
+	Vec3 translation
+	Quat rotation
+	Vec3 scale
+end
+
+# Types can be inlined into other types. This takes all of that type's fields and associated items, and copies them over into the new type.
+# Any associated items of the new type take precedence over those of the type being inlined.
+# If multiple types are being inlined and a conflict occurs, the last type inlined takes precedence.
+type Entity is
+	inline Transform3
+	float health
+	float max_health
 end
 ```

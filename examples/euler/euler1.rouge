@@ -1,11 +1,11 @@
 # https://projecteuler.net/problem=1
 
-func sumMultiplesBelow([nat] factors, nat max) nat do:
+func sumMultiplesBelow([nat] factors, nat max) nat do
 	mut var sum = 0
 
-	for i in 0..=max do:
-		for factor in factors do:
-			if i % factor == 0 then:
+	for i in 0..=max do
+		for factor in factors do
+			if i % factor == 0 then
 				sum += i
 				break
 			end
@@ -15,6 +15,6 @@ func sumMultiplesBelow([nat] factors, nat max) nat do:
 	return sum
 end
 
-pub func main() do:
+pub func main() do
 	outl!("{}", sumMultiplesBelow([3, 5], 1000))
 end

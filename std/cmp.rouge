@@ -1,60 +1,63 @@
-# x == y, x != y
-pub trait Equatable:
-	# equal ==
-	func eq(self, Self rhs) bool
+##
+pub trait PartialEquate<Rhs = Self> is
+	func eq(self, Rhs rhs) bool
 
-	# not equal !=
-	func ne(self, Self rhs) bool:
-		return not self.eq(rhs)
-	end
+	func ne(self, Rhs rhs) bool do return not self.eq(rhs)
 end
 
-pub enum Ordering:
-	# LHS < RHS
-	Less,
-	# LHS = RHS
-	Equal,
-	# LHS > RHS
+##
+pub trait Equate(PartialEquate<Self>)
+
+##
+pub type Ordering is
+	Less
+	Equal
 	Greater
 end
 
-# x < y, x > y, x <= y, x >= y
-pub trait Comparable(Equatable):
-	func cmp(self, Self rhs) Ordering
+##
+pub trait PartialOrder(PartialEquate<Rhs = Self>) is
+	func partial_compare(self, Rhs rhs) Option<Ordering>
 
-	# less than <
-	func lt(self, Self rhs) bool:
-		if self.cmp(rhs) is Ordering::Less:
-			return true
-		else:
-			return false
-		end
+	func lt(self, Rhs rhs) bool do if self.partial_compare(rhs) is
+		Ordering:Less then return true
+		else return false
 	end
 
-	# greater than >
-	func gt(self, Self rhs) bool:
-		if self.cmp(rhs) is Ordering::Greater:
-			return true
-		else:
-			return false
-		end
+	func le(self, Rhs rhs) bool do if self.partial_compare(rhs) is
+		Ordering:Greater then return false
+		else return true
 	end
 
-	# less than or equal to <=
-	func le(self, Self rhs) bool:
-		if self.cmp(rhs) is not Ordering::Greater:
-			return true
-		else:
-			return false
-		end
+	func gt(self, Rhs rhs) bool do if self.partial_compare(rhs) is
+		Ordering:Greater then return true
+		else return false
 	end
 
-	# greater than or equal to >=
-	func ge(self, Self rhs) bool:
-		if self.cmp(rhs) is not Ordering::Less:
-			return true
-		else:
-			return false
-		end
+	func ge(self, Rhs rhs) bool do if self.partial_compare(rhs) is
+		Ordering:Less then return false
+		else return true
+	end
+end
+
+##
+pub trait Order(Equate, PartialOrder<Self>) is
+	func compare(self, Self rhs) Ordering
+
+	func min(self, Self rhs) Self do if self.compare(rhs) is
+		Ordering:Greater then return rhs
+		else return self
+	end
+
+	func max(self, Self rhs) Self do if self.compare(rhs) is
+		Ordering:Less then return rhs
+		else return self
+	end
+
+	func clamp(self, Self min, Self max) Self do
+		assert!(min <= max)
+		if self < min then return min
+		elif self > max then return max
+		else return self
 	end
 end

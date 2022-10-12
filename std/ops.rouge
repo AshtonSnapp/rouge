@@ -1,247 +1,212 @@
-# Arithmetic and Logic Operators
+# Range-related things
 
-# x + y, x += y
-pub trait Add<Rhs = Self>:
-	type Output
-	func add(self, Rhs rhs) Self::Output
-	func add_assign(mut self, Rhs rhs)
-end
-
-# x + y, x -= y
-pub trait Subtract<Rhs = Self>:
-	type Output
-	func sub(self, Rhs rhs) Self::Output
-	func sub_assign(mut self, Rhs rhs)
-end
-
-# x * y, x *= y
-pub trait Multiply<Rhs = Self>:
-	type Output
-	func mul(self, Rhs rhs) Self::Output
-	func mul_assign(mut self, Rhs rhs)
-end
-
-# x / y, x /= y
-pub trait Divide<Rhs = Self>:
-	type Output
-	func div(self, Rhs rhs) Self::Output
-	func div_assign(mut self, Rhs rhs)
-end
-
-# x % y, x %= y
-pub trait Remainder<Rhs = Self>:
-	type Output
-	func rem(self, Rhs rhs) Self::Output
-	func rem_assign(mut self, Rhs rhs)
-end
-
-# x & y, x &= y
-pub trait BitAnd<Rhs = Self>:
-	type Output
-	func and(self, Rhs rhs) Self::Output
-	func and_assign(mut self, Rhs rhs)
-end
-
-# x | y, x |= y
-pub trait BitOr<Rhs = Self>:
-	type Output
-	func or(self, Rhs rhs) Self::Output
-	func or_assign(mut self, Rhs rhs)
-end
-
-# x ^ y, x ^= y
-pub trait BitXor<Rhs = Self>:
-	type Output
-	func xor(self, Rhs rhs) Self::Output
-	func xor_assign(mut self, Rhs rhs)
-end
-
-# x << y, x <<= y
-pub trait ShiftLeft<Rhs = Self>:
-	type Output
-	func shl(self, Rhs rhs) Self::Output
-	func shl_assign(mut self, Rhs rhs)
-end
-
-# x >> y, x >>= y
-pub trait ShiftRight<Rhs = Self>:
-	type Output
-	func shr(self, Rhs rhs) Self::Output
-	func shr_assign(mut self, Rhs rhs)
-end
-
-# !x
-pub trait Not:
-	type Output
-	func not(self) Self::Output
-end
-
-# -x
-pub trait Negate:
-	type Output
-	func neg(self) Self::Output
-end
-
-# All Things Ranges
-
-pub enum Bound<T>:
-	Included(T)
-	Excluded(T)
+## An endpoint of a range of keys.
+pub type Bound<T> is
 	Unbounded
+	Included(T)
+	Exlcuded(T)
 end
 
-pub trait RangeBounds<?Sized T>:
+## Implemented by all Range types.
+pub trait Bounded<T> is
 	func start_bound(self) Bound<T>
 
 	func stop_bound(self) Bound<T>
 
-	func contains<Comparable T>(self, item) bool:
-		return (match self.start_bound():
-			Included(start) then start <= item
-			Excluded(start) then start < item
-			Unbounded then true
-		end) and (match self.stop_bound():
-			Included(stop) then item <= stop
-			Excluded(stop) then item < stop
-			Unbounded then true
+	func contains(self, Order T item) bool do
+		return (if self.start_bound() is
+			Bound:Unbounded then true
+			Bound:Included(start) then item >= start
+			Bound:Excluded(start) then item > start
+		end) and (if self.stop_bound() is
+			Bound:Unbounded then true
+			Bound:Included(stop) then item <= stop
+			Bound:Excluded(stop) then item < stop
 		end)
 	end
 end
 
-# x..y
-pub struct Range<Idx>:
+## A fully unbounded range. Created using `..`. It cannot be used as an iterator.
+type RangeFull
+
+impl Bounded<T> for RangeFull is
+	func start_bound(self) Bound<T> do return Bound:Unbounded
+	
+	func stop_bound(self) Bound<T> do return Bound:Unbounded
+end
+
+## A range bounded inclusively below and exclusively below. `start..stop`
+pub type Range<Idx> is
 	pub Idx start
 	pub Idx stop
 end
 
-impl RangeBounds<T> for Range<T>:
-	func start_bound(self) Bound<T>:
-		return Bound::Included(self.start)
-	end
-
-	func stop_bound(self) Bound<T>:
-		return Bound::Excluded(self.stop)
-	end
+impl Bounded<Idx> for Range<Idx> is
+	func start_bound(self) Bound<Idx> do return Bound:Included(self.start)
+	
+	func stop_bound(self) Bound<Idx> do return Bound:Excluded(self.stop)
 end
 
-# x..
-pub struct RangeFrom<Idx>:
-	pub Idx start
-end
-
-impl RangeBounds<T> for RangeFrom<T>:
-	func start_bound(self) Bound<T>:
-		return Bound::Included(self.start)
-	end
-
-	func stop_bound(self) Bound<T>:
-		return Bound::Unbounded
-	end
-end
-
-# ..
-pub struct RangeFull
-
-impl RangeBounds<T> for RangeFull:
-	func start_bound(self) Bound<T>:
-		return Bound::Unbounded
-	end
-
-	func stop_bound(self) Bound<T>:
-		return Bound::Unbounded
-	end
-end
-
-# x..=y
-pub struct RangeInclusive<Idx>:
+## A range bounded inclusively on both ends. `start..=stop`
+pub type RangeInclusive<Idx> is
 	pub Idx start
 	pub Idx stop
 end
 
-impl RangeBounds<T> for RangeInclusive<T>:
-	func start_bound(self) Bound<T>:
-		return Bound::Included(self.start)
-	end
-
-	func stop_bound(self) Bound<T>:
-		return Bound::Included(self.stop)
-	end
+impl Bounded<Idx> for RangeInclusive<Idx> is
+	func start_bound(self) Bound<Idx> do return Bound:Included(self.start)
+	
+	func stop_bound(self) Bound<Idx> do return Bound:Included(self.stop)
 end
 
-# ..y
-pub struct RangeTo<Idx>:
-	pub Idx stop
+## A range bounded only below. `start..`
+type RangeFrom<Idx> is pub Idx start
+
+impl Bounded<Idx> for RangeFrom<Idx> is
+	func start_bound(self) Bound<Idx> do return Bound:Included(self.start)
+	
+	func stop_bound(self) Bound<Idx> do return Bound:Unbounded
 end
 
-impl RangeBounds<T> for RangeTo<T>:
-	func start_bound(self) Bound<T>:
-		return Bound::Unbounded
-	end
+## A range bounded only above. `..stop`
+pub type RangeTo<Idx> is pub Idx stop
 
-	func stop_bound(self) Bound<T>:
-		return Bound::Excluded(self.stop)
-	end
+impl Bounded<Idx> for RangeTo<Idx> is
+	func start_bound(self) Bound<Idx> do return Bound:Unbounded
+	
+	func stop_bound(self) Bound<Idx> do return Bound:Excluded(self.stop)
 end
 
-# ..=y
-pub struct RangeToInclusive<Idx>:
-	pub Idx stop
+## A range inclusively bounded only above. `..=stop`
+pub type RangeToInclusive<Idx> is pub Idx stop
+
+impl Bounded<Idx> for RangeToInclusive<Idx> is
+	func start_bound(self) Bound<Idx> do return Bound:Unbounded
+	
+	func stop_bound(self) Bound<Idx> do return Bound:Included(self.stop)
 end
 
-impl RangeBounds<T> for RangeToInclusive<T>:
-	func start_bound(self) Bound<T>:
-		return Bound::Unbounded
-	end
+# Arithmetic and Bitwise Operation Traits
 
-	func stop_bound(self) Bound<T>:
-		return Bound::Included(self.stop)
-	end
+## The addition operator, `+`
+pub trait Add<Rhs = Self, Out = Self> is
+	func add(self, Rhs rhs) Out
 end
 
-# Error Propagation
-
-pub enum ControlFlow<C = (), B>:
-	Continue(C)
-	Break(B)
+## The addition assignment operator, `+=`
+pub trait AddTo<Rhs = Self> is
+	func add_to(mut self, Rhs rhs)
 end
 
-# error propagation operator ? and try_* methods require something that implements this trait
-pub trait Try:
-	type Output
-	type Residual
-
-	func from_output(Self::Output output) Self
-
-	func branch(self) ControlFlow<Self::Output, Self::Residual>
+## The subtraction operator, `-`
+pub trait Subtract<Rhs = Self, Out = Self> is
+	func sub(self, Rhs rhs) Out
 end
 
-# Utility Traits
-
-# x[y]
-pub trait Index<?Sized Idx>:
-	type ?Sized Output
-
-	func index(self, Idx index) Self::Output
+## The subtraction assignment operator, `-=`
+pub trait SubtractFrom<Rhs = Self> is
+	func sub_from(mut self, Rhs rhs)
 end
 
-# x[y] but mutable
-pub trait IndexMut(Index)<?Sized Idx>:
-	func index_mut(mut self, Idx index) Self::Output
+## The multiplication operator, `*`
+pub trait Multiply<Rhs = Self, Out = Self> is
+	func mul(self, Rhs rhs) Out
 end
 
-# functions
-pub trait Func(FuncMut)<Args>:
-	func call(self, args: Args) Self::Output
+## The multiplication assignment operator, `*=`
+pub trait MultiplyBy<Rhs = Self> is
+	func mul_by(mut self, Rhs rhs)
 end
 
-# functions that mutate stuff
-pub trait FuncMut<Args>:
-	type Output
-
-	func call_mut(mut self, args: Args) Self::Output
+## The division operator, `/`
+pub trait Divide<Rhs = Self, Out = Self> is
+	func div(self, Rhs rhs) Out
 end
 
-# Custom destructors
-pub trait Drop:
-	func drop(mut self)
+## The division assignment operator, `/=`
+pub trait DivideBy<Rhs = Self> is
+	func div_by(mut self, Rhs rhs)
 end
+
+## The remainder operator, `%`
+pub trait Remainder<Rhs = Self, Out = Self> is
+	func rem(self, Rhs rhs) Out
+end
+
+## The remainder assignment operator, `%=`
+pub trait RemainderOf<Rhs = Self> is
+	func rem_of(mut self, Rhs rhs)
+end
+
+## The shift left operator, `<<`
+pub trait ShiftLeft<Rhs = Self, Out = Self> is
+	func shl(self, Rhs rhs) Out
+end
+
+## THe shift left assignment operator, `<<=`
+pub trait ShiftLeftBy<Rhs = Self> is
+	func shl_by(mut self, Rhs rhs)
+end
+
+## The shift right operator, `>>`
+pub trait ShiftRight<Rhs = Self, Out = Self> is
+	func shr(self, Rhs rhs) Out
+end
+
+## The shift right assignment operator, `>>=`
+pub trait ShiftRightBy<Rhs = Self> is
+	func shr_by(mut self, Rhs rhs)
+end
+
+## The bitwise and operator, `&`
+pub trait BitAnd<Rhs = Self, Out = Self> is
+	func bitand(self, Rhs rhs) Out
+end
+
+## The bitwise and assignment operator, `&=`
+pub trait BitAndWith<Rhs = Self> is
+	func bitand_with(mut self, Rhs rhs)
+end
+
+## The bitwise or operator, `|`
+pub trait BitOr<Rhs = Self, Out = Self> is
+	func bitor(self, Rhs rhs) Out
+end
+
+## The bitwise or assignment operator, `|=`
+pub trait BitOrWith<Rhs = Self> is
+	func bitor_with(mut self, Rhs rhs)
+end
+
+## The bitwise exclusive or operator, `^`
+pub trait BitXor<Rhs = Self, Out = Self> is
+	func bitxor(self, Rhs rhs) Out
+end
+
+## The bitwise exclusive or assignment operator, `^=`
+pub trait BitXorWith<Rhs = Self> is
+	func bitxor_with(mut self, Rhs rhs)
+end
+
+## The negation operator, `-`
+pub trait Negate<Out = Self> is
+	func neg(self) Out
+end
+
+## The logical and bitwise not operator, `!`
+pub trait Not<Out = Self> is
+	func not(self) Out
+end
+
+# Other operators
+
+## The index operator, `[]`, in immutable contexts
+pub trait Index<Idx, Out> is
+	func index(self, Idx index) Out
+end
+
+## The index operator, `[]`, in mutable contexts
+pub trait IndexMut(Index<Idx, Out>) is
+	func index_mut(mut self, Idx index) mut Out
+end
+

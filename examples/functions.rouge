@@ -1,20 +1,18 @@
-func factorial(nat n) nat do:
-	if n == 1 then:
+func factorial(nat n) nat do
+	if n == 1 then
 		return 1
-	else:
+	else
 		return n * factorial(n - 1)
 	end
 end
 
-pub func main() ubyte do:
-	if uint::from_str(prompt!("Give me a positive whole number: ")) is:
-		Ok(num) then:
+pub func main() do
+	if nat:from_str(prompt!("Give me a positive whole number: ")) is:
+		Ok(num) then
 			outl!("{}! = {}", num, factorial(num))
-			return 0
 		end
-		Err(_) then:
-			errl!("{} isn't a positive whole number!", num)
-			return 1
+		Err(_) then
+			errl!("That isn't a positive whole number!")
 		end
 	end
 end
