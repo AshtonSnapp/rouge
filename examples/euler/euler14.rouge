@@ -1,0 +1,32 @@
+# https://projecteuler.net/problem=14
+
+use std:cmp:Ordering
+
+func generate_collatz_chain(nat num) [nat] do
+	mut [nat] chain = [num]
+
+	loop
+		chain.push_back(
+			if chain[-1] %% 2 then chain[-1] / 2
+			else chain[-1] * 3 + 1
+		)
+
+		if chain[-1] == 1 then break
+	end
+
+	return chain
+end
+
+pub func main() do
+	mut [nat: nat] lengths = []
+
+	for n in 0..1_000_000 do lengths.insert(n, generate_collatz_chain(n).len())
+
+	(nat, nat) longest = lengths.iter().max_by(func(a, b) do
+		return if a.1 > b.1 then Ordering:Greater
+		elif a.1 < b.1 then Ordering:Less
+		else Ordering:Equal
+	end)
+
+	outl!("{} produces the longest Collatz chain under a million, with a length of {}.", longest.0, longest.1)
+end

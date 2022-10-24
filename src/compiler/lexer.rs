@@ -73,7 +73,7 @@ pub(crate) enum TokenInner {
 	#[regex(r"\p{XID_Start}\p{XID_Continue}*", Word::new)]
 	Keyword(Word),
 	
-	///
+	/// The obligatory error variant.
 	#[error]
 	#[regex(r"[ \t\r\f]+", logos::skip)]
 	Error,

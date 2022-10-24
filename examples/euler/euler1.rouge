@@ -5,7 +5,7 @@ func sumMultiplesBelow([nat] factors, nat max) nat do
 
 	for i in 0..=max do
 		for factor in factors do
-			if i % factor == 0 then
+			if i %% factor then
 				sum += i
 				break
 			end
