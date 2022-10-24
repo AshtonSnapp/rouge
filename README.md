@@ -267,7 +267,7 @@ type Person is string name & nat age
 type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
 
 # Variants of a type can hold data.
-type Option<T> is None | Some T
+type Option<T> is None or Some is T
 
 # Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
 type Vec3 is
@@ -297,7 +297,7 @@ end
 # Items may be included in a type's definition in order to associate them with that type.
 type Person is
 	string name
-	and nat age
+	nat age
 
 	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
 	pub func new(string name, nat age) Person do return Person { name, age }

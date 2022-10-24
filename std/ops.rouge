@@ -1,10 +1,12 @@
+use self:cmp:[PartialEquate]
+
 # Range-related things
 
 ## An endpoint of a range of keys.
 pub type Bound<T> is
 	Unbounded
-	Included(T)
-	Exlcuded(T)
+	Included is T
+	Exlcuded is T
 end
 
 ## Implemented by all Range types.
@@ -138,6 +140,13 @@ pub trait RemainderOf<Rhs = Self> is
 	func rem_of(mut self, Rhs rhs)
 end
 
+## The remainder comparison / divisible-by operator `%%`
+pub trait DivisibleBy<Rhs = Self, PartialEquate<Rhs = Self> Out = Self>(Remainder<Rhs, PartialEquate<Rhs = Self> Out>) is
+	const Out IS_FACTOR
+
+	func divisible_by(self, Rhs rhs) bool do return self % rhs == IS_FACTOR
+end
+
 ## The shift left operator, `<<`
 pub trait ShiftLeft<Rhs = Self, Out = Self> is
 	func shl(self, Rhs rhs) Out
@@ -210,3 +219,31 @@ pub trait IndexMut(Index<Idx, Out>) is
 	func index_mut(mut self, Idx index) mut Out
 end
 
+# Try related things
+
+pub type ControlFlow<C = (), B> is
+	Continue is C
+	Break is B
+end
+
+pub trait FromResidual<R = <Self as Try>:Residual> is
+	func from_residual(R residual) Self
+end
+
+pub trait Try(FromResidual<Self:Residual>) is
+	type Output
+	type Residual
+
+	func from_output(Self:Output output) Self
+
+	func branch(self) ControlFlow<Self:Output, Self:Residual>
+end
+
+## The bind operator, `>=>`
+# A monad is a monoid in the category of endofunctors, what's the problem?
+pub trait Bind is
+	type Input
+	type Output = Self:Input
+	
+	func bind(self, func(Self:Input) Self<Self:Output> f) Self<Self:Output>
+end
