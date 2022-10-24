@@ -232,13 +232,7 @@ pub(crate) enum Word {
 	Protected,
 	/// An `if` expression takes a condition (returns a bool) and runs code if the condition is met.
 	If,
-	/// `if x is y` == Rust's `if let y = x`
-	/// 
-	/// `is` is also used to separate class signatures from their contents.
-	/// 
-	/// ```rouge
-	/// class Point2D is (float, float)
-	/// ```
+	/// `is` is used for type definitions, impl blocks, traits, and pattern matching.
 	Is,
 	/// `elif` extends an `if` expression, adding another 'arm' that takes another condition. If all preceeding conditions are false, this 'arm' runs its code if its condition is met.
 	ElseIf,
