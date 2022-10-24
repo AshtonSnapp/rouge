@@ -221,52 +221,8 @@ pub(crate) enum Word {
 	/// `rules` keyword that starts a declarative macro.
 	Rules,
 	/// Types can be declared or aliased using the `type` keyword.
-	/// 
-	/// Unit type example:
-	/// ```rouge
-	/// type Empty
-	/// ```
-	/// 
-	/// Unstructured, or tuple, type example:
-	/// ```rouge
-	/// type Point2 is (float, float)
-	/// ```
-	/// 
-	/// Structured, or record, type example:
-	/// ```rouge
-	/// type Person is
-	/// 	string name
-	/// 	nat age
-	/// end
-	/// ```
-	/// 
-	/// Enumerated type example:
-	/// ```rouge
-	/// type Option<T> is
-	/// 	None
-	/// 	Some(T)
-	/// end
-	/// ```
-	/// 
-	/// Type alias example:
-	/// ```
-	/// type Result<T> is std::Result<T, Error>
-	/// ```
 	Type,
 	/// A `trait` contains a set of common behavior that can be implemented on multiple classes.
-	/// 
-	/// As an example, let's take a look at the `cmp::Equatable` trait from the standard library:
-	/// ```rouge
-	/// trait Equatable is
-	/// 	func eq(self, Self other) bool
-	/// 
-	/// 	func ne(self, Self other) bool do return not self.eq(other)
-	/// end
-	/// ```
-	/// 
-	/// Here we see two functions (in this case methods since they utilize `self`) that will be associated with any implementing type.
-	/// The first function, `eq`, is not implemented - it is custom for each implementing type.
-	/// The second function, `ne`, does have an implementation - it will be the same for any type implementing this trait.
 	Trait,
 	/// `impl` keyword that starts a block to implement associated items onto a type.
 	Implementation,
@@ -289,39 +245,8 @@ pub(crate) enum Word {
 	/// `else` acts as the final 'arm' of an `if` or `match` expression.
 	Else,
 	/// The `do` keyword serves multiple purposes.
-	/// 
-	/// First, it can be used to start a generic code block. For example: (Rust equivalent in comments)
-	/// ```rouge
-	/// var x = do			#	let x = {
-	/// 	outl!("Hello!")	#		println!("Hello!");
-	/// 	return 42		#		42
-	/// end					#	};
-	/// ```
-	/// 
-	/// Second, it can be used alongside two pipe characters to create a _closure_ - an anonymous function, essentially.
-	/// ```rouge
-	/// var sum = func(x, y) do x + y
-	/// 
-	/// # Closures can use variables from the context they are defined in.
-	/// var fruit = "Banana"
-	/// var g = || do return fruit[0] # returns 'B'
-	/// 
-	/// # Closures can also be multi-line.
-	/// var repeat = (times) do
-	/// 	return fruit.repeated_with(times, ' ')
-	/// end
-	/// ```
-	/// 
-	/// Finally, it is used to end the signatures of while, until, and for loop expressions.
-	/// ```rouge
-	/// for i in 1..=100 do outl!("{}", i)
-	/// ```
 	Do,
 	/// `then` separates the condition from the code that should be run if that condition is met.
-	/// 
-	/// ```rouge
-	/// if condition then code() elif condition then other_code()
-	/// ```
 	Then,
 	/// `loop` creates a loop that runs forever without intervention.
 	Loop,
