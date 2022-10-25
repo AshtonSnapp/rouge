@@ -5,10 +5,13 @@
 Rouge (pronounced 'rooj', like the Louisiana state capital of Baton Rouge) is a statically-typed programming language designed for two primary uses: applications (graphical and command-line), and embedding into native programs (plugins, config files). To be suitable for both use cases, Rouge aims to have the following feature set:
 
  - A memory management model that aims to be intuitive and fast but with at least some guarantees towards memory and thread safety.
-	- Current thoughts: reference counting with copy-on-write
+	- Currently considering mutable value semantics (already have `mut` keyword as a suitable substitute for `inout`, maybe add a `take` keyword as equivalent to `sink` from Val? no need for a `set` keyword though)
+	- Since user-defined types will be generally heap-allocated, looking into ways to manage said heap. And, yes, even though I'm looking at mutable value semantics, non-primitive types will be reference passed. I mean hey, Swift's `class`es are by-reference!
  - A (mostly) simple syntax. Originally it was based on a combination of Ruby, Python, and Rust, but it evolved over time.
+	- At this point it's been described by u/Uploft on Reddit as a combination of Julia, Scala, and Swift. All interesting languages. Haven't touched Swift though - I don't own a Mac (yes I know it runs on Linux too, just not as well from what I've heard).
  - Interpreted for development and use in config files, bytecode-compiled for distribution.
  - Extreme flexibility provided to the programmer.
+	- There's always a balance to be made with this stuff, obviously, but I'd rather not force everyone to code in a particular way. You have your preferences for how you like to code - Rouge should be able to adapt to you best it can instead of forcing you to adapt to it. Hopefully there'll be enough options to allow this flexibility, but not so many that every codebase is vastly different and unreadable.
 
 The custom runtime environment (RTE) for the Rouge programming language will be provided as a Rust library (and someone can probably work on making a wrapping cdylib for interfacing with other languages) for embedding, and as a standalone utility for applications. Both will simply be called `rouge` and contain everything necessary to run and compile Rouge code.
 
@@ -244,11 +247,14 @@ pub func main() do
 end
 ```
 
-### Type Aliases
+### Aliases
 
 ```rouge
 # A type alias is a way to simplify your code by assigning a name to a commonly used type, without necessarily creating a new type.
 type MessageList = [string]
+
+# Similarly, there are some situations where a function alias may be useful - particularly when dealing with functions on types, where multiple names for a function might make sense, or you want to implement a trait where you might already have a suitable function elsewhere. These are handled similarly to type aliases, but with the `func` keyword.
+func triple(float number) float = multiply_case(16, number)
 ```
 
 ### Custom Types
@@ -415,7 +421,7 @@ end
 
 # Types can be inlined into other types. This takes all of that type's fields and associated items, and copies them over into the new type.
 # Any associated items of the new type take precedence over those of the type being inlined.
-# If multiple types are being inlined and a conflict occurs, the last type inlined takes precedence.
+# If multiple types are being inlined and a conflict occurs, the last type inlined in the code takes precedence.
 type Entity is
 	inline Transform3
 	float health
