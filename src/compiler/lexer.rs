@@ -37,7 +37,7 @@ pub(crate) type Result = std::result::Result<TokenStream, ErrorList>;
 //--> Structs <--
 
 /// Wrapper around a token, providing the character span of the token.
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct Token {
 	pub inner: TokenInner,
 	pub span: Span,
@@ -47,14 +47,14 @@ pub(crate) struct Token {
 //--> Enums <--
 
 /// Tokens!
-#[derive(Logos, Clone)]
+#[derive(Logos, Clone, Debug, PartialEq)]
 pub(crate) enum TokenInner {
 	
 	/// Literal values.
 	/// The `\u{0}-\u{10FFFE}\u{10FFFF}` in the UTF character and string regexes is there to hopefully circumvent a bug in Logos.
 	/// This bug apparently causes `\u{0}-\u{10FFFF}` to match _any byte_ rather than any Unicode character.
 	#[regex(r"'(\\'|[\u{0}-\u{10FFFE}\u{10FFFF}]+)'", Lit::utf_char)]
-	#[regex(r#""([\u{0}-\u{10FFFE}\u{10FFFF}]|\\")*""#, Lit::utf_str)]
+	#[regex(r#""([\u{0}-\u{10FFFE}\u{10FFFF}]|(\\"))*""#, Lit::utf_str)]
 	#[regex(r##"r#"[\u{0}-\u{10FFFE}\u{10FFFF}]*"#r"##, Lit::raw_utf_str)]
 	#[regex(r"b'(\\'|[\x00-\x7F]+)'b", Lit::byte_char)]
 	#[regex(r#"b"([\x00-\x7F]|\\")*"b"#, Lit::byte_str)]
@@ -80,7 +80,7 @@ pub(crate) enum TokenInner {
 }
 
 /// Literal values
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Lit {
 	
 	/// UTF-8 character literal, 'x'
@@ -106,7 +106,7 @@ pub(crate) enum Lit {
 }
 
 /// Operators (symbols, special characters)
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Op {
 	/// The backtick symbol is used to start a loop label.
 	Tick,
@@ -176,7 +176,7 @@ pub(crate) enum Op {
 }
 
 /// Keywords and identifiers
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Word {
 	/// `byte` keyword used to represent the type of an unsigned 8-bit integer (aka a byte)
 	Byte,
@@ -222,6 +222,8 @@ pub(crate) enum Word {
 	Rules,
 	/// Types can be declared or aliased using the `type` keyword.
 	Type,
+	/// The `inline` keyword is used to inline types into other types.
+	Inline,
 	/// A `trait` contains a set of common behavior that can be implemented on multiple classes.
 	Trait,
 	/// `impl` keyword that starts a block to implement associated items onto a type.
@@ -285,7 +287,7 @@ pub(crate) enum Word {
 }
 
 /// Errors that can occur while lexing.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 #[repr(u8)]
 pub enum LexError {
 	/// The token is invalid, plain and simple.
@@ -791,6 +793,7 @@ impl Word {
 			"macro" => Word::Macro,
 			"rules" => Word::Rules,
 			"type" => Word::Type,
+			"inline" => Word::Inline,
 			"trait" => Word::Trait,
 			"impl" => Word::Implementation,
 			"pub" => Word::Public,
@@ -820,5 +823,81 @@ impl Word {
 			"not" => Word::Not,
 			_ => Word::Identifier(String::from(slice))
 		}
+	}
+}
+
+//--> Unit Testing <--
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn lex_hello() {
+		let lexed = Token::lex_file(std::path::Path::new("examples/hello.rouge")).unwrap();
+		
+		let expected = vec![
+			Token {
+				inner: TokenInner::Keyword(Word::Public),
+				span: 0..3,
+				slice: String::from("pub")
+			},
+			Token {
+				inner: TokenInner::Keyword(Word::Function),
+				span: 4..8,
+				slice: String::from("func")
+			},
+			Token {
+				inner: TokenInner::Keyword(Word::Identifier(String::from("main"))),
+				span: 9..13,
+				slice: String::from("main")
+			},
+			Token {
+				inner: TokenInner::Operator(Op::OpenParentheses),
+				span: 13..14,
+				slice: String::from("(")
+			},
+			Token {
+				inner: TokenInner::Operator(Op::CloseParentheses),
+				span: 14..15,
+				slice: String::from(")")
+			},
+			Token {
+				inner: TokenInner::Keyword(Word::Do),
+				span: 15..17,
+				slice: String::from("do")
+			},
+			Token {
+				inner: TokenInner::Keyword(Word::Identifier(String::from("outl"))),
+				span: 1..5,
+				slice: String::from("outl")
+			},
+			Token {
+				inner: TokenInner::Operator(Op::Bang),
+				span: 5..6,
+				slice: String::from("!")
+			},
+			Token {
+				inner: TokenInner::Operator(Op::OpenParentheses),
+				span: 6..7,
+				slice: String::from("(")
+			},
+			Token {
+				inner: TokenInner::Literal(Lit::UTFString(String::from("Hello world!"))),
+				span: 7..21,
+				slice: String::from("\"Hello world!\"")
+			},
+			Token {
+				inner: TokenInner::Operator(Op::CloseParentheses),
+				span: 21..22,
+				slice: String::from(")")
+			},
+			Token {
+				inner: TokenInner::Keyword(Word::End),
+				span: 0..3,
+				slice: String::from("end")
+			}
+		];
+
+		assert_eq!(lexed, expected);
 	}
 }

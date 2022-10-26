@@ -1,0 +1,17 @@
+pub func main() do
+	string text = prompt!("Give me some text with parentheses in it: ")
+
+	nat max_nesting = text.iter()
+		.scan(0, func(n, c) do
+			if c == '(' then
+				n += 1
+				return Some n
+			elif c == ')' then
+				n -= 1
+				return Some n
+			else return None
+		end)
+		.max()
+	
+	outl!("You get into a maximum of {} layers of parentheses in that text.", max_nesting)
+end

@@ -54,6 +54,7 @@ pub struct Runtime {}
 /// The expectation is that programs embeding the runtime will use the information contained to generate error messages.
 /// However, for prototyping (or laziness), the Display trait is implemented to automatically generate error messages for you.
 #[repr(C)]
+#[derive(Debug)]
 pub struct Error {
 	is_warning: bool,
 	file: Option<PathBuf>,
@@ -85,7 +86,7 @@ pub struct Reference {}
 /// For embedders developing in a non-Rust programming language, treat this like a tagged union if at all possible.
 /// If that is not possible, you are up a creek without a paddle as far as I can see.
 #[repr(u8)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum ErrorKind {
 	Interpret(InterpretError),
 	Compile,

@@ -23,7 +23,7 @@ use std::{
 
 //--> Enums <--
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 #[repr(u8)]
 pub enum ParseError {
 	/// The parser didn't have anything to parse.
