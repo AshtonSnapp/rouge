@@ -1,3 +1,5 @@
+![Rouge Logo](./rouge.svg)
+
 # Rouge
 
 [![Rust Continuous Integration](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml/badge.svg)](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml)
@@ -18,6 +20,8 @@ The custom runtime environment (RTE) for the Rouge programming language will be 
 Rouge is currently licensed under MIT.
 
 For the project's Code of Conflict, please click [here](./CONFLICT.md).
+
+(Current probably-temporary logo derived from ["claw scratch" by Feri Saputra, from Noun Project](https://thenounproject.com/icon/claw-scratch-4766678/). Literally all I did was download it and change the color to a red gradient. I don't have to attribute, since I paid for it thinking it was necessary to be allowed to edit, but not doing so would be a jerk move in my opinion so here we are.)
 
 ## Current TODO List
 
@@ -59,53 +63,53 @@ end
 ```rouge
 pub func main() do
 	# An `int` can contain a positive or negative whole number.
-	int year = 2022
+	year: int = 2022
 	
 	# A `nat` can only contain a positive whole number.
-	nat day = 252
+	day: nat = 252
 	
 	# A `float` can contain a whole or non-whole number.
-	float hour = 11.916
+	hour: float = 11.916
 
 	# A `byte` is similar to a `nat`, except it is limited to values in the range of 0 to 255. It is meant for representing binary data - bytes.
-	byte meaning_of_life = b'*'
+	meaning_of_life: byte = b'*'
 
 	# A `bool` holds a true or false value.
-	bool is_finished = false
+	is_finished: bool = false
 
 	# A `char` holds any single Unicode scalar value. This may not exactly match your view of what a character is at any given time - some things that appear as a single character are actually multiple. It's weird.
-	char english_favorite_vowel = 'ə'
+	english_favorite_vowel: char = 'ə'
 
 	# A `tuple` holds some set of related information.
-	(float, float) position = (1.0, 2.0)
+	position: (float, float) = (1.0, 2.0)
 
 	# Tuple members are accessed using dot syntax with a number starting from 0.
 	outl!("{}, {}", position.0, position.1)
 
 	# The elements of a tuple don't have to be of the same type.
-	(byte, char) byte_and_char = (42, '*')
+	byte_and_char: (byte, char) = (42, '*')
 
 	# A `list` contains some unspecified number of some type of item.
-	[nat] fibonacci = [1, 1, 2, 3, 5, 8, 13, 21, 34]
+	fibonacci: [nat] = [1, 1, 2, 3, 5, 8, 13, 21, 34]
 
 	# List elements are accessed using bracket syntax with a number representing the index into the list. The index starts from 0.
 	outl!("Element {} of the fibonacci sequence is {}.", 7, fibonacci[6])
 
 	# A `string` is just a list of characters.
-	string capital = "Baton Rouge"
+	capital: string = "Baton Rouge"
 
 	# A list of bytes can be represented with a byte string.
-	[byte] linux_binary_magic = b"ELF"
+	linux_binary_magic: [byte] = b"ELF"
 
 	# A `map` allows you to use one type to get another type. The first type is called the key, the second type is the value.
-	[string: float] classes = ["English 101": 3.0, "Calculus 101": 2.5, "Computer Science 101": 4.0]
+	classes: [string: float] = ["English 101": 3.0, "Calculus 101": 2.5, "Computer Science 101": 4.0]
 
 	# Map entries are accessed using bracket syntax with the key you want to get the value of.
 	outl!("Your GPA in Computer Science 101 is {}", classes["Computer Science 101"])
 
 	# The `mut` keyword goes before a variable's type to specify that changing (or mutating) the variable's value in your code is allowed.
-	# The `var` keyword is used to indicate that the type of the variable should be inferred.
-	mut var my_age = 22
+	# Type inferrence is handled by simply omitting the type, and often includes 
+	mut my_age := 22
 	my_age += 1 # this is allowed
 	day += 2 # this is not allowed, day is not declared as mutable
 end
@@ -115,7 +119,7 @@ end
 
 ```rouge
 pub func main() do
-	var name = prompt!("What's your name? ")
+	name := prompt!("What's your name? ")
 
 	# Simple control flow using `if`, `elif` (else if), and `else`.
 	if name == "Rouge" then
@@ -124,7 +128,7 @@ pub func main() do
 		outl!("Isn't that the name of the guy who created me?")
 	else outl!("Nice to meet you, {}.", name)
 
-	var num = prompt!("What's your favorite number? ")
+	num := prompt!("What's your favorite number? ")
 
 	# Using the `is` keyword, you can check if whatever's on the left matches some pattern on the right. Variables will be bound if possible.
 	if num.parse::<nat>() is Ok(n) then
@@ -137,7 +141,7 @@ pub func main() do
 		end
 	else errl!("I don't think that was a number, so we'll just skip over this.")
 
-	mut nat count = 5
+	mut count: nat = 5
 
 	# The `loop` keyword creates an infinite loop. It will continue running forever, unless you stop it yourself or add code to break out of the loop.
 	loop
@@ -183,7 +187,7 @@ pub func main() do
 	for _ in 0..10 do outl!("One hop this time!")
 
 	# To be more clear, the above `for` loop is exactly equivalent to the following `while` loop:
-	mut var range = 0..10
+	mut range := 0..10
 	while range.next() is Some(_) do outl!("One hop this time!")
 
 	# And is therefore equivalent to the following simple loop:
@@ -202,14 +206,14 @@ end
 func do_something() do outl!("Did something!")
 
 # Sometimes you want to pass data into a function. For this, you need to specify what arguments you want.
-func double_it(float number) do
-	float doubled = number * 2
+func double_it(number: float) do
+	doubled: float = number * 2
 	outl!("{} doubled is {}", number, doubled)
 end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
 # The `return` keyword is used to return data from a function.
-func multiply_case(int case, float number) float do
+func multiply_case(case: int, number: float) float do
 	if case is
 		0..10 then return number * 2
 		10..100 then return number * 3
@@ -221,7 +225,7 @@ func multiply_case(int case, float number) float do
 end
 
 # Functions can call themselves. This is called recursion.
-func factorial(int number) int do
+func factorial(number: int) int do
 	if number == 2 then return number # optimization: short-circuiting the base case, look it up on the Wikipedia page for recursion
 
 	return number * factorial(number - 1)
@@ -235,9 +239,9 @@ pub func main() do
 	outl!("{}! = {}", 8, factorial(8))
 
 	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
-	mut nat test_num = 64
-	var closure = func() do
-		nat old_test_num = test_num
+	mut test_num: nat = 64
+	closure := func() do
+		old_test_num: nat = test_num
 		test_num *= 2
 		outl!("{}", old_test_num)
 	end
@@ -269,7 +273,7 @@ type Empty
 type Vec2 is float and float # & is also valid instead of and
 
 # Other times, you'll want to give a name to each field. These are called record-like types.
-type Person is string name & nat age
+type Person is name: string & age: nat
 
 # And sometimes, you'll want a data type that can be in different states. These are called variant types, and their states are called variants.
 type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
@@ -285,9 +289,9 @@ type Vec3 is
 end
 
 type Student is
-	string name
-	and nat year
-	and [string: float] grades
+	name: string
+	and year: nat
+	and grades: [string: float]
 end
 
 type Element is
@@ -304,11 +308,11 @@ end
 ```rouge
 # Items may be included in a type's definition in order to associate them with that type.
 type Person is
-	string name
-	nat age
+	name: string
+	age: nat
 
 	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
-	pub func new(string name, nat age) Person do return Person { name, age }
+	pub func new(name: string, age: nat) Person do return Person { name, age }
 
 	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
 	pub func name(self) string do return self.name
@@ -322,7 +326,7 @@ end
 # Further items may be associated through the use of implementation, or impl, blocks like this one.
 impl for Person is
 	# Constants may be associated with a type.
-	const nat AVERAGE_LIFESPAN = 73
+	const AVERAGE_LIFESPAN: nat = 73
 
 	# Types may be associated with other types. Nesting types like this is useful in some situations.
 	pub type LifeStage is
@@ -337,7 +341,7 @@ end
 
 pub func main() do
 	# Calling an associated function, such as our constructor, is done using colon syntax.
-	var me = Person:new("Ashton", 22)
+	me := Person:new("Ashton", 22)
 
 	# Calling a method on a class is done using dot syntax.
 	outl!("{} is {} years old.", me.name, me.age)
@@ -351,7 +355,7 @@ pub func main() do
 
 	# Dealing with nested types is also handled through colon syntax.
 	# Tengentially, accessing the variants of a type is also handled through colon syntax.
-	var stage = Person:LifeStage:Adult
+	stage := Person:LifeStage:Adult
 end
 ```
 
@@ -361,8 +365,8 @@ end
 # A generic type, or simply generic for short, is essentially a placeholder for a type.
 # When used with functions, generic types allow a function to handle multiple different types without having to redefine the function over and over again.
 # A function's 'generic arguments' are defined in angle brackets.
-func largest<T>([T] list) T do
-	mut T largest = list[0]
+func largest<T>(list: [T]) T do
+	mut largest := list[0]
 	for item in list do
 		if item > largest then largest = item
 	end
@@ -371,8 +375,8 @@ end
 
 # Types can also have generic arguments, which is useful for container or wrapper types.
 type TaggedBox<T> is
-	T contents
-	and [string: string] tags
+	contents: T
+	and tags: [string: string]
 end
 ```
 
@@ -401,22 +405,22 @@ end
 
 ```rouge
 type Vec3 is
-	float x
-	float y
-	float z
+	x: float
+	y: float
+	z: float
 end
 
 type Quat is
-	float x
-	float y
-	float z
-	float w
+	x: float
+	y: float
+	z: float
+	w: float
 end
 
 type Transform3 is
-	Vec3 translation
-	Quat rotation
-	Vec3 scale
+	Vec3 translation: Vec3
+	Quat rotation: Quat
+	Vec3 scale: Vec3
 end
 
 # Types can be inlined into other types. This takes all of that type's fields and associated items, and copies them over into the new type.
@@ -424,7 +428,7 @@ end
 # If multiple types are being inlined and a conflict occurs, the last type inlined in the code takes precedence.
 type Entity is
 	inline Transform3
-	float health
-	float max_health
+	health: float
+	max_health: float
 end
 ```
