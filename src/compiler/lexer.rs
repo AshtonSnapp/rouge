@@ -196,10 +196,6 @@ pub(crate) enum Word {
 	Character,
 	/// `string` keyword used to represent the type of a list (or string) of characters (basically a primitive/built-in type alias)
 	String,
-	/// `var` keyword used to invoke type inferrence on a variable (i.e. when the type should be obvious).
-	/// 
-	/// Can ONLY be used with variables. Use anywhere else will generate a parsing error.
-	VariableType,
 	/// `self` or `Self` keyword used to represent either:
 	/// 
 	///  - The package containing the module you're working on (`self`)
@@ -784,7 +780,6 @@ impl Word {
 			"false" => Word::False,
 			"char" => Word::Character,
 			"string" => Word::String,
-			"var" => Word::VariableType,
 			"self" | "Self" => Word::Selff,
 			"super" => Word::Super,
 			"mut" => Word::Mutable,
