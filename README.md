@@ -258,7 +258,7 @@ end
 type MessageList = [string]
 
 # Similarly, there are some situations where a function alias may be useful - particularly when dealing with functions on types, where multiple names for a function might make sense, or you want to implement a trait where you might already have a suitable function elsewhere. These are handled similarly to type aliases, but with the `func` keyword.
-func triple(float number) float = multiply_case(16, number)
+func triple(float number): float = multiply_case(16, number)
 ```
 
 ### Custom Types
@@ -312,12 +312,12 @@ type Person is
 	age: nat
 
 	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
-	pub func new(name: string, age: nat) Person do return Person { name, age }
+	pub func new(name: string, age: nat): Person do return Person { name, age }
 
 	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
-	pub func name(self) string do return self.name
+	pub func name(self): string do return self.name
 
-	pub func age(self) nat do return self.age
+	pub func age(self): nat do return self.age
 
 	# Methods which modify an instance's data must specify as such, and can't be called on immutable instances of the type.
 	pub func birthday(mut self) do self.age += 1
@@ -365,7 +365,7 @@ end
 # A generic type, or simply generic for short, is essentially a placeholder for a type.
 # When used with functions, generic types allow a function to handle multiple different types without having to redefine the function over and over again.
 # A function's 'generic arguments' are defined in angle brackets.
-func largest<T>(list: [T]) T do
+func largest<T>(list: [T]): T do
 	mut largest := list[0]
 	for item in list do
 		if item > largest then largest = item
