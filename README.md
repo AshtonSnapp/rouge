@@ -240,7 +240,7 @@ pub func main() do
 
 	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
 	mut test_num: nat = 64
-	closure := func() do # or should this just be `() do`?
+	closure := () do
 		old_test_num: nat = test_num
 		test_num *= 2
 		outl!("{}", old_test_num)
