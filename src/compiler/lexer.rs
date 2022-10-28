@@ -314,7 +314,7 @@ impl Token {
 				let mut source = String::new();
 				match f.read_to_string(&mut source) {
 					Ok(_) => {
-						source = source.chars().skip_while(|c| *c == '\r').collect();
+						source = source.chars().filter(|c| *c != '\r').collect();
 						// Since we aren't lexing each line individually, we need to keep track of the line number manually.
 						let mut lno = 0;
 						// Since we aren't lexing each line individually, we need to correct for the length of previous lines in spans.
