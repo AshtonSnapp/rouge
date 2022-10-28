@@ -14,10 +14,7 @@ use std::{
 		Path,
 	},
 	fs::File,
-	io::{
-		BufRead,
-		BufReader,
-	},
+	io::Read,
 	str::FromStr,
 };
 
@@ -41,6 +38,8 @@ pub(crate) type Result = std::result::Result<TokenStream, ErrorList>;
 pub(crate) struct Token {
 	pub inner: TokenInner,
 	pub span: Span,
+	pub line: usize,
+	pub span_in_line: Span,
 	pub slice: String,
 }
 
@@ -51,14 +50,12 @@ pub(crate) struct Token {
 pub(crate) enum TokenInner {
 	
 	/// Literal values.
-	/// The `\u{0}-\u{10FFFE}\u{10FFFF}` in the UTF character and string regexes is there to hopefully circumvent a bug in Logos.
-	/// This bug apparently causes `\u{0}-\u{10FFFF}` to match _any byte_ rather than any Unicode character.
-	#[regex(r"'(\\'|[\u{0}-\u{10FFFE}\u{10FFFF}]+)'", Lit::utf_char)]
-	#[regex(r#""(?:[^"]|\\")*""#, Lit::utf_str)] // BUGGED
-	#[regex(r##"r#"[\u{0}-\u{10FFFE}\u{10FFFF}]*"#r"##, Lit::raw_utf_str)]
-	#[regex(r"b'(\\'|[\x00-\x7F]+)'b", Lit::byte_char)]
-	#[regex(r#"b"([\x00-\x7F]|\\")*"b"#, Lit::byte_str)]
-	#[regex(r##"br#"[\x00-\x7F]*"#rb"##, Lit::raw_byte_str)]
+	#[regex(r"'(?:[^']|\\')'", Lit::utf_char)]
+	#[regex(r#""(?:[^"]|\\")*""#, Lit::utf_str)]
+	#[regex(r##"r#"?:[^("#r)]"#r"##, Lit::raw_utf_str)]
+	#[regex(r"b''(?:[^']|\\')''b", Lit::byte_char)]
+	#[regex(r#"b"(?:[^"]|\\")*"b"#, Lit::byte_str)]
+	#[regex(r##"br#"?:[^("#rb)]"#rb"##, Lit::raw_byte_str)]
 	#[regex(r"[+-]?0(B|b)[01][_01]*", Lit::bin)]
 	#[regex(r"[+-]?0(O|o)[0-7][_0-7]*", Lit::oct)]
 	#[regex(r"[+-]?[0-9][_0-9]*(.[0-9][_0-9]*)?((E|e)[0-9][_0-9]*)?", Lit::dec)]
@@ -313,44 +310,62 @@ impl Token {
 		let mut errs = Vec::new();
 		
 		match File::open(p) {
-			Ok(f) => {
-				for (lno, line) in BufReader::new(f).lines().enumerate() {
-					match line {
-						Ok(l) => {
-							for (token, span) in TokenInner::lexer(&l).spanned() {
-								match token {
-									// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-									TokenInner::Error => errs.push(Error::new(false, Some(p), Some(lno), Some(span.clone()), Some(&l[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-									_ => toks.push(Token { inner: token, span: span.clone(), slice: String::from(&l[span]) })
-								}
+			Ok(mut f) => {
+				let mut source = String::new();
+				match f.read_to_string(&mut source) {
+					Ok(_) => {
+						// Since we aren't lexing each line individually, we need to keep track of the line number manually.
+						let mut lno = 0;
+						// Since we aren't lexing each line individually, we need to correct for the length of previous lines in spans.
+						let mut span_correction = 0;
+						for (token, span) in TokenInner::lexer(&source).spanned() {
+							match token {
+								TokenInner::Error => errs.push(Error::new(false, Some(p), Some(lno), {
+									let mut ret = span.clone();
+									ret.start -= span_correction;
+									ret.end -= span_correction;
+									Some(ret)
+								}, Some(&source[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
+								TokenInner::Operator(Op::Newline) => {
+									// We'll need to update the span correction, but we keep this for correcting the span on this token.
+									let old_span_correction = span_correction;
+									span_correction = span.end;
+
+									toks.push(Token {
+										inner: token,
+										span: span.clone(),
+										line: lno,
+										span_in_line: {
+											let mut ret = span.clone();
+											ret.start -= old_span_correction;
+											ret.end -= old_span_correction;
+											ret
+										},
+										slice: String::from(&source[span]),
+									});
+
+									// And now we update the line number...
+									lno += 1;
+								},
+								_ => toks.push(Token {
+									inner: token,
+									span: span.clone(),
+									line: lno,
+									span_in_line: {
+										let mut ret = span.clone();
+										ret.start -= span_correction;
+										ret.end -= span_correction;
+										ret
+									},
+									slice: String::from(&source[span]),
+								})
 							}
-						},
-						Err(e) => errs.push(Error::new(false, Some(p), Some(lno), None, None, ErrorKind::IO(e.kind())))
-					}
+						}
+					},
+					Err(e) => errs.push(Error::new(false, Some(p), None, None, None, ErrorKind::IO(e.kind())))
 				}
 			},
 			Err(e) => errs.push(Error::new(false, Some(p), None, None, None, ErrorKind::IO(e.kind())))
-		}
-
-		if errs.is_empty() {
-			Ok(toks)
-		} else {
-			Err(errs)
-		}
-	}
-
-	/// Given a line of text provided by the user over stdin, converts it into a stream of tokens.
-	/// This can fail, and the lexer will provide errors if so.
-	pub(crate) fn lex_line(s: &str, lno: usize) -> Result {
-		let mut toks = Vec::new();
-		let mut errs = Vec::new();
-
-		for (token, span) in TokenInner::lexer(s).spanned() {
-			match token {
-				// TODO: Better error messages. Really don't know how I could do this without Logos allowing arguments in the error variant.
-				TokenInner::Error => errs.push(Error::new(false, None, Some(lno), Some(span.clone()), Some(&s[span]), ErrorKind::Interpret(InterpretError::Lex(LexError::InvalidToken)))),
-				_ => toks.push(Token { inner: token, span: span.clone(), slice: String::from(&s[span]) })
-			}
 		}
 
 		if errs.is_empty() {
@@ -834,61 +849,99 @@ mod tests {
 			Token {
 				inner: TokenInner::Keyword(Word::Public),
 				span: 0..3,
+				line: 0,
+				span_in_line: 0..3,
 				slice: String::from("pub")
 			},
 			Token {
 				inner: TokenInner::Keyword(Word::Function),
 				span: 4..8,
+				line: 0,
+				span_in_line: 4..8,
 				slice: String::from("func")
 			},
 			Token {
 				inner: TokenInner::Keyword(Word::Identifier(String::from("main"))),
 				span: 9..13,
+				line: 0,
+				span_in_line: 9..13,
 				slice: String::from("main")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::OpenParentheses),
 				span: 13..14,
+				line: 0,
+				span_in_line: 13..14,
 				slice: String::from("(")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::CloseParentheses),
 				span: 14..15,
+				line: 0,
+				span_in_line: 14..15,
 				slice: String::from(")")
 			},
 			Token {
 				inner: TokenInner::Keyword(Word::Do),
 				span: 16..18,
+				line: 0,
+				span_in_line: 16..18,
 				slice: String::from("do")
 			},
 			Token {
+				inner: TokenInner::Operator(Op::Newline),
+				span: 18..19,
+				line: 0,
+				span_in_line: 18..19,
+				slice: String::from("\n")
+			},
+			Token {
 				inner: TokenInner::Keyword(Word::Identifier(String::from("outl"))),
-				span: 1..5,
+				span: 20..24,
+				line: 1,
+				span_in_line: 1..5,
 				slice: String::from("outl")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::Bang),
-				span: 5..6,
+				span: 24..25,
+				line: 1,
+				span_in_line: 5..6,
 				slice: String::from("!")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::OpenParentheses),
-				span: 6..7,
+				span: 25..26,
+				line: 1,
+				span_in_line: 6..7,
 				slice: String::from("(")
 			},
 			Token {
 				inner: TokenInner::Literal(Lit::UTFString(String::from("Hello world!"))),
-				span: 7..21,
+				span: 26..40,
+				line: 1,
+				span_in_line: 7..21,
 				slice: String::from("\"Hello world!\"")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::CloseParentheses),
-				span: 21..22,
+				span: 40..41,
+				line: 1,
+				span_in_line: 21..22,
 				slice: String::from(")")
 			},
 			Token {
+				inner: TokenInner::Operator(Op::Newline),
+				span: 41..42,
+				line: 1,
+				span_in_line: 22..23,
+				slice: String::from("\n")
+			},
+			Token {
 				inner: TokenInner::Keyword(Word::End),
-				span: 0..3,
+				span: 42..45,
+				line: 2,
+				span_in_line: 0..3,
 				slice: String::from("end")
 			}
 		];
