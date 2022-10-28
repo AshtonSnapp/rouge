@@ -54,7 +54,7 @@ pub(crate) enum TokenInner {
 	/// The `\u{0}-\u{10FFFE}\u{10FFFF}` in the UTF character and string regexes is there to hopefully circumvent a bug in Logos.
 	/// This bug apparently causes `\u{0}-\u{10FFFF}` to match _any byte_ rather than any Unicode character.
 	#[regex(r"'(\\'|[\u{0}-\u{10FFFE}\u{10FFFF}]+)'", Lit::utf_char)]
-	#[regex(r#""([\u{0}-\u{10FFFE}\u{10FFFF}]|(\\"))*""#, Lit::utf_str)] // BUGGED
+	#[regex(r#""(?:[^"]|\\")*""#, Lit::utf_str)] // BUGGED
 	#[regex(r##"r#"[\u{0}-\u{10FFFE}\u{10FFFF}]*"#r"##, Lit::raw_utf_str)]
 	#[regex(r"b'(\\'|[\x00-\x7F]+)'b", Lit::byte_char)]
 	#[regex(r#"b"([\x00-\x7F]|\\")*"b"#, Lit::byte_str)]
@@ -828,7 +828,7 @@ mod tests {
 	use super::*;
 	#[test]
 	fn lex_hello() {
-		let lexed = Token::lex_file(std::path::Path::new("examples/hello.rouge")).unwrap();
+		let lexed = Token::lex_file(std::path::Path::new("examples/hello.ro")).unwrap();
 		
 		let expected = vec![
 			Token {
@@ -858,7 +858,7 @@ mod tests {
 			},
 			Token {
 				inner: TokenInner::Keyword(Word::Do),
-				span: 15..17,
+				span: 16..18,
 				slice: String::from("do")
 			},
 			Token {
