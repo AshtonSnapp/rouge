@@ -1,7 +1,7 @@
 # https://projecteuler.net/problem=1
 
-func sumMultiplesBelow([nat] factors, nat max) nat do
-	mut var sum = 0
+func sumMultiplesBelow(factors: [nat], max: nat): nat do
+	mut sum := 0
 
 	for i in 0..=max do
 		for factor in factors do

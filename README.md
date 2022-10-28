@@ -213,7 +213,7 @@ end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
 # The `return` keyword is used to return data from a function.
-func multiply_case(case: int, number: float) float do
+func multiply_case(case: int, number: float): float do
 	if case is
 		0..10 then return number * 2
 		10..100 then return number * 3
@@ -225,7 +225,7 @@ func multiply_case(case: int, number: float) float do
 end
 
 # Functions can call themselves. This is called recursion.
-func factorial(number: int) int do
+func factorial(number: int): int do
 	if number == 2 then return number # optimization: short-circuiting the base case, look it up on the Wikipedia page for recursion
 
 	return number * factorial(number - 1)
@@ -240,7 +240,7 @@ pub func main() do
 
 	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
 	mut test_num: nat = 64
-	closure := func() do
+	closure := func() do # or should this just be `() do`?
 		old_test_num: nat = test_num
 		test_num *= 2
 		outl!("{}", old_test_num)
@@ -389,8 +389,8 @@ trait Drawable is
 end
 
 type Button is
-	string label
-	func() callback
+	label: string
+	callback: func()
 end
 
 # Traits are always implemented using impl blocks.

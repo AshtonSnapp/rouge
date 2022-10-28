@@ -1,7 +1,7 @@
 pub func main() do
-	string text = prompt!("Give me some text with parentheses in it: ")
+	text := prompt!("Give me some text with parentheses in it: ")
 
-	nat max_nesting = text.iter()
+	max_nesting: nat = text.iter()
 		.scan(0, func(n, c) do
 			if c == '(' then
 				n += 1

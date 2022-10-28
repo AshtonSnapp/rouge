@@ -54,7 +54,7 @@ pub(crate) enum TokenInner {
 	/// The `\u{0}-\u{10FFFE}\u{10FFFF}` in the UTF character and string regexes is there to hopefully circumvent a bug in Logos.
 	/// This bug apparently causes `\u{0}-\u{10FFFF}` to match _any byte_ rather than any Unicode character.
 	#[regex(r"'(\\'|[\u{0}-\u{10FFFE}\u{10FFFF}]+)'", Lit::utf_char)]
-	#[regex(r#""([\u{0}-\u{10FFFE}\u{10FFFF}]|(\\"))*""#, Lit::utf_str)]
+	#[regex(r#""([\u{0}-\u{10FFFE}\u{10FFFF}]|(\\"))*""#, Lit::utf_str)] // BUGGED
 	#[regex(r##"r#"[\u{0}-\u{10FFFE}\u{10FFFF}]*"#r"##, Lit::raw_utf_str)]
 	#[regex(r"b'(\\'|[\x00-\x7F]+)'b", Lit::byte_char)]
 	#[regex(r#"b"([\x00-\x7F]|\\")*"b"#, Lit::byte_str)]

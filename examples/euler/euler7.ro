@@ -1,8 +1,8 @@
 # https://projecteuler.net/problem=7
 
-func xPrimes(nat x) [nat] do
-	mut var primes = [2]
-	mut uint y = 2
+func xPrimes(x: nat): [nat] do
+	mut primes := [2]
+	mut y: nat = 2
 
 	`outer loop
 		y += 1

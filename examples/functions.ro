@@ -1,4 +1,4 @@
-func factorial(nat n) nat do
+func factorial(n: nat): nat do
 	if n == 1 then
 		return 1
 	else

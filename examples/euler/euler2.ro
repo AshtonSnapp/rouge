@@ -1,7 +1,7 @@
 # https://projecteuler.net/problem=2
 
-func fibonacci(nat one, nat two, nat max) [nat] do
-	mut var sequence = [one, two]
+func fibonacci(one: nat, two: nat, max: nat): [nat] do
+	mut sequence := [one, two]
 
 	loop
 		var next = sequence[-1] + sequence[-2]
