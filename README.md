@@ -62,14 +62,14 @@ end
 
 ```rouge
 pub func main() do
-	# An `int` can contain a positive or negative whole number.
+	# An `int` can contain a positive or negative whole number. It is short for 'integer'.
 	year: int = 2022
 	
-	# A `nat` can only contain a positive whole number.
+	# A `nat` can only contain a positive whole number. It is short for 'natural', as in natural number.
 	day: nat = 252
 	
-	# A `float` can contain a whole or non-whole number.
-	hour: float = 11.916
+	# A `flo` can contain a whole or non-whole number. It is short for 'float', as in floating-point number.
+	hour: flo = 11.916
 
 	# A `byte` is similar to a `nat`, except it is limited to values in the range of 0 to 255. It is meant for representing binary data - bytes.
 	meaning_of_life: byte = b'*'
@@ -95,8 +95,8 @@ pub func main() do
 	# List elements are accessed using bracket syntax with a number representing the index into the list. The index starts from 0.
 	outl!("Element {} of the fibonacci sequence is {}.", 7, fibonacci[6])
 
-	# A `string` is just a list of characters.
-	capital: string = "Baton Rouge"
+	# A `str` (short for 'string') is just a list of characters.
+	capital: str = "Baton Rouge"
 
 	# A list of bytes can be represented with a byte string.
 	linux_binary_magic: [byte] = b"ELF"
@@ -206,14 +206,14 @@ end
 func do_something() do outl!("Did something!")
 
 # Sometimes you want to pass data into a function. For this, you need to specify what arguments you want.
-func double_it(number: float) do
-	doubled: float = number * 2
+func double_it(number: flo) do
+	doubled: flo = number * 2
 	outl!("{} doubled is {}", number, doubled)
 end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
 # The `return` keyword is used to return data from a function.
-func multiply_case(case: int, number: float): float do
+func multiply_case(case: int, number: flo): flo do
 	if case is
 		0..10 then return number * 2
 		10..100 then return number * 3
@@ -255,10 +255,10 @@ end
 
 ```rouge
 # A type alias is a way to simplify your code by assigning a name to a commonly used type, without necessarily creating a new type.
-type MessageList = [string]
+type MessageList = [str]
 
 # Similarly, there are some situations where a function alias may be useful - particularly when dealing with functions on types, where multiple names for a function might make sense, or you want to implement a trait where you might already have a suitable function elsewhere. These are handled similarly to type aliases, but with the `func` keyword.
-func triple(float number): float = multiply_case(16, number)
+func triple(number: flo): flo = multiply_case(16, number)
 ```
 
 ### Custom Types
@@ -270,10 +270,10 @@ func triple(float number): float = multiply_case(16, number)
 type Empty
 
 # Most custom data types will actually contain data though. In the simplest cases, you just list out the types of the different fields of your custom type within parentheses. These are called tuple-like types.
-type Vec2 is float and float # & is also valid instead of and
+type Vec2 is flo and flo # & is also valid instead of and
 
 # Other times, you'll want to give a name to each field. These are called record-like types.
-type Person is name: string & age: nat
+type Person is name: str & age: nat
 
 # And sometimes, you'll want a data type that can be in different states. These are called variant types, and their states are called variants.
 type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
@@ -283,15 +283,15 @@ type Option<T> is None or Some is T
 
 # Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
 type Vec3 is
-	float
-	and float
-	and float
+	flo
+	and flo
+	and flo
 end
 
 type Student is
-	name: string
+	name: str
 	and year: nat
-	and grades: [string: float]
+	and grades: [str: flo]
 end
 
 type Element is
@@ -308,14 +308,14 @@ end
 ```rouge
 # Items may be included in a type's definition in order to associate them with that type.
 type Person is
-	name: string
+	name: str
 	age: nat
 
 	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
-	pub func new(name: string, age: nat): Person do return Person { name, age }
+	pub func new(name: str, age: nat): Person do return Person { name, age }
 
 	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
-	pub func name(self): string do return self.name
+	pub func name(self): str do return self.name
 
 	pub func age(self): nat do return self.age
 
@@ -349,7 +349,7 @@ pub func main() do
 	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
 	#me.birthay()
 
-	mut var you = Person:new("Your Name Here", 42)
+	mut you := Person:new("Your Name Here", 42)
 	# Now we can run the birthday method without raising any errors.
 	you.birthday()
 
@@ -376,7 +376,7 @@ end
 # Types can also have generic arguments, which is useful for container or wrapper types.
 type TaggedBox<T> is
 	contents: T
-	and tags: [string: string]
+	and tags: [str: str]
 end
 ```
 
@@ -389,7 +389,7 @@ trait Drawable is
 end
 
 type Button is
-	label: string
+	label: str
 	callback: func()
 end
 
@@ -405,22 +405,22 @@ end
 
 ```rouge
 type Vec3 is
-	x: float
-	y: float
-	z: float
+	x: flo
+	y: flo
+	z: flo
 end
 
 type Quat is
-	x: float
-	y: float
-	z: float
-	w: float
+	x: flo
+	y: flo
+	z: flo
+	w: flo
 end
 
 type Transform3 is
-	Vec3 translation: Vec3
-	Quat rotation: Quat
-	Vec3 scale: Vec3
+	translation: Vec3
+	rotation: Quat
+	scale: Vec3
 end
 
 # Types can be inlined into other types. This takes all of that type's fields and associated items, and copies them over into the new type.
@@ -428,7 +428,7 @@ end
 # If multiple types are being inlined and a conflict occurs, the last type inlined in the code takes precedence.
 type Entity is
 	inline Transform3
-	health: float
-	max_health: float
+	health: flo
+	max_health: flo
 end
 ```

@@ -181,7 +181,7 @@ pub(crate) enum Word {
 	Natural,
 	/// `int` keyword used to represent the type of a signed 64-bit integer
 	Integer,
-	/// `float` keyword used to represent the type of a 64-bit floating-point number
+	/// `flo` keyword used to represent the type of a 64-bit floating-point number
 	Float,
 	/// `bool` keyword used to represent the type of a true or false value
 	Boolean,
@@ -790,12 +790,12 @@ impl Word {
 			"byte" => Word::Byte,
 			"nat" => Word::Natural,
 			"int" => Word::Integer,
-			"float" => Word::Float,
+			"flo" => Word::Float,
 			"bool" => Word::Boolean,
 			"true" => Word::True,
 			"false" => Word::False,
 			"char" => Word::Character,
-			"string" => Word::String,
+			"str" => Word::String,
 			"self" | "Self" => Word::Selff,
 			"super" => Word::Super,
 			"mut" => Word::Mutable,
