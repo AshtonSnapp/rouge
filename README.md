@@ -23,6 +23,8 @@ For the project's Code of Conflict, please click [here](./CONFLICT.md).
 
 (Current probably-temporary logo derived from ["claw scratch" by Feri Saputra, from Noun Project](https://thenounproject.com/icon/claw-scratch-4766678/). Literally all I did was download it and change the color to a red gradient. I don't have to attribute, since I paid for it thinking it was necessary to be allowed to edit, but not doing so would be a jerk move in my opinion so here we are.)
 
+> **Note:** Rouge is in an extremely early alpha! The embedding and native-function interfaces are NOT STABLE! Hell, the syntax can still change on a dime!
+
 ## Current TODO List
 
 ### High Priority
