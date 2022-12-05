@@ -1,7 +1,0 @@
-##
-@builtin
-pub extern type char
-
-##
-@builtin
-pub extern type string is [char]

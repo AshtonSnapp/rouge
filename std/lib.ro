@@ -1,7 +1,0 @@
-pub use self:[
-	cmp
-	collections
-	num
-	ops
-	string
-]
