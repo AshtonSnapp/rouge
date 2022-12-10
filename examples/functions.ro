@@ -1,18 +1,18 @@
 func factorial(n: nat): nat do
 	if n == 1 then
-		return 1
+		1
 	else
-		return n * factorial(n - 1)
+		n * factorial(n - 1)
 	end
 end
 
 pub func main() do
-	if nat:from_str(prompt!("Give me a positive whole number: ")) is:
-		Ok(num) then
-			outl!("{}! = {}", num, factorial(num))
+	if nat:from_str(prompt("Give me a positive whole number: ")) is:
+		Ok num then
+			outl("\{num}! = \{factorial(num)}")
 		end
-		Err(_) then
-			errl!("That isn't a positive whole number!")
+		Err _ then
+			errl("That isn't a positive whole number!")
 		end
 	end
 end

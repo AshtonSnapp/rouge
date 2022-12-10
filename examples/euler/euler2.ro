@@ -4,7 +4,7 @@ func fibonacci(one: nat, two: nat, max: nat): [nat] do
 	mut sequence := [one, two]
 
 	loop
-		var next = sequence[-1] + sequence[-2]
+		next = sequence[-1] + sequence[-2]
 		if next > max then
 			break
 		else:
@@ -12,9 +12,9 @@ func fibonacci(one: nat, two: nat, max: nat): [nat] do
 		end
 	end
 
-	return sequence
+	sequence
 end
 
 pub func main() do
-	outl!("{}", fibonacci(1, 2, 4000000).iter.filter(|x| x % 2 == 0).sum())
+	outl("\{fibonacci(1, 2, 4000000).iter.filter(|x| x % 2 == 0).sum()}")
 ends

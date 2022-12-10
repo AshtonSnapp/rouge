@@ -17,9 +17,9 @@ func xPrimes(x: nat): [nat] do
 		end
 	end
 
-	return primes
+	primes
 end
 
-pub func main()
-	outl!("{}", xPrimes(10001)[-1])
+pub func main() do
+	outl("\{xPrimes(10001)[-1]}")
 end

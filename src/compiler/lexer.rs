@@ -904,43 +904,36 @@ mod tests {
 				slice: String::from("outl")
 			},
 			Token {
-				inner: TokenInner::Operator(Op::Bang),
+				inner: TokenInner::Operator(Op::OpenParentheses),
 				span: 24..25,
 				line: 1,
 				span_in_line: 5..6,
-				slice: String::from("!")
-			},
-			Token {
-				inner: TokenInner::Operator(Op::OpenParentheses),
-				span: 25..26,
-				line: 1,
-				span_in_line: 6..7,
 				slice: String::from("(")
 			},
 			Token {
 				inner: TokenInner::Literal(Lit::UTFString(String::from("Hello world!"))),
-				span: 26..40,
+				span: 25..39,
 				line: 1,
-				span_in_line: 7..21,
+				span_in_line: 6..20,
 				slice: String::from("\"Hello world!\"")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::CloseParentheses),
-				span: 40..41,
+				span: 39..40,
 				line: 1,
-				span_in_line: 21..22,
+				span_in_line: 20..21,
 				slice: String::from(")")
 			},
 			Token {
 				inner: TokenInner::Operator(Op::Newline),
-				span: 41..42,
+				span: 40..41,
 				line: 1,
-				span_in_line: 22..23,
+				span_in_line: 21..22,
 				slice: String::from("\n")
 			},
 			Token {
 				inner: TokenInner::Keyword(Word::End),
-				span: 42..45,
+				span: 41..44,
 				line: 2,
 				span_in_line: 0..3,
 				slice: String::from("end")
