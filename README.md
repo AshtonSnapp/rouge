@@ -54,7 +54,7 @@ Rouge isn't really implemented yet, and a lot of things are probably going to ch
 
 ```rouge
 pub func main() do
-	outl!("Bonjour le monde!")
+	outl("Bonjour le monde!")
 end
 ```
 
@@ -95,7 +95,7 @@ pub func main() do
 	fibonacci: [nat] = [1, 1, 2, 3, 5, 8, 13, 21, 34]
 
 	# List elements are accessed using bracket syntax with a number representing the index into the list. The index starts from 0.
-	outl!("Element {} of the fibonacci sequence is {}.", 7, fibonacci[6])
+	outl("Element {} of the fibonacci sequence is {}.", 7, fibonacci[6])
 
 	# A `str` (short for 'string') is just a list of characters.
 	capital: str = "Baton Rouge"
@@ -107,7 +107,7 @@ pub func main() do
 	classes: [string: float] = ["English 101": 3.0, "Calculus 101": 2.5, "Computer Science 101": 4.0]
 
 	# Map entries are accessed using bracket syntax with the key you want to get the value of.
-	outl!("Your GPA in Computer Science 101 is {}", classes["Computer Science 101"])
+	outl("Your GPA in Computer Science 101 is {}", classes["Computer Science 101"])
 
 	# The `mut` keyword goes before a variable's type to specify that changing (or mutating) the variable's value in your code is allowed.
 	# Type inferrence is handled by simply omitting the type, and often includes 
@@ -121,36 +121,36 @@ end
 
 ```rouge
 pub func main() do
-	name := prompt!("What's your name? ")
+	name := prompt("What's your name? ")
 
 	# Simple control flow using `if`, `elif` (else if), and `else`.
 	if name == "Rouge" then
-		outl!("Hey, that's MY name!")
+		outl("Hey, that's MY name!")
 	elif name == "Ashton" then
-		outl!("Isn't that the name of the guy who created me?")
-	else outl!("Nice to meet you, {}.", name)
+		outl("Isn't that the name of the guy who created me?")
+	else outl("Nice to meet you, \{name}.")
 
-	num := prompt!("What's your favorite number? ")
+	num := prompt("What's your favorite number? ")
 
 	# Using the `is` keyword, you can check if whatever's on the left matches some pattern on the right. Variables will be bound if possible.
 	if num.parse::<nat>() is Ok(n) then
 		# You can also do this using `is` - it's like a Rust `match` block. Using it like this means you have to handle any possible case - hence the else branch.
 		if n is
-			42 then outl!("I see you're a fan of Douglas Adams. Did you bring a towel?")
-			0..=9 then outl!("Single digit club, huh?")
-			100.. then outl!("I mean, who doesn't like big numbers?")
-			else outl!("Double digit club, let's goooooooooo")
+			42 then outl("I see you're a fan of Douglas Adams. Did you bring a towel?")
+			0..=9 then outl("Single digit club, huh?")
+			100.. then outl("I mean, who doesn't like big numbers?")
+			else outl("Double digit club, let's goooooooooo")
 		end
-	else errl!("I don't think that was a number, so we'll just skip over this.")
+	else errl("I don't think that was a number, so we'll just skip over this.")
 
 	mut count: nat = 5
 
 	# The `loop` keyword creates an infinite loop. It will continue running forever, unless you stop it yourself or add code to break out of the loop.
 	loop
-		outl!("This will print forever!")
+		outl("This will print forever!")
 		count -= 1
 		if count == 0 then:
-			outl!("Okay forever sounds boring, let's stop.")
+			outl("Okay forever sounds boring, let's stop.")
 			break
 		end
 	end
@@ -158,7 +158,7 @@ pub func main() do
 	# `while` will loop while some condition is true.
 	count = 10
 	while count != 0 do
-		outl!("One hop this time!")
+		outl("One hop this time!")
 		count -= 1
 	end
 
@@ -166,36 +166,36 @@ pub func main() do
 	count = 10
 	loop
 		if not count != 0 then break # `if count == 0 then break` would be more concise, but this line is more clear as to how `while` works.
-		outl!("One hop this time!")
+		outl("One hop this time!")
 		count -= 1
 	end
 
 	# `until` is like while, but it loops until some condition is true
 	count = 10
 	until count == 0 do
-		outl!("!emit siht poh enO") # "One hop this time!" but reversed
+		outl("!emit siht poh enO") # "One hop this time!" but reversed
 		count -= 1
 	end
 
 	# It's equivalent to the following simple loop:
 	count = 10
 	loop
-		outl!("!emit siht poh enO")
+		outl("!emit siht poh enO")
 		count -= 1
 		if count == 0 then break
 	end
 
 	# A `for` loop is used for looping through the members of some collection. The `while` loop above can be simplified to the following one-line `for` loop.
-	for _ in 0..10 do outl!("One hop this time!")
+	for _ in 0..10 do outl("One hop this time!")
 
 	# To be more clear, the above `for` loop is exactly equivalent to the following `while` loop:
 	mut range := 0..10
-	while range.next() is Some(_) do outl!("One hop this time!")
+	while range.next() is Some _ do outl("One hop this time!")
 
 	# And is therefore equivalent to the following simple loop:
 	range = 0..10
 	loop
-		if range.next() is Some(_) then outl!("One hop this time!")
+		if range.next() is Some _ then outl("One hop this time!")
 		else break
 	end
 end
@@ -205,12 +205,12 @@ end
 
 ```rouge
 # The most basic function takes no arguments and returns nothing.
-func do_something() do outl!("Did something!")
+func do_something() do outl("Did something!")
 
 # Sometimes you want to pass data into a function. For this, you need to specify what arguments you want.
 func double_it(number: flo) do
 	doubled: flo = number * 2
-	outl!("{} doubled is {}", number, doubled)
+	outl("{} doubled is {}", number, doubled)
 end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
@@ -237,15 +237,15 @@ end
 pub func main() do
 	do_something()
 	double_it(42.0)
-	outl!("{}", multiply_case(999, 6.9))
-	outl!("{}! = {}", 8, factorial(8))
+	outl("\{multiply_case(999, 6.9)}")
+	outl("\{8}! = \{factorial(8)}")
 
 	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
 	mut test_num: nat = 64
 	closure := () do
 		old_test_num: nat = test_num
 		test_num *= 2
-		outl!("{}", old_test_num)
+		outl("\{old_test_num}")
 	end
 
 	closure()
@@ -281,7 +281,7 @@ type Person is name: str & age: nat
 type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
 
 # Variants of a type can hold data.
-type Option<T> is None or Some is T
+type Option<T> is None or Some T
 
 # Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
 type Vec3 is
@@ -346,7 +346,7 @@ pub func main() do
 	me := Person:new("Ashton", 22)
 
 	# Calling a method on a class is done using dot syntax.
-	outl!("{} is {} years old.", me.name, me.age)
+	outl("\{me.name} is \{me.age} years old.")
 
 	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
 	#me.birthay()
