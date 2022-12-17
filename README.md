@@ -215,7 +215,7 @@ end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
 # The `return` keyword is used to return data from a function.
-func multiply_case(case: int, number: flo): flo do
+func multiply_case(case: int, number: flo) -> flo do
 	if case is
 		0..10 then return number * 2
 		10..100 then return number * 3
@@ -227,7 +227,7 @@ func multiply_case(case: int, number: flo): flo do
 end
 
 # Functions can call themselves. This is called recursion.
-func factorial(number: int): int do
+func factorial(number: int) -> int do
 	if number == 2 then return number # optimization: short-circuiting the base case, look it up on the Wikipedia page for recursion
 
 	return number * factorial(number - 1)
@@ -260,7 +260,7 @@ end
 type MessageList = [str]
 
 # Similarly, there are some situations where a function alias may be useful - particularly when dealing with functions on types, where multiple names for a function might make sense, or you want to implement a trait where you might already have a suitable function elsewhere. These are handled similarly to type aliases, but with the `func` keyword.
-func triple(number: flo): flo = multiply_case(16, number)
+func triple(number: flo) -> flo = multiply_case(16, number)
 ```
 
 ### Custom Types
@@ -281,7 +281,7 @@ type Person is name: str & age: nat
 type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
 
 # Variants of a type can hold data.
-type Option<T> is None or Some T
+type Option<T> is None | Some T
 
 # Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
 type Vec3 is
@@ -314,12 +314,12 @@ type Person is
 	age: nat
 
 	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
-	pub func new(name: str, age: nat): Person do return Person { name, age }
+	pub func new(name: str, age: nat) -> Person do Person { name, age }
 
 	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
-	pub func name(self): str do return self.name
+	pub func name(self) -> str do self.name
 
-	pub func age(self): nat do return self.age
+	pub func age(self) -> nat do self.age
 
 	# Methods which modify an instance's data must specify as such, and can't be called on immutable instances of the type.
 	pub func birthday(mut self) do self.age += 1
@@ -333,17 +333,17 @@ impl for Person is
 	# Types may be associated with other types. Nesting types like this is useful in some situations.
 	pub type LifeStage is
 		Infant
-		or Toddler
-		or Child
-		or Teenager
-		or Adult
-		or Elder
+		Toddler
+		Child
+		Teenager
+		Adult
+		Elder
 	end
 end
 
 pub func main() do
 	# Calling an associated function, such as our constructor, is done using colon syntax.
-	me := Person:new("Ashton", 22)
+	me := Person::new("Ashton", 22)
 
 	# Calling a method on a class is done using dot syntax.
 	outl("\{me.name} is \{me.age} years old.")
@@ -351,13 +351,13 @@ pub func main() do
 	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
 	#me.birthay()
 
-	mut you := Person:new("Your Name Here", 42)
+	mut you := Person::new("Your Name Here", 42)
 	# Now we can run the birthday method without raising any errors.
 	you.birthday()
 
 	# Dealing with nested types is also handled through colon syntax.
 	# Tengentially, accessing the variants of a type is also handled through colon syntax.
-	stage := Person:LifeStage:Adult
+	stage := Person::LifeStage::Adult
 end
 ```
 
@@ -367,18 +367,18 @@ end
 # A generic type, or simply generic for short, is essentially a placeholder for a type.
 # When used with functions, generic types allow a function to handle multiple different types without having to redefine the function over and over again.
 # A function's 'generic arguments' are defined in angle brackets.
-func largest<T>(list: [T]): T do
+func largest<T>(list: [T]) -> T do
 	mut largest := list[0]
 	for item in list do
 		if item > largest then largest = item
 	end
-	return largest
+	largest
 end
 
 # Types can also have generic arguments, which is useful for container or wrapper types.
 type TaggedBox<T> is
 	contents: T
-	and tags: [str: str]
+	tags: [str: str]
 end
 ```
 

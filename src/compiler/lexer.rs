@@ -48,7 +48,6 @@ pub(crate) struct Token {
 /// Tokens!
 #[derive(Logos, Clone, Debug, PartialEq)]
 pub(crate) enum TokenInner {
-	
 	/// Literal values.
 	#[regex(r"'(?:[^']|\\')'", Lit::utf_char)]
 	#[regex(r#""(?:[^"]|\\")*""#, Lit::utf_str)]
@@ -61,15 +60,12 @@ pub(crate) enum TokenInner {
 	#[regex(r"[+-]?[0-9][_0-9]*(.[0-9][_0-9]*)?((E|e)[0-9][_0-9]*)?", Lit::dec)]
 	#[regex(r"[+-]?0(X|x)[0-9a-fA-F][_0-9a-fA-F]*", Lit::hex)]
 	Literal(Lit),
-
 	/// Symbols and special characters.
 	#[regex(r"[\p{Punctuation}\n]", Op::new)]
 	Operator(Op),
-
 	/// Keywords... and identifiers.
 	#[regex(r"\p{XID_Start}\p{XID_Continue}*", Word::new)]
 	Keyword(Word),
-	
 	/// The obligatory error variant.
 	#[error]
 	#[regex(r"[ \t\r\f]+", logos::skip)]
@@ -79,25 +75,18 @@ pub(crate) enum TokenInner {
 /// Literal values
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Lit {
-	
 	/// UTF-8 character literal, 'x'
 	UTFCharacter(char),
-	
 	/// UTF-8 string literal, "x" or r#"x"#r
 	UTFString(String),
-	
 	/// Byte character literal, b'x'b
 	ByteCharacter(u8),
-
 	/// Byte string literal, b"x"b or br#"x"#rb
 	ByteString(Vec<u8>),
-	
 	/// Unsigned integer, in decimal/hexadecimal/octal/binary
 	UnsignedInteger(u64),
-	
 	/// Signed integer, in decimal/hexadecimal/octal/binary
 	SignedInteger(i64),
-	
 	/// Floating point number, in decimal.
 	Float(f64),
 }
@@ -281,7 +270,6 @@ pub(crate) enum Word {
 
 /// Errors that can occur while lexing.
 #[derive(Clone, Debug)]
-#[repr(u8)]
 pub enum LexError {
 	/// The token is invalid, plain and simple.
 	/// 
@@ -289,13 +277,10 @@ pub enum LexError {
 	/// Logos, the crate being used to implement the lexer, doesn't really let you put data in the Error variant of your Token enum.
 	/// This limits how good the error reporting can be, and I would like to look into getting this situation improved.
 	InvalidToken,
-
 	/// The lexer tried to parse this text as a number literal, but failed.
 	NumberParseFail,
-
 	/// The lexer tried to parse this text as a character, byte, string, or byte string literal, but it encountered an escape sequence it didn't recognize.
 	UnknownEscapeSequence,
-
 	/// The lexer tried to parse this text as a character, byte, string, or byte string literal, but it encountered a malformed ASCII/Byte or Unicode escape sequence.
 	InvalidEscapeSequence,
 }

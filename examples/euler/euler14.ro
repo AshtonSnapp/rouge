@@ -2,7 +2,7 @@
 
 use std:cmp:Ordering
 
-func generate_collatz_chain(num: nat): [nat] do
+func generate_collatz_chain(num: nat) -> [nat] do
 	mut chain := [num]
 
 	loop

@@ -1,6 +1,6 @@
 # https://projecteuler.net/problem=2
 
-func fibonacci(one: nat, two: nat, max: nat): [nat] do
+func fibonacci(one: nat, two: nat, max: nat) -> [nat] do
 	mut sequence := [one, two]
 
 	loop

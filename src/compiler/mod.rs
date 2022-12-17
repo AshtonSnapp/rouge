@@ -21,7 +21,6 @@ use crate::Error;
 //--> Enums <--
 
 #[derive(Clone, Debug)]
-#[repr(u8)]
 pub enum InterpretError {
 	Lex(LexError),
 	Parse(ParseError),

@@ -46,14 +46,12 @@ pub type ErrorList = Vec<Error>;
 //--> Structs <--
 
 /// The Rouge runtime itself.
-#[repr(C)]
 pub struct Runtime {}
 
 /// Contains information about some kind of error that occurred while trying to run a program.
 /// 
 /// The expectation is that programs embeding the runtime will use the information contained to generate error messages.
 /// However, for prototyping (or laziness), the Display trait is implemented to automatically generate error messages for you.
-#[repr(C)]
 #[derive(Debug)]
 pub struct Error {
 	is_warning: bool,
@@ -65,11 +63,9 @@ pub struct Error {
 }
 
 /// A callable handle to a Rouge function.
-#[repr(C)]
 pub struct Handle {}
 
 /// A reference to an object within Rouge's heap.
-#[repr(C)]
 pub struct Reference {}
 
 //--> Enums <--
@@ -82,10 +78,6 @@ pub struct Reference {}
 ///  - Loading errors, which can occur when trying to load a bytecode file.
 ///  - I/O errors, which can occur when the runtime tries to load a file containing either source code (for interpretation or compilation) or bytecode.
 ///  - Runtime errors, which occur when something goes wrong while code is trying to run.
-/// 
-/// For embedders developing in a non-Rust programming language, treat this like a tagged union if at all possible.
-/// If that is not possible, you are up a creek without a paddle as far as I can see.
-#[repr(u8)]
 #[derive(Clone, Debug)]
 pub enum ErrorKind {
 	Interpret(InterpretError),
@@ -96,7 +88,6 @@ pub enum ErrorKind {
 }
 
 /// An enum representing different data types.
-#[repr(u8)]
 pub enum DataType {
 	/// Indicates a byte value (Rust `u8`, C/C++ `unsigned char` or `uint8_t`)
 	Byte,
@@ -127,8 +118,7 @@ pub enum DataType {
 		return_type: Box<DataType>
 	},
 	/// Indicates an object reference.
-	/// The exact type referenced is specified via a C-compatible (null-terminated) UTF-8 string.
-	Reference(CString),
+	Reference(String),
 }
 
 enum Data {
@@ -151,12 +141,10 @@ enum Data {
 impl Runtime {
 	/// The semantic version of the Rouge runtime, as a tuple.
 	pub const ROUGE_VERSION_TUPLE: (u8, u8, u8) = (0, 1, 0);
-	/// A human-friendly string representatino of the version.
-	/// C/C++ programs may be able to treat this string as a standard C-style string by ignoring the pre-pended length.
-	pub const ROUGE_VERSION_STRING: &'static str = "0.1.0\0";
+	/// A human-friendly string representation of the version.
+	pub const ROUGE_VERSION_STRING: &'static str = "0.1.0";
 	
-	#[no_mangle]
-	pub extern "C" fn new() -> Runtime {
+	pub fn new() -> Runtime {
 		Runtime {}
 	}
 }
@@ -166,57 +154,45 @@ impl Error {
 	pub(crate) fn new(is_warning: bool, file: Option<&Path>, line: Option<usize>, span: Option<Span>, slice: Option<&str>, kind: ErrorKind) -> Error {
 		Error {
 			is_warning,
-			file: match file {
-				Some(p) => Some(PathBuf::from(p)),
-				None => None
-			},
+			file: file.map(|path| path.to_path_buf()),
 			line,
 			span,
-			slice: match slice {
-				Some(s) => Some(String::from(s)),
-				None => None
-			},
+			slice: slice.map(|source| source.to_string()),
 			kind
 		}
 	}
 
 	/// Indicates whether this is a full-on error, or a simple warning.
-	#[no_mangle]
-	pub extern "C" fn is_warning(&self) -> bool {
+	pub fn is_warning(&self) -> bool {
 		self.is_warning
 	}
 
 	/// Indicates where the error came from.
 	/// A return value of None indicates the error came from the REPL.
-	#[no_mangle]
-	pub extern "C" fn file(&self) -> Option<PathBuf> {
+	pub fn file(&self) -> Option<PathBuf> {
 		self.file.clone()
 	}
 
 	/// Indicates what line the error came from.
 	/// A return value of None indicates that this error applies to the entire file.
-	#[no_mangle]
-	pub extern "C" fn line(&self) -> Option<usize> {
+	pub fn line(&self) -> Option<usize> {
 		self.line
 	}
 
 	/// Indicates what characters generated the error.
 	/// A return value of None indicates the error applies to the entire line (or file if a line number is unspecified).
-	#[no_mangle]
-	pub extern "C" fn span(&self) -> Option<Span> {
+	pub fn span(&self) -> Option<Span> {
 		self.span.clone()
 	}
 
 	/// Contains the text that generated the error.
 	/// A return value of None indicates the error doesn't apply to a specific string of text.
-	#[no_mangle]
-	pub extern "C" fn slice(&self) -> Option<String> {
+	pub fn slice(&self) -> Option<String> {
 		self.slice.clone()
 	}
 
 	/// Returns the kind of error that occurred.
-	#[no_mangle]
-	pub extern "C" fn kind(&self) -> ErrorKind {
+	pub fn kind(&self) -> ErrorKind {
 		self.kind.clone()
 	}
 }
