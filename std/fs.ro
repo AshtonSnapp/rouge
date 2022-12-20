@@ -1,0 +1,13 @@
+use self::io
+
+pub effect Fs is
+end
+
+pub type Path is
+end
+
+pub type File is
+end
+
+pub type Dir is
+end

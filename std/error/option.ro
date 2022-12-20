@@ -1,0 +1,15 @@
+use super::[
+	Error
+	Exn
+]
+
+use self::ops::Bind
+
+pub type UnexpectedNone is str
+
+pub type UnwrappedNone is ()
+
+pub type Option<T> is
+	none
+	some T
+end

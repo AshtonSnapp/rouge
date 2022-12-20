@@ -1,0 +1,10 @@
+pub use result::*
+pub use option::*
+
+pub trait Error: Display is
+	func source(self) -> Option<Error> do none
+end
+
+pub effect Exn<E: Error = Error> is
+	func throw(err: E) -> !
+end

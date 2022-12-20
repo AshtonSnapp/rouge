@@ -1,0 +1,23 @@
+use super::[
+	Error
+	Exn
+]
+
+use self::ops::Bind
+
+pub type Unexpected<E: Error> is
+	msg: str
+	err: E
+end
+
+pub type UnexpectedValue<T> is
+	msg: str
+	val: T
+end
+
+pub type UnwrappedValue<T> is T
+
+pub type Result<T, E: Error> is
+	ok T
+	err E
+end

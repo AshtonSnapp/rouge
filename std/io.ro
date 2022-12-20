@@ -1,0 +1,120 @@
+use std::error
+
+pub type Result<T> = error::Result<T, Error>
+
+pub type Error is
+	pub type Kind is
+		notFound
+		permissionDenied
+		connectionRefused
+		connectionReset
+		hostUnreachable
+		networkUnreachable
+		connectionAborted
+		notConnected
+		addressInUse
+		addressNotAvailable
+		networkDown
+		brokenPipe
+		alreadyExists
+		wouldBlock
+		notADirectory
+		isADirectory
+		directoryNotEmpty
+		readOnlyFilesystem
+		filesystemLoop
+		staleNetworkFileHandle
+		invalidInput
+		invalidData
+		timedOut
+		writeZero
+		storageFull
+		notSeekable
+		filesystemQuotaExceeded
+		fileTooLarge
+		resourceBusy
+		executableFileBusy
+		deadlock
+		crossesDevices
+		tooManyLinks
+		invalidFilename
+		argumentListTooLong
+		interrupted
+		unsupported
+		unexpectedEof
+		outOfMemory
+		other
+	end
+
+	kind: Kind
+	error: error::Error
+end
+
+impl error::Error for Error is
+	func source(self) -> Option<Error> do some self.error
+end
+
+pub effect Io = {Read, Seek, Write}
+
+pub effect trait Read is
+	func read_bytes(mut self, count: nat) -> Result<[byte]>
+	func read_bytes_until(mut self, stop: byte) -> Result<[byte]>
+	func read_all_bytes(mut self) -> Result<[byte]>
+	func read_bytes_split(mut self, delimiter: byte) -> Result<[[byte]]>
+
+	func read_chars(mut self, count: nat) -> Result<str>
+	func read_chars_until(mut self, stop: char) -> Result<str>
+	func read_all_chars(mut self) -> Result<str>
+	func read_chars_split(mut self, delimiter: char) -> Result<[str]>
+end
+
+pub effect trait Seek is
+	func seek_bytes(mut self, offset: int) -> Result<nat>
+	func goto_byte(mut self, pos: nat) -> Result<()>
+	func len_bytes(mut self) -> Result<nat>
+	func current_byte(mut self) -> Result<nat>
+
+	func seek_chars(mut self, offset: int) -> Result<nat>
+	func goto_char(mut self, pos: nat) -> Result<()>
+	func len_chars(mut self) -> Result<nat>
+	func current_char(mut self) -> Result<nat>
+end
+
+pub effect trait Write is
+	func write_bytes(mut self, data: [byte]) -> Result<nat>
+	
+	func write_chars(mut self, data: str) -> Result<nat>
+
+	func flush(mut self) -> Result<()>
+end
+
+pub type Stdout
+impl Write for Stdout
+
+pub type Stderr
+impl Write for Stderr
+
+pub type Stdin
+impl Read for Stdin
+
+pub func out(msg: str) {Write<Stdout>} do _ := Stdout.write_chars(msg)
+
+pub func outl(msg: str) {Write<Stdout>} do _ := Stdout.write_chars("\{msg}\n")
+
+pub func err(msg: str) {Write<Stderr>} do _ := Stderr.write_chars(msg)
+
+pub func errl(msg: str) {Write<Stderr>} do _ := Stderr.write_chars("\{msg}\n")
+
+pub func in() -> Result<str> {Read<Stdin>} do Stdin.read_chars(1)
+
+pub func inl() -> Result<str> {Read<Stdin>} do Stdin.read_chars_until('\n')
+
+pub func prompt(msg: str) -> Result<str> {Write<Stdout>, Read<Stdin>} do
+	_ := Stdout.write_chars(msg)
+	Stdin.read_chars(1)
+end
+
+pub func promptl(msg: str) -> Result<str> {Write<Stdout>, Read<Stdin>} do
+	_ := Stdout.write_chars(msg)
+	Stdin.read_chars_until('\n')
+end
