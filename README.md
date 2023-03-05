@@ -1,6 +1,6 @@
 ![Rouge Logo](./rouge.svg)
 
-# Rouge
+# Rouge (Work in Progress)
 
 [![Rust Continuous Integration](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml/badge.svg)](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml)
 
@@ -188,16 +188,8 @@ pub func main() do
 	# A `for` loop is used for looping through the members of some collection. The `while` loop above can be simplified to the following one-line `for` loop.
 	for _ in 0..10 do outl("One hop this time!")
 
-	# To be more clear, the above `for` loop is exactly equivalent to the following `while` loop:
-	mut range := 0..10
-	while range.next() is Some _ do outl("One hop this time!")
-
-	# And is therefore equivalent to the following simple loop:
-	range = 0..10
-	loop
-		if range.next() is Some _ then outl("One hop this time!")
-		else break
-	end
+	# However, the way this actually works involves effects - something we'll discuss in more detail later. So a for loop desugars into the following:
+	when Yield::yield(_) do outl("One hop this time!") in (0..10).iter()
 end
 ```
 
@@ -214,7 +206,7 @@ func double_it(number: flo) do
 end
 
 # And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
-# The `return` keyword is used to return data from a function.
+# The `return` keyword is used to return data from a function. It is optional if the last line in a block is what is being returned.
 func multiply_case(case: int, number: flo) -> flo do
 	if case is
 		0..10 then return number * 2
@@ -272,13 +264,13 @@ func triple(number: flo) -> flo = multiply_case(16, number)
 type Empty
 
 # Most custom data types will actually contain data though. In the simplest cases, you just list out the types of the different fields of your custom type within parentheses. These are called tuple-like types.
-type Vec2 is flo and flo # & is also valid instead of and
+type Vec2 is flo, flo
 
 # Other times, you'll want to give a name to each field. These are called record-like types.
-type Person is name: str & age: nat
+type Person is name: str, age: nat
 
 # And sometimes, you'll want a data type that can be in different states. These are called variant types, and their states are called variants.
-type CardSuit is Spades or Hearts or Clubs or Diamonds # | is also valid instead of or
+type CardSuit is Spades | Hearts | Clubs | Diamonds
 
 # Variants of a type can hold data.
 type Option<T> is None | Some T
@@ -286,22 +278,22 @@ type Option<T> is None | Some T
 # Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
 type Vec3 is
 	flo
-	and flo
-	and flo
+	flo
+	flo
 end
 
 type Student is
 	name: str
-	and year: nat
-	and grades: [str: flo]
+	year: nat
+	grades: [str: flo]
 end
 
 type Element is
-	Fire
-	or Water
-	or Grass
-	or Electric
-	or Wind
+	| Fire
+	| Water
+	| Grass
+	| Electric
+	| Wind
 end
 ```
 
@@ -332,12 +324,12 @@ impl for Person is
 
 	# Types may be associated with other types. Nesting types like this is useful in some situations.
 	pub type LifeStage is
-		Infant
-		Toddler
-		Child
-		Teenager
-		Adult
-		Elder
+		| Infant
+		| Toddler
+		| Child
+		| Teenager
+		| Adult
+		| Elder
 	end
 end
 
@@ -403,34 +395,35 @@ impl Drawable for Button is
 end
 ```
 
-### Type Inlining
+### Effects
 
 ```rouge
-type Vec3 is
-	x: flo
-	y: flo
-	z: flo
+# Effects are one of many ways to extend the capabilities of Rouge. They are a basic way to pass information between functions and the runtime.
+
+# A simple effect you might already be familiar with is exceptions, implemented in Rouge as Exn.
+effect Exn<E: Error = Error> is
+	# Effects define operations, essentially fake functions that pass data up (and possibly down) the call stack.
+	# In this case, the throw operation only goes one way (represented by the never / ! return type).
+	# Exceptions that are thrown can be caught, but they cannot be returned.
+	func throw(err: E) -> !
 end
 
-type Quat is
-	x: flo
-	y: flo
-	z: flo
-	w: flo
+# A function is marked with what effects it might perform using the -< operator.
+# Since Exn's generic type has a default type (after the = operator), it doesn't need to be stated unless you want to be specific.
+func might_fail(fail: bool) -> nat -< Exn do
+	if fail then Exn::throw("oops!")
+	
+	42
 end
 
-type Transform3 is
-	translation: Vec3
-	rotation: Quat
-	scale: Vec3
-end
+pub func main() do
+	# Effects can be handled before they reach the runtime, via the use of a when block.
+	# Ones like this apply to any code that runs after they are defined.
+	when Exn::throw(err) do
+		errl("\{err}")
+	end
 
-# Types can be inlined into other types. This takes all of that type's fields and associated items, and copies them over into the new type.
-# Any associated items of the new type take precedence over those of the type being inlined.
-# If multiple types are being inlined and a conflict occurs, the last type inlined in the code takes precedence.
-type Entity is
-	inline Transform3
-	health: flo
-	max_health: flo
+	might_fail(false)
+	might_fail(true)
 end
 ```
