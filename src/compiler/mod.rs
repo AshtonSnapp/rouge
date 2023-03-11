@@ -9,7 +9,6 @@ use std::{
 };
 
 use lexer::{
-	Token,
 	TokenStream,
 };
 
@@ -40,8 +39,8 @@ pub fn compile(paths: Vec<&Path>) {
 	let mut tok_files: HashMap<&Path, TokenStream> = HashMap::new();
 
 	for file_path in paths.iter().filter(|p| p.is_file()) {
-		match Token::lex_file(file_path) {
-			Ok(t) => if !t.is_empty() {
+		match TokenStream::lex_file(file_path) {
+			Ok(t) => if !t.0.is_empty() {
 				tok_files.insert(file_path, t);
 			},
 			Err(e) => {

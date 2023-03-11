@@ -57,15 +57,15 @@ end
 pub effect Io = {Read, Seek, Write}
 
 pub effect trait Read is
-	func read_bytes(mut self, count: nat) -> Result<[byte]>
-	func read_bytes_until(mut self, stop: byte) -> Result<[byte]>
-	func read_all_bytes(mut self) -> Result<[byte]>
-	func read_bytes_split(mut self, delimiter: byte) -> Result<[[byte]]>
+	func read_bytes(self, count: nat) -> Result<[byte]>
+	func read_bytes_until(self, stop: byte) -> Result<[byte]>
+	func read_all_bytes(self) -> Result<[byte]>
+	func read_bytes_split(self, delimiter: byte) -> Result<[[byte]]>
 
-	func read_chars(mut self, count: nat) -> Result<str>
-	func read_chars_until(mut self, stop: char) -> Result<str>
-	func read_all_chars(mut self) -> Result<str>
-	func read_chars_split(mut self, delimiter: char) -> Result<[str]>
+	func read_chars(self, count: nat) -> Result<str>
+	func read_chars_until(self, stop: char) -> Result<str>
+	func read_all_chars(self) -> Result<str>
+	func read_chars_split(self, delimiter: char) -> Result<[str]>
 end
 
 pub effect trait Seek is
@@ -87,6 +87,8 @@ pub effect trait Write is
 
 	func flush(mut self) -> Result<()>
 end
+
+pub effect Console = {Write<Stdout>, Write<Stderr>, Read<Stdin>}
 
 pub type Stdout
 impl Write for Stdout

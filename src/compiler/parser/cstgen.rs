@@ -10,9 +10,6 @@ use crate::{
 			Token,
 			TokenInner,
 			TokenStream,
-			Lit,
-			Op,
-			Word,
 		}
 	},
 };
@@ -51,7 +48,7 @@ pub(crate) struct ConcreteSyntaxNode {
 
 impl ConcreteSyntaxTree {
 	pub(crate) fn new(path: &Path, mut tokens: TokenStream) -> Result {
-		if tokens.is_empty() {
+		if tokens.0.is_empty() {
 			return Err(vec![
 				// TODO: I should probably simplify how ErrorKind works. Nesting enums seemed like a good idea at first, but not any more...
 				Error::new(false, Some(path), None, None, None, ErrorKind::Interpret(InterpretError::Parse(ParseError::NoTokens)))
@@ -62,18 +59,18 @@ impl ConcreteSyntaxTree {
 		let mut errors = ErrorList::new();
 
 		// Going to use the tokens as a stack.
-		tokens.reverse();
+		tokens.0.reverse();
 
 		let mut context = ContextStack::new();
 
 		loop {
-			let node = ConcreteSyntaxNode::new(tokens.pop().unwrap());
+			let node = ConcreteSyntaxNode::new(tokens.0.pop().unwrap());
 
 			// TODO: How the fuck do I write a parser????
 
 			context.push(node);
 
-			if tokens.is_empty() { break; }
+			if tokens.0.is_empty() { break; }
 		}
 
 		if errors.is_empty() || errors.iter().all(|e| e.is_warning()) {

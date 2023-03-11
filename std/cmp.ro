@@ -1,0 +1,36 @@
+pub trait PartialEq<Rhs = Self> is
+	func eq(self, other: Rhs) -> bool
+
+	func ne(self, other: Rhs) -> bool do not self.eq(other)
+end
+
+pub trait Eq: PartialEq<Self>
+
+pub type Ordering is
+	less
+	equal
+	greater
+end
+
+pub trait PartialOrd<Rhs = Self>: PartialEq<Rhs> is
+	func partial_cmp(self, other: Rhs) -> Option<Ordering>
+
+	func lt(self, other: Rhs) -> bool do if self.partial_cmp(other) is Ordering::Less then true else false
+	func gt(self, other: Rhs) -> bool do if self.partial_cmp(other) is Ordering::Greater then true else false
+	func le(self, other: Rhs) -> bool do not self.gt(other)
+	func ge(self, other: Rhs) -> bool do not self.lt(other)
+end
+
+pub trait Ord: Eq + PartialOrd<Self> is
+	func cmp(self, other: Self) -> Ordering
+
+	func max(self, other: Self) -> Self do if self.cmp(other) is Ordering::greater then self else other
+	func min(self, other: Self) -> Self do if self.cmp(other) is Ordering::greater then other else self
+	func clamp(self, min: Self, max: Self) -> Self {Exn<AssertFailure>} do
+		assert(min <= max)
+
+		if self < min then min
+		elif self > max then max
+		else self
+	end
+end

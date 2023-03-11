@@ -1,6 +1,7 @@
 use super::[
 	Error
 	Exn
+	Option
 ]
 
 use self::ops::Bind
@@ -18,6 +19,123 @@ end
 pub type UnwrappedValue<T> is T
 
 pub type Result<T, E: Error> is
-	ok T
-	err E
+	Ok(T)
+	Err(E)
+
+	pub func wrap(f: func() -> T -< Exn<E>) -> Result<T, E> do
+		when Exn::throw(e) do
+			Err(e)
+		end
+
+		Ok(f(t))
+	end
+
+	pub func ok(self) -> Option<T> do if self is Ok(t) then Option::Some(t) else Option::none
+	
+	pub const func is_ok(self) -> bool do if self is Ok(_) then true else false
+
+	pub func is_ok_and(self, f: func(T) -> bool) -> bool do if self is Ok(t) then f(t) else false
+
+	pub func map<U>(self, f: func(T) -> U) -> Result<U, E> do if self is
+		Ok(t) then ok f(t)
+		Err(e) then err e
+	end
+
+	pub func map_or<U>(self, default: U, f: func(T) -> U) -> U do if self is
+		Ok(t) then f(t)
+		Err(_) then default
+	end
+
+	pub func map_or_else<U>(self, default: func(E) -> U, f: func(T) -> U) -> U do if self is
+		Ok(t) then f(t)
+		Err(e) then default(e)
+	end
+
+	pub func and<U>(self, res: Result<U, E>) -> Result<U, E> do if self is
+		Ok(_) then res
+		Err(e) then Err(e)
+	end
+
+	pub func and_then<U>(self, f: func(T) -> Result<U, E>) -> Result<U, E> do if self is
+		Ok(t) then f(t)
+		Err(e) then Err(e)
+	end
+
+	pub func inspect(self, f: func(T)) -> Result<T, E> do
+		if self is Ok(t) then f(t)
+
+		self
+	end
+
+	pub func expect(self, msg: str) -> T -< Exn<Unexpected<E>> do if self is
+		Ok(t) then t
+		Err(e) then throw(Unexpected(msg, err: e))
+	end
+	
+	pub func unwrap(self) -> T -< Exn<E> do if self is
+		Ok(t) then t
+		Err(e) then throw(e)
+	end
+
+	pub func unwrap_or(self, default: T) -> T do if self is
+		Ok(t) then t
+		Err(_) then default
+	end
+
+	pub func unwrap_or_else(self, f: func(E) -> T) -> T do if self is
+		Ok(t) then t
+		Err(e) then f(e)
+	end
+
+	pub const func is_err(self) -> bool do if self is Err(_) then true else false
+
+	pub func is_err_and(self, f: func(E) -> bool) -> bool do if self is Err(e) then f(e) else false
+
+	pub func err(self) -> Option<E> do if self is Err(e) then Option::Some(e) else Option::None
+
+	pub func map_err<F>(self, f: func(E) -> F) -> Result<T, F> do if self is
+		Ok(t) then Ok(t)
+		Err(e) then Err(f(e))
+	end
+
+	pub func inspect_err(self, f: func(E)) -> Result<T, E> do
+		if self is Err(e) then f(e)
+
+		self
+	end
+
+	pub func or<F>(self, res: Result<T, F>) -> Result<T, F> do if self is
+		Ok(t) then Ok(t)
+		Err(_) then res
+	end
+
+	pub func or_else<F>(self, f: func(E) -> Result<T, F>) -> Result<T, F> do if self is
+		Ok(t) then Ok(t)
+		Err(e) then f(e)
+	end
+
+	pub func expect_err(self, msg: str) -> E -< Exn<UnexpectedValue<T>> do if self is
+		Ok(t) then throw(UnexpectedValue { msg, val: t })
+		Err(e) then e
+	end
+
+	pub func unwrap_err(self) -> E -< Exn<UnwrappedValue<T>> do if self is
+		Ok(t) then throw(UnwrappedValue(t))
+		Err(e) then e
+	end
+end
+
+impl Result<T: Default, E> is
+	pub func unwrap_or_default(self) -> T do if self is
+		Ok(t) then t
+		Err(_) then T::default()
+	end
+end
+
+impl Bind<T> for Result<T, E> is
+	func bind(self, f: func(T) -> T) -> Result<T, E> = map<T>(self, f)
+end
+
+impl Bind<T, U> for Result<T, E> is
+	func bind(self, f: func(T) -> U) -> Result<U, E> = map<U>(self, f)
 end
