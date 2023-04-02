@@ -7,8 +7,8 @@ func factorial(n: nat) -> nat do
 end
 
 pub func main() do
-	if nat::from_str(prompt("Give me a positive whole number: ")) is
-		ok num then outl("\{num}! = \{factorial(num)}")
-		err _ then errl("That isn't a positive whole number!")
+	if nat::from_str(prompt("Give me a positive whole number: ")) matches
+		Ok(num) then outl("\{num}! = \{factorial(num)}")
+		Err(_) then errl("That isn't a positive whole number!")
 	end
 end

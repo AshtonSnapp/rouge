@@ -74,16 +74,17 @@ pub func main() do
 	hour: flo = 11.916
 
 	# A `byte` is similar to a `nat`, except it is limited to values in the range of 0 to 255. It is meant for representing binary data - bytes.
+	# A special literal can be used to represent a byte value.
 	meaning_of_life: byte = b'*'
 
 	# A `bool` holds a true or false value.
 	is_finished: bool = false
 
-	# A `char` holds any single Unicode scalar value. This may not exactly match your view of what a character is at any given time - some things that appear as a single character are actually multiple. It's weird.
+	# A `char` holds any single Unicode scalar value. This may not exactly match your view of what a character is at any given time - some things that appear as a single character are actually multiple. It's weird. Unicode is weird. But it's a standard, so we use it.
 	english_favorite_vowel: char = 'ə'
 
 	# A `tuple` holds some set of related information.
-	position: (float, float) = (1.0, 2.0)
+	position: (flo, flo) = (1.0, 2.0)
 
 	# Tuple members are accessed using dot syntax with a number starting from 0.
 	outl!("{}, {}", position.0, position.1)
@@ -289,7 +290,7 @@ type Student is
 end
 
 type Element is
-	| Fire
+	| Fire # first pipe is optional but it looks weird without it
 	| Water
 	| Grass
 	| Electric

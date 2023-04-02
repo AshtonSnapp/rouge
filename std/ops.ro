@@ -1,5 +1,0 @@
-
-## The bind operator, `>=>`, used for easy handling of monadic types.
-pub trait Bind<T, U = T> is
-	func bind(self, f: func(T) -> U) -> Self
-end
