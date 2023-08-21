@@ -4,18 +4,15 @@
 
 [![Rust Continuous Integration](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml/badge.svg)](https://github.com/AshtonSnapp/rouge/actions/workflows/rust.yml)
 
-Rouge (pronounced 'rooj', like the Louisiana state capital of Baton Rouge) is a statically-typed programming language designed for two primary uses: applications (graphical and command-line), and embedding into native programs (plugins, config files). To be suitable for both use cases, Rouge aims to have the following feature set:
+Rouge (pronounced 'rooj', like the Louisiana state capital of Baton Rouge) is a statically-typed programming language being written in Rust.
 
- - A memory management model that aims to be intuitive and fast but with at least some guarantees towards memory and thread safety.
-	- Currently considering mutable value semantics (already have `mut` keyword as a suitable substitute for `inout`, maybe add a `take` keyword as equivalent to `sink` from Val? no need for a `set` keyword though)
-	- Since user-defined types will be generally heap-allocated, looking into ways to manage said heap. And, yes, even though I'm looking at mutable value semantics, non-primitive types will be reference passed. I mean hey, Swift's `class`es are by-reference!
- - A (mostly) simple syntax. Originally it was based on a combination of Ruby, Python, and Rust, but it evolved over time.
-	- At this point it's been described by u/Uploft on Reddit as a combination of Julia, Scala, and Swift. All interesting languages. Haven't touched Swift though - I don't own a Mac (yes I know it runs on Linux too, just not as well from what I've heard).
- - Interpreted for development and use in config files, bytecode-compiled for distribution.
- - Extreme flexibility provided to the programmer.
-	- There's always a balance to be made with this stuff, obviously, but I'd rather not force everyone to code in a particular way. You have your preferences for how you like to code - Rouge should be able to adapt to you best it can instead of forcing you to adapt to it. Hopefully there'll be enough options to allow this flexibility, but not so many that every codebase is vastly different and unreadable.
+Rust is an awesome programming language, with a lot of very useful features. However, there is a steep hill to climb whenever you start learning it. It ends up being a plateau later on - steady progress instead of feeling like an uphill battle - but that initial steep climb is a big turn off for some people trying to learn it. Plus, while Rust generally manages memory automatically in a way that doesn't require a garbage collector, you still have to make a lot of decisions about memory. If you want a type to be able to contain itself, you need to put the child instances inside of `Box`es. If you want multiple ownership instead of single ownership, you need to manually wrap your types in `Rc`, or `Arc` for multithreaded situations. It gets really complicated, and for a lot of applications you really don't need or want to decide all of this yourself. Plus, due to Rust being compiled to native, it really isn't suitable for use as a scripting engine inside of another program.
 
-The custom runtime environment (RTE) for the Rouge programming language will be provided as a Rust library (and someone can probably work on making a wrapping cdylib for interfacing with other languages) for embedding, and as a standalone utility for applications. Both will simply be called `rouge` and contain everything necessary to run and compile Rouge code.
+Rouge aims to do something about both of those issues. By compiling to bytecode which is executed inside of a custom interpreter, it can be more easily embedded into another program and used for scripting, plugins, or configuration. Examples of where Rouge may be useful in this way would be programs like [Neovim](https://neovim.io) or [Awesome](https://awesomewm.org/), or a game engine like [Godot](https://godotengine.org) or [Bevy](https://bevyengine.org). And, since the interpreter would be able to run by itself, it should also be useful for writing standalone programs or scripts. Hopefully I could even write an interactive interpreter, or REPL.
+
+Of course, Rouge won't _just_ do the same things as Rust. To try and make things a bit easier, Rouge plans to adopt [mutable value semantics](https://www.jot.fm/issues/issue_2022_02/article2.pdf) as an alternative to borrow checking - references are not a language-level feature, just an implementation detail. In addition, for a number of reasons that I won't get into right now, Rouge also plans to adopt [algebraic effects](https://overreacted.io/algebraic-effects-for-the-rest-of-us/).
+
+The custom runtime environment (RTE) for the Rouge programming language will be provided as a Rust library (and someone can probably work on making a wrapping cdylib for interfacing with other languages, or even reimplement it entirely) for embedding, and as a standalone utility for applications. Both will simply be called `rouge` and contain everything necessary to run and compile Rouge code.
 
 Rouge is currently licensed under MIT.
 
@@ -60,371 +57,241 @@ end
 
 (I wanted to go with Louisiana Creole since it's an endangered language, but because it is an endangered language I haven't been able to find much in the way of resources I could use to put together a translation.)
 
-### Variables and Primitive Data Types
+### Variables and Builtin Data Types
+
+Rouge is statically typed with type inference, meaning that each variable may be of only one data type BUT the compiler can generally figure out what type it is supposed to be.
+
+If you're new to programming, think of it like this: variables are like buckets, but each bucket can only hold one kind of thing. Sometimes you need to write down what the bucket can hold, but other times the computer can figure it out for you.
+
+The _basic_ types of things your variable buckets can hold are as follows:
+
+| Type         | Description                                                                                                           |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `bool`       | True or false, short for 'boolean'                                                                                    |
+| `char`       | UTF-8 scalar, short for 'character'                                                                                   |
+| `byte`       | 8-bit unsigned integer, primarily for representing binary data                                                        |
+| `nat`        | 64-bit unsigned integer, short for 'natural'                                                                          |
+| `int`        | 64-bit signed integer, short for 'integer'                                                                            |
+| `flo`        | 64-bit floating-point number, short for 'float'                                                                       |
+| `[T]`        | Dynamically-sized list containing items of type `T`                                                                   |
+| `[T; N]`     | Statically-sized list containing `N` items of type `T`                                                                |
+| `[K: V]`     | Map between values of type `K` to values of type `V`                                                                  |
+| `str`        | A 'string' of text, equivalent to `[char]`                                                                            |
+
+To define a variable in Rouge, state its name and value separated by the walrus operator. If you're also specifying the type, split the walrus operator and place the type between the colon and equal sign.
 
 ```rouge
-pub func main() do
-	# An `int` can contain a positive or negative whole number. It is short for 'integer'.
-	year: int = 2022
-	
-	# A `nat` can only contain a positive whole number. It is short for 'natural', as in natural number.
-	day: nat = 252
-	
-	# A `flo` can contain a whole or non-whole number. It is short for 'float', as in floating-point number.
-	hour: flo = 11.916
+name := "Ashton"
+age: nat = 22
 
-	# A `byte` is similar to a `nat`, except it is limited to values in the range of 0 to 255. It is meant for representing binary data - bytes.
-	# A special literal can be used to represent a byte value.
-	meaning_of_life: byte = b'*'
+job := (
+	employer: "Banana Incorporated" # this isn't a real company as far as I know, so don't try looking to see if I'm employed there
+	title: "Developer"
+	annual_salary: 86_215
+)
+```
 
-	# A `bool` holds a true or false value.
-	is_finished: bool = false
+If you need to be able to change a variable's value (yes, variables can't be varied by default, I am aware of the irony), add the word `mut` in front of it. `mut` is short for 'mutable', which means "able to be mutated" (or, in normal people terms, "able to be changed").
 
-	# A `char` holds any single Unicode scalar value. This may not exactly match your view of what a character is at any given time - some things that appear as a single character are actually multiple. It's weird. Unicode is weird. But it's a standard, so we use it.
-	english_favorite_vowel: char = 'ə'
+```rouge
+# It makes sense for age to be mutable.
+mut age: nat = 22
 
-	# A `tuple` holds some set of related information.
-	position: (flo, flo) = (1.0, 2.0)
+age += 1 # run this line of code on August 30th :3
+```
 
-	# Tuple members are accessed using dot syntax with a number starting from 0.
-	outl!("{}, {}", position.0, position.1)
+Alternatively, if you _really_ want to make sure a value never gets changed, you can use the word `const` instead of `mut`. `const` is short for 'constant', and indicates that a variable has to have a value **before your code ever actually runs**, and this value can never be changed.
 
-	# The elements of a tuple don't have to be of the same type.
-	byte_and_char: (byte, char) = (42, '*')
-
-	# A `list` contains some unspecified number of some type of item.
-	fibonacci: [nat] = [1, 1, 2, 3, 5, 8, 13, 21, 34]
-
-	# List elements are accessed using bracket syntax with a number representing the index into the list. The index starts from 0.
-	outl("Element {} of the fibonacci sequence is {}.", 7, fibonacci[6])
-
-	# A `str` (short for 'string') is just a list of characters.
-	capital: str = "Baton Rouge"
-
-	# A list of bytes can be represented with a byte string.
-	linux_binary_magic: [byte] = b"ELF"
-
-	# A `map` allows you to use one type to get another type. The first type is called the key, the second type is the value.
-	classes: [string: float] = ["English 101": 3.0, "Calculus 101": 2.5, "Computer Science 101": 4.0]
-
-	# Map entries are accessed using bracket syntax with the key you want to get the value of.
-	outl("Your GPA in Computer Science 101 is {}", classes["Computer Science 101"])
-
-	# The `mut` keyword goes before a variable's type to specify that changing (or mutating) the variable's value in your code is allowed.
-	# Type inferrence is handled by simply omitting the type, and often includes 
-	mut my_age := 22
-	my_age += 1 # this is allowed
-	day += 2 # this is not allowed, day is not declared as mutable
-end
+```rouge
+# I doubt I'd ever change my name.
+const name := "Ashton"
 ```
 
 ### Control Flow
 
+Anything to do with the control flow is going to have the keyword `do`. But, there's a few different classes of control flow structure.
+
+#### Basic Branching
+
+Basic branching - where you check a condition to decide between two pieces of code to run - is achieved using `if`, `elif`, and `else`. If you're curious, `elif` is shorthand for `else if`. When doing basic branching, there will be exactly one `if` at the start, any number of `elif`s in the middle, and optionally an `else` at the very end. Each `if` or `elif` will take a condition, which will generally be some expression that returns a `bool`. If the condition comes out `true`, that branch's code will be ran. Otherwise, if there is a following `elif`, that branch's condition will be checked, and for an `else`, that branch will be taken. If there is no other branch to take, then we jump out of the branch expression and continue normal execution. Examples:
+
 ```rouge
-pub func main() do
-	name := prompt("What's your name? ")
-
-	# Simple control flow using `if`, `elif` (else if), and `else`.
-	if name == "Rouge" then
-		outl("Hey, that's MY name!")
-	elif name == "Ashton" then
-		outl("Isn't that the name of the guy who created me?")
-	else outl("Nice to meet you, \{name}.")
-
-	num := prompt("What's your favorite number? ")
-
-	# Using the `is` keyword, you can check if whatever's on the left matches some pattern on the right. Variables will be bound if possible.
-	if num.parse::<nat>() is Ok(n) then
-		# You can also do this using `is` - it's like a Rust `match` block. Using it like this means you have to handle any possible case - hence the else branch.
-		if n is
-			42 then outl("I see you're a fan of Douglas Adams. Did you bring a towel?")
-			0..=9 then outl("Single digit club, huh?")
-			100.. then outl("I mean, who doesn't like big numbers?")
-			else outl("Double digit club, let's goooooooooo")
-		end
-	else errl("I don't think that was a number, so we'll just skip over this.")
-
-	mut count: nat = 5
-
-	# The `loop` keyword creates an infinite loop. It will continue running forever, unless you stop it yourself or add code to break out of the loop.
-	loop
-		outl("This will print forever!")
-		count -= 1
-		if count == 0 then:
-			outl("Okay forever sounds boring, let's stop.")
-			break
-		end
-	end
-
-	# `while` will loop while some condition is true.
-	count = 10
-	while count != 0 do
-		outl("One hop this time!")
-		count -= 1
-	end
-
-	# It's equivalent to the following simple loop:
-	count = 10
-	loop
-		if not count != 0 then break # `if count == 0 then break` would be more concise, but this line is more clear as to how `while` works.
-		outl("One hop this time!")
-		count -= 1
-	end
-
-	# `until` is like while, but it loops until some condition is true
-	count = 10
-	until count == 0 do
-		outl("!emit siht poh enO") # "One hop this time!" but reversed
-		count -= 1
-	end
-
-	# It's equivalent to the following simple loop:
-	count = 10
-	loop
-		outl("!emit siht poh enO")
-		count -= 1
-		if count == 0 then break
-	end
-
-	# A `for` loop is used for looping through the members of some collection. The `while` loop above can be simplified to the following one-line `for` loop.
-	for _ in 0..10 do outl("One hop this time!")
-
-	# However, the way this actually works involves effects - something we'll discuss in more detail later. So a for loop desugars into the following:
-	when Yield::yield(_) do outl("One hop this time!") in (0..10).iter()
+if person.age >= 21 then
+	outl("You can drink alcohol.")
+elif person.age >= 18 then
+	outl("You can vote.")
+else
+	outl("You can't do anything. :<")
 end
 ```
 
-### Functions
+If you really want to, you can generalize this as follows:
+
+```
+if condition_0 then code_0 (elif condition_n then code_n)* (else code_last)?
+```
+
+And for a multi-line version, add line breaks and an `end` keyword.
+
+#### Pattern Matching
+
+There's another kind of branching - pattern matching. Here, instead of having a condition for your `if`, you have a check to see if something `matches` something else.
 
 ```rouge
-# The most basic function takes no arguments and returns nothing.
-func do_something() do outl("Did something!")
-
-# Sometimes you want to pass data into a function. For this, you need to specify what arguments you want.
-func double_it(number: flo) do
-	doubled: flo = number * 2
-	outl("{} doubled is {}", number, doubled)
-end
-
-# And you'll often want your functions to give you some data. So you'll need to specify the type of data that the function returns.
-# The `return` keyword is used to return data from a function. It is optional if the last line in a block is what is being returned.
-func multiply_case(case: int, number: flo) -> flo do
-	if case is
-		0..10 then return number * 2
-		10..100 then return number * 3
-		100..1_000 then return number * 4
-		1_000..10_000 then return number * 5
-		10_000..100_000 then return number * 6
-		else return number * 7
-	end
-end
-
-# Functions can call themselves. This is called recursion.
-func factorial(number: int) -> int do
-	if number == 2 then return number # optimization: short-circuiting the base case, look it up on the Wikipedia page for recursion
-
-	return number * factorial(number - 1)
-end
-
-# Any function named 'main' is considered an entrypoint function. The standalone version of the Rouge runtime expects this function to have no arguments, and return either nothing, an `int`, or a class that implements `Try`.
-pub func main() do
-	do_something()
-	double_it(42.0)
-	outl("\{multiply_case(999, 6.9)}")
-	outl("\{8}! = \{factorial(8)}")
-
-	# A closure is an anonymous, unnamed function (usually called a lambda in other languages) that can use variables from the environment it was defined in.
-	mut test_num: nat = 64
-	closure := () do
-		old_test_num: nat = test_num
-		test_num *= 2
-		outl("\{old_test_num}")
-	end
-
-	closure()
-	closure()
+if Fs::open("text_file.txt", Mode::Write) matches Ok(mut file) then
+	file.write_strl("This is a text file.")
 end
 ```
 
-### Aliases
+Of course, pattern matching can get a lot more complicated than that. For one, you can easily switch from matching just one pattern to matching on multiple patterns:
 
 ```rouge
-# A type alias is a way to simplify your code by assigning a name to a commonly used type, without necessarily creating a new type.
-type MessageList = [str]
-
-# Similarly, there are some situations where a function alias may be useful - particularly when dealing with functions on types, where multiple names for a function might make sense, or you want to implement a trait where you might already have a suitable function elsewhere. These are handled similarly to type aliases, but with the `func` keyword.
-func triple(number: flo) -> flo = multiply_case(16, number)
-```
-
-### Custom Types
-
-```rouge
-# Custom data types are also made using the type keyword.
-
-# The simplest custom data type is the unit-like type. These don't actually contain any data. They exist because sometimes you need to implement a trait (discussed later) but have no need for actual data for that trait to work with.
-type Empty
-
-# Most custom data types will actually contain data though. In the simplest cases, you just list out the types of the different fields of your custom type within parentheses. These are called tuple-like types.
-type Vec2 is flo, flo
-
-# Other times, you'll want to give a name to each field. These are called record-like types.
-type Person is name: str, age: nat
-
-# And sometimes, you'll want a data type that can be in different states. These are called variant types, and their states are called variants.
-type CardSuit is Spades | Hearts | Clubs | Diamonds
-
-# Variants of a type can hold data.
-type Option<T> is None | Some T
-
-# Data type definitions can be spread among multiple lines. The operators (and/&, or/|) may be omitted, but are included here.
-type Vec3 is
-	flo
-	flo
-	flo
-end
-
-type Student is
-	name: str
-	year: nat
-	grades: [str: flo]
-end
-
-type Element is
-	| Fire # first pipe is optional but it looks weird without it
-	| Water
-	| Grass
-	| Electric
-	| Wind
+if Fs::open("text_file.txt", Mode::Write) matches
+	Ok(mut file) then file.write_strl("This is a text file.")
+	Err(err) then Exn::throw(err)
 end
 ```
 
-### Associated Items on Types
+Why would you want to do this when you can just do something like `elif x matches y do`? Well, doing it this way means _you don't have to repeat the same calculation or operation over and over again._ You just do it once.
+
+As for why pattern matching uses `if` as a base, let's look at how Rust handles pattern matching. You have two options: `if let` and `match`:
+
+```rust
+if let Ok(mut file) = File::options().write(true).open("text_file.txt") {
+	writeln!(&mut file, "This is a text file.")
+}
+
+match File::options().write(true).open("text_file.txt") {
+	Ok(mut file) => writeln!(&mut file, "This is a text file."),
+	Err(err) => Err(err)
+}
+```
+
+This is kinda terrible though, since you need to do a lot of rewriting if you need to change from checking for one pattern to checking for multiple patterns. With how Rouge does it, you just need to replace the space after `matches` with a newline, and then each pattern you want to check for will be on its own line.
+
+#### Loops
+
+A loop allows you to run the same code over and over and over and - I think you get the point. There are several kinds of loops, though.
+
+The simplest kind of loop is an `always` loop. As you might guess, this is a simple loop that will never end on its own. If you want an `always` loop to end, you will need to manually `break` it, push `Ctrl+C` on your computer, turn it off, or hope the operating system kills your program. So, uh, be careful.
 
 ```rouge
-# Items may be included in a type's definition in order to associate them with that type.
-type Person is
-	name: str
-	age: nat
-
-	# Functions may be associated with a type. Regular associated functions are often used as constructors, such as here.
-	pub func new(name: str, age: nat) -> Person do Person { name, age }
-
-	# Associated functions which deal with a specific instance of a type are called methods, and take a special self argument.
-	pub func name(self) -> str do self.name
-
-	pub func age(self) -> nat do self.age
-
-	# Methods which modify an instance's data must specify as such, and can't be called on immutable instances of the type.
-	pub func birthday(mut self) do self.age += 1
-end
-
-# Further items may be associated through the use of implementation, or impl, blocks like this one.
-impl for Person is
-	# Constants may be associated with a type.
-	const AVERAGE_LIFESPAN: nat = 73
-
-	# Types may be associated with other types. Nesting types like this is useful in some situations.
-	pub type LifeStage is
-		| Infant
-		| Toddler
-		| Child
-		| Teenager
-		| Adult
-		| Elder
-	end
-end
-
-pub func main() do
-	# Calling an associated function, such as our constructor, is done using colon syntax.
-	me := Person::new("Ashton", 22)
-
-	# Calling a method on a class is done using dot syntax.
-	outl("\{me.name} is \{me.age} years old.")
-
-	# The following line is commented out as it would fail, because I defined `me` as an immutable value.
-	#me.birthay()
-
-	mut you := Person::new("Your Name Here", 42)
-	# Now we can run the birthday method without raising any errors.
-	you.birthday()
-
-	# Dealing with nested types is also handled through colon syntax.
-	# Tengentially, accessing the variants of a type is also handled through colon syntax.
-	stage := Person::LifeStage::Adult
+always do
+	outl("It is time for crazy.")
 end
 ```
 
-### Generics
+The next simplest kinds of loop both feature some sort of conditional check, similar to `if`. These are `while` and `until` loops. The difference? `while` runs its code _while_ the condition is `true`, checking the condition before running any code. Meanwhile, `until` runs its code _until_ the condition is `true`, checking the condition after running any code. So, these `while` and `until` loops:
 
 ```rouge
-# A generic type, or simply generic for short, is essentially a placeholder for a type.
-# When used with functions, generic types allow a function to handle multiple different types without having to redefine the function over and over again.
-# A function's 'generic arguments' are defined in angle brackets.
-func largest<T>(list: [T]) -> T do
-	mut largest := list[0]
-	for item in list do
-		if item > largest then largest = item
-	end
-	largest
+mut i := 10
+while i > 0 do
+	outl("i = \{i}")
+	i -= 1
 end
 
-# Types can also have generic arguments, which is useful for container or wrapper types.
-type TaggedBox<T> is
-	contents: T
-	tags: [str: str]
+until i >= 10 do
+	outl("i = \{i}")
+	i += 1
 end
 ```
 
-### Traits
+are equivalent to the following `always` loops:
 
 ```rouge
-# A trait is a way to define a set of behavior that may be implemented by multiple types.
-trait Drawable is
-	func draw(self)
+mut i := 10
+always do
+	if i > 0 then
+		outl("i = \{i})
+		i -= 1
+	else break
 end
 
-type Button is
-	label: str
-	callback: func()
-end
+always do
+	outl("i = \{i}")
+	i += 1
 
-# Traits are always implemented using impl blocks.
-impl Drawable for Button is
-	func draw(self) do
-		# -- code goes here --
-	end
+	if i >= 10 then break
 end
 ```
 
-### Effects
+The last kind of loop is a `for` loop. It is used for looping through each element of something that can be iterated over.
 
 ```rouge
-# Effects are one of many ways to extend the capabilities of Rouge. They are a basic way to pass information between functions and the runtime.
+friends := ["Chance", "Chase", "John"]
 
-# A simple effect you might already be familiar with is exceptions, implemented in Rouge as Exn.
-effect Exn<E: Error = Error> is
-	# Effects define operations, essentially fake functions that pass data up (and possibly down) the call stack.
-	# In this case, the throw operation only goes one way (represented by the never / ! return type).
-	# Exceptions that are thrown can be caught, but they cannot be returned.
-	func throw(err: E) -> !
-end
-
-# A function is marked with what effects it might perform using the -< operator.
-# Since Exn's generic type has a default type (after the = operator), it doesn't need to be stated unless you want to be specific.
-func might_fail(fail: bool) -> nat -< Exn do
-	if fail then Exn::throw("oops!")
-	
-	42
-end
-
-pub func main() do
-	# Effects can be handled before they reach the runtime, via the use of a when block.
-	# Ones like this apply to any code that runs after they are defined.
-	when Exn::throw(err) do
-		errl("\{err}")
-	end
-
-	might_fail(false)
-	might_fail(true)
+for friend in friends do
+	outl("\{friend} is my friend!")
 end
 ```
+
+Because of how iteration is implemented, `for` loops can't really be described in terms of other loops. Instead, they are described in terms of something we haven't gone over yet: an effect handler.
+
+```rouge
+friends := ["Chance", "Chase", "John"]
+
+when Yield::yield(friend) do
+	outl("\{friend} is my friend!")
+in friends.iter()
+```
+
+#### Effect Handlers
+
+Effect handlers are hard to truly explain without first explaining effects, so this might initially be confusing. If you want, you can scroll down to where effects are described and then read this afterwards. Effect handlers are structured in one of two ways.
+
+```rouge
+when Effect::operation(params) do # you don't have to indicate the effect name if you import its operations, but it is recommended to do so.
+	# ... code ...
+end
+```
+
+This creates an effect handler that handles whatever scope it is inside of. If defined at the start of a function, it handles the specified operation until the function exits. If you want to specify a specific scope for the effect handler, you can do so as follows:
+
+```rouge
+when Effect::operation(params) do
+	# ... code ...
+in
+	# ... code ...
+end
+```
+
+#### Functions
+
+A function is a clump of code that you can run whenever you want. You run it by _calling_ it, passing in any data that it needs and potentially getting data out of it.
+
+The most basic function takes nothing and gives nothing, although that doesn't necessarily mean it _does_ nothing.
+
+```rouge
+func do_a_flip() do outl("Do a flip!")
+```
+
+A function's inputs, also known as arguments or parameters depending on who you ask, are placed inside of parentheses. You need to specify the names and types of your inputs, because you don't want to put a string into a function asking for numbers.
+
+```rouge
+func collatz(n: nat) do
+	m := if n %% 2 then n / 2 else (3 * n) + 1
+	outl("\{m}")
+end
+```
+
+If you want a function to also return something, you specify the type of whatever is returned by placing it after an arrow.
+
+```rouge
+func collatz(n: nat) -> nat do
+	if n %% 2 then n / 2 else (3 * n) + 1
+end
+```
+
+Note that there is no `return` keyword. While there _is_ one in the language, it is not necessary if the returned value is the last expression.
+
+By the way, while we still haven't really discussed effects, you can mark those on a function by putting them after a `-<`. I got the suggestion from a friend but can't remember what he called the symbol.
+
+```rouge
+func load_csv(path: Path) -> [[str]] -< Fs + Read<File> + Exn<io::Error> do
+	Fs::open(path)?.lines()
+		.map((line) do line.split(',').map((entry) do entry.trim()).collect())
+		.collect()
+end
+```
+
+Functions _can be passed around and stored as if they were data_. Wonder what that `(line) do ...` and `(entry) do ...` expressions are? Those are _closures_, also known as _lambdas_, or more usefully _anonymous functions_. Itty bitty functions that are made when needed and passed around, or even stored in a variable. The general syntax is to place your arguments inside parentheses before the start of a code block - types may be inferred in at least some cases, but you can choose to explicitly type the arguments.

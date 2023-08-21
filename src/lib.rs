@@ -1,17 +1,6 @@
 //! Rouge is a statically-typed programming language designed for two primary uses:
 //! applications (graphical and command-line), and embedding into native programs (plugins, config files).
 //! To be suitable for both use cases, Rouge aims to have the following feature set:
-//! 
-//!  - A memory management model that aims to be intuitive and performant but with at least some guarantees towards memory and thread safety.
-//!  - A simple, easy-to-learn syntax inspired primarily by Ruby and Lua.
-//!  - Interpreted for development and use in config files, bytecode-compiled for distribution.
-//! 
-//! The Rouge runtime is developed in Rust and is designed to be embeddable in other programs.
-//! This is done by allowing embedding programs to add _hooks_, functions that can be called by programs running on top of the runtime,
-//! and by adding a trait that allows custom types to be put into and taken out of the runtime.
-//! 
-//! It should also be embeddable in programs written in languages other than Rust, which is accomplished by making most functions use the C ABI (via `extern "C"`).
-//! I say 'most' because, due to how Rust considers all non-Rust code unsafe, the code for making a safe hook does not use the C ABI.
 
 //--> Imports <--
 
@@ -19,16 +8,15 @@ mod compiler;
 
 use compiler::{
 	InterpretError,
-	LexError,
-	ParseError,
 };
 
 use std::{
-	ffi::{
-		CStr,
-		CString
+	any::Any,
+	collections::{
+		BTreeMap,
+		HashMap,
+		VecDeque,
 	},
-	fmt,
 	io::ErrorKind as IOError,
 	path::{
 		Path,
@@ -62,12 +50,6 @@ pub struct Error {
 	kind: ErrorKind
 }
 
-/// A callable handle to a Rouge function.
-pub struct Handle {}
-
-/// A reference to an object within Rouge's heap.
-pub struct Reference {}
-
 //--> Enums <--
 
 /// Indicates what kind of error has occurred, including any significant information that is specific to a given kind of error.
@@ -87,53 +69,26 @@ pub enum ErrorKind {
 	Runtime,
 }
 
-/// An enum representing different data types.
-pub enum DataType {
-	/// Indicates a byte value (Rust `u8`, C/C++ `unsigned char` or `uint8_t`)
-	Byte,
-	/// Indicates a natural value (Rust `u64`, C/C++ `unsigned long` or `uint64_t`)
-	Nat,
-	/// Indicates an integer value (Rust `i64`, C/C++ `long` or `int64_t`)
-	Int,
-	/// Indicates a floating-point value (Rust `f64`, C/C++ `double`)
-	Float,
-	/// Indicates a boolean value (`bool`)
-	Bool,
-	/// Indicates a UTF-8 character (Rust `char`, C/C++ `wchar_t` on non-Windows platforms because Windows uses UTF-16 for some reason)
-	Char,
-	/// Indicates a tuple of values. The type of each element of the tuple is further specified.
-	Tuple(Vec<DataType>),
-	/// Indicates a (dynamic) list of values. The type of the list is further specified.
-	List(Box<DataType>),
-	/// Indicates a string of UTF-8 characters.
-	String,
-	/// Indicates a map of key/value pairs. The types of the keys and values are further specified.
-	Map{
-		key_type: Box<DataType>,
-		value_type: Box<DataType>
-	},
-	/// Indicates a function handle. The types of the arguments and return value are further specified.
-	Handle{
-		arg_types: Vec<DataType>,
-		return_type: Box<DataType>
-	},
-	/// Indicates an object reference.
-	Reference(String),
-}
-
-enum Data {
-	Byte(u8),
+pub enum RougeData {
 	Nat(u64),
 	Int(i64),
-	Float(f64),
-	Bool(bool),
+	Flo(f64),
 	Char(char),
-	Tuple(),
-	List(),
-	String(),
-	Map(),
-	Handle(Handle),
-	Reference(Reference),
+	Bool(bool),
+	List(VecDeque<RougeData>),
+	Map(BTreeMap<RougeData, RougeData>),
+	Str(String),
+	Struct(HashMap<Member, RougeData>),
+	Union{ tag: u8, data: HashMap<Member, RougeData> },
+	ConstRef(),
+	HeapRef(),
+	ExternData(Box<dyn Any>)
+}
+
+#[derive(Clone, Eq, Hash, PartialEq)]
+pub enum Member {
+	Unnamed(u64),
+	Named(String),
 }
 
 //--> Functions <--

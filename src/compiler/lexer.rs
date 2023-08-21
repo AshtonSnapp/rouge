@@ -354,6 +354,9 @@ pub(crate) enum TokenInner {
 	/// Indicates an imported package, module, item
 	#[token("use")]
 	WordUse,
+	/// Used either to create import aliases OR as part of implementation blocks.
+	#[token("as")]
+	WordAs,
 	/// Represents the parent module
 	#[token("super")]
 	WordSuper,

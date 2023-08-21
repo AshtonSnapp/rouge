@@ -1,0 +1,12 @@
+
+@builtin
+pub type byte
+
+@builtin
+pub type nat
+
+@builtin
+pub type int
+
+@builtin
+put type flo

@@ -1,0 +1,9 @@
+
+@builtin
+pub type [T]
+
+@builtin
+pub type [T; N]
+
+@builtin
+pub type [K: V]

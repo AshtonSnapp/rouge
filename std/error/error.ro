@@ -1,0 +1,10 @@
+
+pub use self::[option, result]::*
+
+pub effect Exception<E: Error = Error> is
+	func throw(err: E) -> !
+end
+
+pub trait Error is
+	# ...
+end

@@ -1,0 +1,6 @@
+[book]
+authors = ["Ashton Scott Snapp"]
+language = "en"
+multilingual = false
+src = "src"
+title = "The Rouge Programming Language"

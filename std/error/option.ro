@@ -1,0 +1,108 @@
+
+## The `Option` type.
+pub enum Option<T> is
+	## No value.
+	| None
+	## Some value of type `T`.
+	| Some(T)
+
+	##
+	pub func is_some(self) -> bool do
+	end
+
+	##
+	pub func is_some_and<F>(self, f: F) -> bool where
+		F: Func(T) -> bool
+	do
+	end
+
+	##
+	pub func is_none(self) -> bool do
+	end
+
+	##
+	pub func expect(self, msg: str) -> T -< Exception<OptionError> do
+	end
+
+	##
+	pub func unwrap(self) -> T -< Exception<OptionError> do
+	end
+
+	##
+	pub func unwrap_or(self, default: T) -> T do
+	end
+
+	##
+	pub func unwrap_or_else<F>(self, default: F) -> T where
+		F: Func() -> T
+	do
+	end
+
+	##
+	pub func unwrap_or_default(self) -> T where
+		T: default
+	do
+	end
+
+	##
+	pub func map<U, F>(self, f: F) -> Option<U> where
+		F: Func(T) -> U
+	do
+	end
+
+	##
+	pub func map_or<U, F>(self, default: U, f: F) -> U where
+		F: Func(T) -> U
+	do
+	end
+
+	##
+	pub func map_or_else<U, D, F>(self, default: D, f: F) -> U where
+		D: Func() -> U
+		F: Func(T) -> U
+	do
+	end
+
+	##
+	pub func inspect<F>(self, f: F) -> Option<T> where
+		F: Func(T)
+	do
+	end
+
+	##
+	pub func ok_or<E>(self, err: E) -> Result<T, E> where
+		E: Error
+	do
+	end
+
+	##
+	pub func ok_or_else<E, F>(self, err: F) -> Result<T, E> where
+		E: Error
+		F: Func() -> E
+	do
+	end
+
+	##
+	pub func and<U>(self, optb: Option<U>) -> Option<U> do
+	end
+
+	##
+	pub func and_then<U, F>(self, f: F) -> Option<U> where
+		F: Func(T) -> Option<U>
+	do
+	end
+
+	##
+	pub func filter<P>(self, predicate: P) -> Option<T> where
+		F: Func(T) -> bool
+	do
+	end
+
+	##
+	pub func or(self, optb: Option<T>) -> Option<T> do
+	end
+
+	##
+	pub func or_else<F>(self, f: F) -> Option<T> where
+		F: Func() -> Option<T>
+end
