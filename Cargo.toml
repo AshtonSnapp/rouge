@@ -15,13 +15,8 @@ categories = ["compilers", "command-line-utilities"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# Lexer
-logos = "0.12"
-# Parser
-nom = "7.1"
+read_chars = "0.1"
+# Derive implementations of the Error trait for Error types.
+thiserror = "1"
 # Command line interface
 clap = { version = "4.0", features = ["cargo", "unicode"] }
-# Bytecode file compression and decompression.
-zstd = "0.11"
-# Used to dynamically load native libraries for Rouge programs to use.
-dlopen = { version = "0.1", optional = true }
