@@ -12,7 +12,7 @@ Rouge aims to do something about both of those issues. By compiling to bytecode 
 
 Of course, Rouge won't _just_ do the same things as Rust. To try and make things a bit easier, Rouge plans to adopt [mutable value semantics](https://www.jot.fm/issues/issue_2022_02/article2.pdf) as an alternative to borrow checking - references are not a language-level feature, just an implementation detail. In addition, for a number of reasons that I won't get into right now, Rouge also plans to adopt [algebraic effects](https://overreacted.io/algebraic-effects-for-the-rest-of-us/).
 
-The custom runtime environment (RTE) for the Rouge programming language will be provided as a Rust library (and someone can probably work on making a wrapping cdylib for interfacing with other languages, or even reimplement it entirely) for embedding, and as a standalone utility for applications. Both will simply be called `rouge` and contain everything necessary to run and compile Rouge code.
+Rouge is planned to use the also work-in-progress [`baton`](https://github.com/AshtonSnapp/baton) runtime, which is essentially designed and named to go with Rouge (though it can be used with other languages).
 
 Rouge is currently licensed under MIT.
 

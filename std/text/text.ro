@@ -1,6 +1,0 @@
-
-@builtin
-pub type char
-
-@builtin
-pub type str

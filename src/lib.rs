@@ -1,13 +1,11 @@
-//! Rouge is a statically-typed programming language designed for two primary uses:
-//! applications (graphical and command-line), and embedding into native programs (plugins, config files).
-//! To be suitable for both use cases, Rouge aims to have the following feature set:
-
-//--> Imports <--
+//--> Imports & Modules <--
 
 mod compiler;
+
+//--> Type Aliases <--
 
 //--> Structs <--
 
 //--> Enums <--
 
-//--> Functions <--
+//--> Functions & Impls <--

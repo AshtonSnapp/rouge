@@ -1,22 +1,16 @@
 [package]
 name = "rouge"
 version = "0.1.0"
-authors = ["Ashton Scott Snapp <ashton@ashtonsnapp.com>"]
 edition = "2021"
-description = "A statically-typed programming language for applications, plugins, and config files."
-readme = "README.md"
-license = "MIT"
-categories = ["compilers", "command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-# Library needs to produce both a C-loadable dynamic library and a Rust library.
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-read_chars = "0.1"
-# Derive implementations of the Error trait for Error types.
-thiserror = "1"
-# Command line interface
-clap = { version = "4.0", features = ["cargo", "unicode"] }
+codespan-reporting = { version = "0.11" }
+logos = { version = "0.13" }
+read_chars = { version = "0.3" }
+unicode-properties = { version = "0.1" }
+unicode-ident = { version = "1.0" }

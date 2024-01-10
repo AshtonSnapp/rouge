@@ -1,7 +1,11 @@
-//--> Imports <--
+//--> Imports & Modules <--
 
-mod lexer;
+mod scanner;
+
+//--> Type Aliases <--
+
+//--> Structs <--
 
 //--> Enums <--
 
-//--> Functions <--
+//--> Functions & Impls <--
