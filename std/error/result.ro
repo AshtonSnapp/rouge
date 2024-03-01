@@ -1,0 +1,20 @@
+use super::Exn
+
+##
+pub type Result(T, E) is
+    ##
+    | ok(T)
+    ##
+    | err(E)
+
+    ##
+    pub func wrap(F, f: F) -> Result(T, E) where
+        F: Func() -> T -< Exn(E), Effect
+    do
+        when raise(err: E) do
+            return Result.err(err)
+        end
+
+        Ok(f())
+    end
+end

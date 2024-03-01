@@ -1,0 +1,102 @@
+use std::error::[Option, Result]
+
+##
+pub trait Default is
+    ##
+    func default() -> Self
+end
+
+impl Default for bool as
+    func default() -> bool do false
+end
+
+impl Default for num as
+    func default() -> num do 0
+end
+
+impl Default for nat as
+    func default() -> nat do 0
+end
+
+impl Default for nat8 as
+    func default() -> nat8 do 0
+end
+
+impl Default for nat16 as
+    func default() -> nat16 do 0
+end
+
+impl Default for nat32 as
+    func default() -> nat32 do 0
+end
+
+impl Default for nat64 as
+    func default() -> nat64 do 0
+end
+
+impl Default for nat128 as
+    func default() -> nat128 do 0
+end
+
+impl Default for int as
+    func default() -> int do 0
+end
+
+impl Default for int8 as
+    func default() -> int8 do 0
+end
+
+impl Default for int16 as
+    func default() -> int16 do 0
+end
+
+impl Default for int32 as
+    func default() -> int32 do 0
+end
+
+impl Default for int64 as
+    func default() -> int64 do 0
+end
+
+impl Default for int128 as
+    func default() -> int128 do 0
+end
+
+impl Default for flo as
+    func default() -> flo do 0.0
+end
+
+impl Default for flo32 as
+    func default() -> flo32 do 0.0
+end
+
+impl Default for flo64 as
+    func default() -> flo64 do 0.0
+end
+
+impl Default for char as
+    func default() -> char do '\0'
+end
+
+impl Default for str as
+    func default() -> str do ""
+end
+
+impl Default for [T] as
+    func default() -> [] do []
+end
+
+impl Default for [K: V] as
+    func default() -> [K: V] do []
+end
+
+impl Default for Result(T, E) where
+    E: Default
+as
+    func default() -> Result(T, E) do Result.err(E::default())
+end
+
+impl Default for Option(T) as
+    func default() -> Option(T) do Option.none
+end
+

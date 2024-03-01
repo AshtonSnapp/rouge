@@ -1,0 +1,47 @@
+use pkg::sync::io
+
+pub type Stdout is
+    impl Writable
+end
+
+pub func out(s: str) -> io::Result(()) -< Write(Stdout) do
+    perform Stdout.write_str(s)
+end
+
+pub func outln(s: str) -> io::Result(()) -< Write(Stdout) do
+    perform Stdout.write_str("\{s}\n")
+end
+
+pub type Stderr is
+    impl Writable
+end
+
+pub func err(s: str) -> io::Result(()) -< Write(Stderr) do
+    perform Stderr.write_str(s)
+end
+
+pub func errln(s: str) -> io::Result(()) -< Write(Stderr) do
+    perform Stderr.write_str("\{s}\n")
+end
+
+pub type Stdin is
+    impl Readable
+end
+
+pub func in(count: nat) -> io::Result(str) -< Read(Stdin) do
+    perform Stdin.read_chars(count)
+end
+
+pub func inln() -> io::Result(str) -< Read(Stdin) do
+    perform Stdin.read_chars_until('\n')
+end
+
+pub func prompt(prompt: str, count: nat) -> io::Result(str) -< Read(Stdin), Write(Stdout) do
+    perform Stdout.write_str(prompt)
+    perform Stdin.read_chars(count)
+end
+
+pub func promptln(prompt: str) -> io::Result(str) -< Read(Stdin), Write(Stdout) do
+    perform Stdout.write_str(prompt)
+    perform Stdin.read_chars_until('\n')
+end

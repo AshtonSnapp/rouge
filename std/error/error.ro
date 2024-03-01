@@ -1,0 +1,15 @@
+pub use self::[
+    result::*
+    option::*
+]
+
+##
+pub effect Exn(E: Error = any Error) is
+    ##
+    func raise(E) -> !
+end
+
+##
+pub trait Error is
+    # ???
+end
