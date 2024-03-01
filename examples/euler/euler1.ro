@@ -16,5 +16,5 @@ func sumMultiplesBelow(factors: [nat], max: nat) -> nat do
 end
 
 pub func main() do
-	outl("\{sumMultiplesBelow([3, 5], 1000)}")
+	outln("\{sumMultiplesBelow([3, 5], 1000)}")
 end

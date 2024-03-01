@@ -1,5 +1,5 @@
 pub func main() do
-	text := prompt("Give me some text with parentheses in it: ")
+	text := promptln("Give me some text with parentheses in it: ")
 
 	max_nesting: nat = text.iter()
 		.scan(0, (n, c) do
@@ -13,5 +13,5 @@ pub func main() do
 		end)
 		.max()
 	
-	outl("You get into a maximum of \{max_nesting} layers of parentheses in that text.")
+	outln("You get into a maximum of \{max_nesting} layers of parentheses in that text.")
 end

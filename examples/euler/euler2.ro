@@ -16,5 +16,5 @@ func fibonacci(one: nat, two: nat, max: nat) -> [nat] do
 end
 
 pub func main() do
-	outl("\{fibonacci(1, 2, 4000000).iter.filter(|x| x % 2 == 0).sum()}")
+	outln("\{fibonacci(1, 2, 4000000).iter.filter(|x| x % 2 == 0).sum()}")
 ends

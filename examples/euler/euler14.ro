@@ -28,5 +28,5 @@ pub func main() do
 		else Ordering:Equal
 	end)
 
-	outl("\{longest.0} produces the longest Collatz chain under a million, with a length of \{longest.1}.")
+	outln("\{longest.0} produces the longest Collatz chain under a million, with a length of \{longest.1}.")
 end
