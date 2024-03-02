@@ -1,0 +1,162 @@
+use super::[
+    Add
+    Sub
+]
+
+use pkg::iter::Iterable
+
+pub trait Steppable: Add + Sub is
+    const DEFAULT_START: Self
+    const DEFAULT_STOP: Self
+    const DEFAULT_STEP: Self
+end
+
+pub type Range(Idx: Steppable) is
+    pub start: Idx
+    pub stop: Idx
+    pub step: Idx
+
+    pub func (..)(start: Idx, stop: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: stop - 1
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (..)(start: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: Idx::DEFAULT_STOP - 1
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    @prefix
+    pub func (..)(stop: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: stop - 1
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (..)() -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: Idx::DEFAULT_STOP - 1
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (.:)(start: Idx, stop: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (.:)(start: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: Idx::DEFAULT_STOP
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    @prefix
+    pub func (.:)(stop: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (.:)() -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: Idx::DEFAULT_STOP
+            step: Idx::DEFAULT_STEP
+        )
+    end
+
+    pub func (.., :)(start: Idx, stop: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: stop - 1
+            step
+        )
+    end
+
+    pub func (..:)(start: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: Idx::DEFAULT_STOP - 1
+            step
+        )
+    end
+
+    @prefix
+    pub func (.., :)(stop: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: stop - 1
+            step
+        )
+    end
+
+    pub func (..:)(step: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: Idx::DEFAULT_STOP - 1
+            step
+        )
+    end
+
+    pub func (.:, :)(start: Idx, stop: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop
+            step
+        )
+    end
+
+    pub func (.::)(start: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start
+            stop: Idx::DEFAULT_STOP
+            step
+        )
+    end
+
+    @prefix
+    pub func (.:, :)(stop: Idx, step: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop
+            step
+        )
+    end
+
+    pub func (.::)(step: Idx) -> Range(Idx) do
+        Range(
+            start: Idx::DEFAULT_START
+            stop: Idx::DEFAULT_STOP
+            step
+        )
+    end
+
+    impl Iterable as
+        type Item is alias Idx
+
+        func next(mut self) -> Option(Self::Item) do
+            if self.start == self.stop then Option.none
+
+            item := self.start
+            self.start += self.step
+            Option.some(item)
+        end
+    end
+end

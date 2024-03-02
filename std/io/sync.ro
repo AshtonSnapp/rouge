@@ -1,0 +1,135 @@
+use super::[
+    Error
+    Result
+    Readable
+    Seekable
+    SeekFrom
+    Writable
+]
+
+use pkg::iter::Iterable
+
+pub effect SyncIo(`T: Readable + Seekable + Writable) is alias SyncRw(T), Seek(T)
+pub effect SyncRw(`T: Readable + Writable) is alias Read(T), Write(T)
+
+pub effect Read(`R: Readable) is
+    func read_chars(mut reader: R, count: nat) -> Result(str)
+    func read_bytes(mut reader: R, count: nat) -> Result([nat8])
+
+    func read_chars_until(mut reader: R, sentinel: char) -> Result(str)
+    func read_bytes_until(mut reader: R, sentinel: nat8) -> Result([nat8])
+
+    func read_all_chars(mut reader: R) -> Result(str)
+    func read_all_bytes(mut reader: R) -> Result([nat8])
+
+    func read_str_chunks(mut reader: R, size: nat) -> Result([str])
+    func read_byte_chunks(mut reader: R, size: nat) -> Result([[nat8]])
+
+    func read_str_slices(mut reader: R, delimiter: char) -> Result([str])
+    func read_byte_slices(mut reader: R, delimiter: nat8) -> Result([[nat8]])
+end
+
+pub type Chars(`R: Readable) is
+    inner: R
+
+    impl Iterable as
+        type Item is alias Result(char)
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_chars(1) matches
+                Result.ok(str) then if str.is_empty() then Option.none else Option.some(Result.ok(str[0]))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub type Bytes(`R: Readable) is
+    inner: R
+
+    impl Iterable as
+        type Item is alias Result(nat8)
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_bytes(1) matches
+                Result.ok(seq) then if seq.is_empty() then Option.none else Option.some(Result.ok(seq[0]))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub type StrChunks(`R: Readable) is
+    inner: R
+    size: nat
+
+    impl Iterable as
+        type Item is alias Result(str)
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_chars(self.size) matches
+                Result.ok(str) then if str.is_empty() then Option.none else Option.some(Result.ok(str))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub type ByteChunks(`R: Readable) is
+    inner: R
+    size: nat
+
+    impl Iterable as
+        type Item is alias Result([nat8])
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_bytes(self.size) matches
+                Result.ok(seq) then if seq.is_empty() then Option.none else Option.some(Result.ok(seq))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub type StrSlices(`R: Readable) is
+    inner: R
+    delimiter: char
+
+    impl Iterable as
+        type Item is alias Result(str)
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_chars_until(self.delimiter) matches
+                Result.ok(str) then if str.is_empty() then Option.none else Option.some(Result.ok(str))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub type ByteSlices(`R: Readable) is
+    inner: R
+    delimiter: nat8
+
+    impl Iterable as
+        type Item is alias Result([nat8])
+
+        func next(mut self) -> Option(Self::Item) -< Read(R) do
+            if perform self.inner.read_bytes_until(self.delimiter) matches
+                Result.ok(seq) then if seq.is_empty() then Option.none else Option.some(Result.ok(seq))
+                Result.err(e) then Option.some(Result.err(e))
+            end
+        end
+    end
+end
+
+pub effect Seek(`S: Seekable) is
+    func seek(mut seeker: S, pos: SeekFrom) -> Result(u64)
+end
+
+pub effect Write(`W: Writable) is
+    func write_str(mut self, buf: str) -> Result(nat)
+    func write_bytes(mut self, buf: [nat8]) -> Result(nat)
+
+    func flush(mut self) -> Result(())
+end

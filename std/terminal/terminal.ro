@@ -1,47 +1,58 @@
-use pkg::sync::io
+use pkg::io::[
+    Readable
+    Writable
+]
 
 pub type Stdout is
     impl Writable
-end
-
-pub func out(s: str) -> io::Result(()) -< Write(Stdout) do
-    perform Stdout.write_str(s)
-end
-
-pub func outln(s: str) -> io::Result(()) -< Write(Stdout) do
-    perform Stdout.write_str("\{s}\n")
 end
 
 pub type Stderr is
     impl Writable
 end
 
-pub func err(s: str) -> io::Result(()) -< Write(Stderr) do
-    perform Stderr.write_str(s)
-end
-
-pub func errln(s: str) -> io::Result(()) -< Write(Stderr) do
-    perform Stderr.write_str("\{s}\n")
-end
-
 pub type Stdin is
     impl Readable
 end
 
-pub func in(count: nat) -> io::Result(str) -< Read(Stdin) do
-    perform Stdin.read_chars(count)
+pub func out(msg: str) -< Write(Stdout) do
+    _ := perform Stdout.write_str(msg)
+    _ := perform Stdout.flush()
 end
 
-pub func inln() -> io::Result(str) -< Read(Stdin) do
+pub func outln(msg: str) -< Write(Stdout) do
+    _ := perform Stdout.write_str("\{msg}\n")
+    _ := perform Stdout.flush()
+end
+
+pub func err(msg: str) -< Write(Stderr) do
+    _ := perform Stderr.write_str(msg)
+    _ := perform Stderr.flush()
+end
+
+pub func errln(msg: str) -< Write(Stderr) do
+    _ := perform Stderr.write_str("\{msg}\n")
+    _ := perform Stderr.flush()
+end
+
+pub func in() -> Result(str) -< Read(Stdin) do
+    perform Stdin.read_chars(1)
+end
+
+pub func inln() -> Result(str) -< Read(Stdin) do
     perform Stdin.read_chars_until('\n')
 end
 
-pub func prompt(prompt: str, count: nat) -> io::Result(str) -< Read(Stdin), Write(Stdout) do
-    perform Stdout.write_str(prompt)
-    perform Stdin.read_chars(count)
+pub func prompt(msg: str) -> Result(str) -< Read(Stdin), Write(Stdout) do
+    _ := perform Stdout.write_str(msg)
+    _ := perform Stdout.flush()
+
+    perform Stdin.read_chars(1)
 end
 
-pub func promptln(prompt: str) -> io::Result(str) -< Read(Stdin), Write(Stdout) do
-    perform Stdout.write_str(prompt)
+pub func promptln(msg: str) -> Result(str) -< Read(Stdin), Write(Stdout) do
+    _ := perform Stdout.write_str(msg)
+    _ := perform Stdout.flush()
+
     perform Stdin.read_chars_until('\n')
 end

@@ -1,0 +1,57 @@
+pub trait PartialEq(`Rhs = Self) is
+    func (==)(self, other: Rhs) -> bool
+
+    func (!=)(self, other: Rhs) -> bool do not (self == other)
+end
+
+pub trait Eq: PartialEq(Self)
+
+pub type Ordering is
+    | less = -1
+    | equal = 0
+    | greater = 1
+end
+
+pub trait PartialOrd(`Rhs = Self): PartialEq(Rhs) is
+    func partial_cmp(self, other: Rhs) -> Option(Ordering)
+
+    func (<)(self, other: Rhs) -> bool do if self.partial_cmp(other) matches
+        Option.some(Ordering.less) then true
+        else false
+    end
+
+    func (>)(self, other: Rhs) -> bool do if self.partial_cmp(other) matches
+        Option.some(Ordering.greater) then true
+        else false
+    end
+
+    func (>=)(self, other: Rhs) -> bool do if self.partial_cmp(other) matches
+        Option.some(Ordering.less) | Option.none then false
+        else true
+    end
+
+    func (<=)(self, other: Rhs) -> bool do if self.partial_cmp(other) matches
+        Option.some(Ordering.greater) | Option.none then false
+        else true
+    end
+end
+
+pub trait Ord: Eq + PartialOrd(Self) is
+    func cmp(self, other: Self) -> Ordering
+
+    func max(self, other: Self) -> Self do if self.cmp(other) matches
+        Ordering.greater then self
+        else other
+    end
+
+    func min(self, other: Self) -> Self do if self.cmp(other) matches
+        Ordering.greater then other
+        else self
+    end
+
+    func clamp(self, min: Self, max: Self) -> Self do
+        if self < min then min
+        else if self > max then max
+        else self
+    end
+end

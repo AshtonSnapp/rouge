@@ -1,0 +1,108 @@
+use self::sync::*
+
+use pkg::error::[
+    Error as ErrorTrait
+]
+
+pub type Result(T) is alias pkg::error::Result(T, Error)
+
+pub effect Io(`T: Readable + Seekable + Writable) is alias SyncIo(T)
+
+pub trait Readable is
+    func chars(self) -> Chars(Self) do (self)
+    func bytes(self) -> Bytes(Self) do (self)
+
+    func str_chunks(self, size: nat) -> StrChunks(Self) do (self, size)
+    func byte_chunks(self, size: nat) -> ByteChunks(Self) do (self, size)
+
+    func str_slices(self, delimiter: char) -> StrSlices(Self) do (self, delimiter)
+    func byte_slices(self, delimiter: nat8) -> ByteSlices(Self) do (self, delimiter)
+end
+
+pub trait Seekable is
+    func rewind(mut self) -> Result(()) -< Seek(Self) do
+        perform self.seek(SeekFrom.start(0))
+            .map((_) do ())
+    end
+
+    func stream_len(mut self) -> Result(u64) -< Seek(Self) do
+        old_pos := self.stream_pos()?
+        len := perform self.seek(SeekFrom.end(0))?
+
+        if old_pos != len then perform self.seek(SeekFrom.start(old_pos))?
+
+        Result.ok(len)
+    end
+
+    func stream_pos(mut self) -> Result(u64) -< Seek(Self) do
+        perform self.seek(SeekFrom.current(0))
+    end
+end
+
+pub type SeekFrom is
+    | start(nat64)
+    | end(int64)
+    | current(int64)
+end
+
+pub trait Writable
+
+pub type Error is
+    @non_exhaustive
+    pub type Kind is
+        | notFound
+        | permissionDenied
+        | connectionRefused
+        | connectionReset
+        | hostUnreachable
+        | networkUnreachable
+        | connectionAborted
+        | notConnected
+        | addrInUse
+        | addrNotAvailable
+        | networkDown
+        | brokenPipe
+        | alreadyExists
+        | wouldBlock
+        | notDirectory
+        | isDirectory
+        | directoryNotEmpty
+        | readOnlyFilesystem
+        | filesystemLoop
+        | staleNetworkFileHandle
+        | invalidInput
+        | invalidData
+        | timedOut
+        | writeZero
+        | storageFull
+        | notSeekable
+        | filesystemQuotaExceeded
+        | fileTooLarge
+        | resourceBusy
+        | executableFileBusy
+        | deadlock
+        | crossesDevices
+        | tooManyLinks
+        | invalidFilename
+        | argumentListTooLong
+        | interrupted
+        | unsupported
+        | unexpectedEof
+        | outOfMemory
+        | other
+    end
+
+    kind: Kind
+    inner: Option(any ErrorTrait)
+
+    pub func new(`E: ErrorTrait, kind: Error.Kind, error: E) -> Error do (kind, inner: Option.some(error))
+
+    pub func other(`E: ErrorTrait, error: E) -> Error do (Error.Kind.other, inner: Option.some(error))
+
+    pub func kind(self) -> Error.Kind do self.kind
+
+    pub func get_inner(self) -> Option(any Error) do self.inner
+
+    impl ErrorTrait as
+    end
+end

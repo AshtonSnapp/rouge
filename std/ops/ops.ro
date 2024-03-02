@@ -1,0 +1,125 @@
+pub use self::range::*
+pub use self::cmp::*
+pub use self::special::*
+
+pub trait Add(`Rhs = Self) is
+    type Output
+
+    func (+)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait AddAssign('Rhs = Self) is
+    func (+=)(inout self, rhs: Rhs)
+end
+
+pub trait Sub(`Rhs = Self) is
+    type Output
+
+    func (-)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait SubAssign('Rhs = Self) is
+    func (-=)(inout self, rhs: Rhs)
+end
+
+pub trait Mul(`Rhs = Self) is
+    type Output
+
+    func (*)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait MulAssign('Rhs = Self) is
+    func (*=)(inout self, rhs: Rhs)
+end
+
+pub trait Div(`Rhs = Self) is
+    type Output
+
+    func (/)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait DivAssign('Rhs = Self) is
+    func (/=)(inout self, rhs: Rhs)
+end
+
+pub trait Rem(`Rhs = Self) is
+    type Output
+
+    func (%)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait Divisible where
+    Self: Rem + Eq
+is
+    const ZERO: Self
+
+    func (%%)(self, rhs: Self) -> bool do (self % rhs) == Self::ZERO
+end
+
+pub trait RemAssign('Rhs = Self) is
+    func (%=)(inout self, rhs: Rhs)
+end
+
+pub trait Neg is
+    type Output
+
+    @prefix
+    func (-)(self) -> Self::Output
+end
+
+pub trait BitAnd(`Rhs = Self) is
+    type Output
+
+    func (&)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait BitAndAssign('Rhs = Self) is
+    func (&=)(inout self, rhs: Rhs)
+end
+
+pub trait BitOr(`Rhs = Self) is
+    type Output
+
+    func (|)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait BitOrAssign('Rhs = Self) is
+    func (|=)(inout self, rhs: Rhs)
+end
+
+pub trait BitXor(`Rhs = Self) is
+    type Output
+
+    func (^)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait BitXorAssign('Rhs = Self) is
+    func (^=)(inout self, rhs: Rhs)
+end
+
+pub trait Not is
+    type Output
+
+    @prefix
+    func (!)(self) -> Self::Output
+end
+
+pub trait Shl(`Rhs = Self) is
+    type Output
+
+    func (<<)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait ShlAssign('Rhs = Self) is
+    func (<<=)(inout self, rhs: Rhs)
+end
+
+pub trait Shr(`Rhs = Self) is
+    type Output
+
+    func (>>)(self, rhs: Rhs) -> Self::Output
+end
+
+pub trait ShrAssign('Rhs = Self) is
+    func (>>)(inout self, rhs: Rhs)
+end
