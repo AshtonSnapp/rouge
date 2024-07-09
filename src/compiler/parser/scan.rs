@@ -22,18 +22,18 @@ pub(crate) struct Scanner<'source> {
 ///
 #[derive(Clone, PartialEq, PartialOrd)]
 pub struct Token {
-    kind: TokenKind,
-    span: Span,
-    code: String,
+    pub kind: TokenKind,
+    pub span: Span,
+    pub code: String,
 }
 
 ///
 #[derive(Clone, Default, PartialEq)]
 pub struct Error {
-    kind: ErrorKind,
-    span: Option<Span>,
-    code: Option<String>,
-    help: Option<String>,
+    pub kind: ErrorKind,
+    pub span: Option<Span>,
+    pub code: Option<String>,
+    pub help: Option<String>,
 }
 
 //--> Enums <--

@@ -51,6 +51,10 @@ impl ConcreteSyntaxTree {
         errors.append(scanner.filter_map(|r| if let Err(e) = r { Some(e) } else { None }).collect());
         node_stack.append(scanner.filter_map(|r| if let Ok(tok) = r { Some(tok) } else { None }).collect());
 
+        loop {
+            // TODO: ??????
+        }
+
         if !errors.is_empty() {
             
             if errors.len() == 1 {
