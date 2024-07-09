@@ -1,6 +1,7 @@
+use super::Exn
 
 ##
-pub type Option(T) is
+pub type Option(`T) is
     ##
     | none
     ##

@@ -1,0 +1,26 @@
+use std::[
+    fs::[
+        Filesystem
+        File::Mode
+    ]
+    io::sync::[
+        Read
+        Write
+    ]
+]
+
+pub func main() do
+    mut reversed_text := ""
+    
+    with mut file := perform Filesystem::open("test.txt", Mode.read).unwrap(), inout reversed_text do
+        for line in file.str_slices('\n') do
+            outln("\{line}")
+            reversed_text.suffix("\{line.reverse()}\n")
+        end
+    end
+
+    with mut file := perform Filesystem::open("tset.txt", Mode.create | Mode.write).unwrap(), reversed_text do
+        perform file.write_str(reersed_text)
+        perform file.flush()
+    end
+end

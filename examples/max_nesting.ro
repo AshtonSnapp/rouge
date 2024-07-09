@@ -5,11 +5,11 @@ pub func main() do
 		.scan(0, (n, c) do
 			if c == '(' then
 				n += 1
-				Some n
+				Option.some(n)
 			elif c == ')' then
 				n -= 1
-				Some n
-			else None
+				Option.some(n)
+			else Option.none
 		end)
 		.max()
 	

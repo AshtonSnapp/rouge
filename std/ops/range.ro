@@ -11,7 +11,7 @@ pub trait Steppable: Add + Sub is
     const DEFAULT_STEP: Self
 end
 
-pub type Range(Idx: Steppable) is
+pub type Range(`Idx: Steppable) is
     pub start: Idx
     pub stop: Idx
     pub step: Idx

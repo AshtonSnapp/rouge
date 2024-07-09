@@ -1,7 +1,7 @@
 use super::Exn
 
 ##
-pub type Result(T, E) is
+pub type Result(`T, `E) is
     ##
     | ok(T)
     ##
@@ -9,7 +9,7 @@ pub type Result(T, E) is
 
     ##
     pub func wrap(F, f: F) -> Result(T, E) where
-        F: Func() -> T -< Exn(E), Effect
+        F: Func() -> T -< Exn(E), `E
     do
         when raise(err: E) do
             return Result.err(err)
@@ -17,4 +17,15 @@ pub type Result(T, E) is
 
         Ok(f())
     end
+
+    pub func unwrap(take self) -> T -< Exn(E) where
+        E: Error
+    do
+        if self matches
+            Result.ok(t) then t
+            Result.err(e) then perform raise(e)
+        end
+    end
+
+    
 end

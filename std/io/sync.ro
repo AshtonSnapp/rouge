@@ -128,8 +128,8 @@ pub effect Seek(`S: Seekable) is
 end
 
 pub effect Write(`W: Writable) is
-    func write_str(mut self, buf: str) -> Result(nat)
-    func write_bytes(mut self, buf: [nat8]) -> Result(nat)
+    func write_str(mut writer: W, buf: str) -> Result(nat)
+    func write_bytes(mut writer: W, buf: [nat8]) -> Result(nat)
 
-    func flush(mut self) -> Result(())
+    func flush(mut writer: W) -> Result(())
 end

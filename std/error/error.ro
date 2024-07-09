@@ -4,7 +4,7 @@ pub use self::[
 ]
 
 ##
-pub effect Exn(E: Error = any Error) is
+pub effect Exn(`E: Error = any Error) is
     ##
     func raise(E) -> !
 end

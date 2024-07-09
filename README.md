@@ -69,17 +69,16 @@ The _basic_ types of things your variable buckets can hold are as follows:
 | ------------ | --------------------------------------------------------------------------------------------------------------------- |
 | `bool`       | True or false, short for 'boolean'                                                                                    |
 | `char`       | UTF-8 scalar, short for 'character'                                                                                   |
-| `num`        | Arbitrary number that changes under the hood.                                                                         |
 | `nat`        | Arbitrary unsigned whole number that changes size under the hood.                                                     |
-| `natX`       | Unsigned whole number that is specifically `X` bits long (`X` can be 8, 16, 32, or 64)                                |
+| `natX`       | Unsigned whole number that is specifically `X` bits long (`X` can be 8, 16, 32, 64, or 128)                           |
 | `int`        | Arbitrary signed whole number that changes size under the hood.                                                       |
-| `intX`       | Signed whole number that is specifically `X` bits long (`X` can be 8, 16, 32, or 64)                                  |
+| `intX`       | Signed whole number that is specifically `X` bits long (`X` can be 8, 16, 32, 64, or 128)                             |
 | `flo`        | Arbitrary floating-point number that changes size under the hood.                                                     |
-| `floX`       | Floating-point number that is specifically `X` bits long (`X` can be 32 or 64)                                        |
-| `[T]`        | Dynamically-sized list containing items of type `T`                                                                   |
-| `[T; N]`     | Statically-sized list containing `N` items of type `T`                                                                |
-| `[K: V]`     | Map between values of type `K` to values of type `V`                                                                  |
-| `str`        | A 'string' of text, equivalent to `[char]`                                                                            |
+| `floX`       | Floating-point number that is specifically `X` bits long (`X` can be 16, 32, or 64)                                   |
+| `[]T`        | Dynamically-sized list containing items of type `T`                                                                   |
+| `[N]T`       | Statically-sized list containing `N` items of type `T`                                                                |
+| `[K]V`       | Map between values of type `K` to values of type `V`                                                                  |
+| `str`        | A 'string' of text, equivalent to `[]char`                                                                            |
 | `any`        | Opt-out of static typing, can represent any value and can take trait bounds                                           |
 
 To define a variable in Rouge, state its name and value separated by the walrus operator. If you're also specifying the type, split the walrus operator and place the type between the colon and equal sign.

@@ -10,7 +10,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 codespan-reporting = { version = "0.11" }
-logos = { version = "0.13" }
+logos = { version = "0.14" }
 read_chars = { version = "0.3" }
 unicode-properties = { version = "0.1" }
 unicode-ident = { version = "1.0" }

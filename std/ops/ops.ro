@@ -8,7 +8,7 @@ pub trait Add(`Rhs = Self) is
     func (+)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait AddAssign('Rhs = Self) is
+pub trait AddAssign(`Rhs = Self) is
     func (+=)(inout self, rhs: Rhs)
 end
 
@@ -18,7 +18,7 @@ pub trait Sub(`Rhs = Self) is
     func (-)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait SubAssign('Rhs = Self) is
+pub trait SubAssign(`Rhs = Self) is
     func (-=)(inout self, rhs: Rhs)
 end
 
@@ -28,7 +28,7 @@ pub trait Mul(`Rhs = Self) is
     func (*)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait MulAssign('Rhs = Self) is
+pub trait MulAssign(`Rhs = Self) is
     func (*=)(inout self, rhs: Rhs)
 end
 
@@ -38,7 +38,7 @@ pub trait Div(`Rhs = Self) is
     func (/)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait DivAssign('Rhs = Self) is
+pub trait DivAssign(`Rhs = Self) is
     func (/=)(inout self, rhs: Rhs)
 end
 
@@ -56,7 +56,7 @@ is
     func (%%)(self, rhs: Self) -> bool do (self % rhs) == Self::ZERO
 end
 
-pub trait RemAssign('Rhs = Self) is
+pub trait RemAssign(`Rhs = Self) is
     func (%=)(inout self, rhs: Rhs)
 end
 
@@ -73,7 +73,7 @@ pub trait BitAnd(`Rhs = Self) is
     func (&)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait BitAndAssign('Rhs = Self) is
+pub trait BitAndAssign(`Rhs = Self) is
     func (&=)(inout self, rhs: Rhs)
 end
 
@@ -83,7 +83,7 @@ pub trait BitOr(`Rhs = Self) is
     func (|)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait BitOrAssign('Rhs = Self) is
+pub trait BitOrAssign(`Rhs = Self) is
     func (|=)(inout self, rhs: Rhs)
 end
 
@@ -93,7 +93,7 @@ pub trait BitXor(`Rhs = Self) is
     func (^)(self, rhs: Rhs) -> Self::Output
 end
 
-pub trait BitXorAssign('Rhs = Self) is
+pub trait BitXorAssign(`Rhs = Self) is
     func (^=)(inout self, rhs: Rhs)
 end
 

@@ -10,10 +10,6 @@ impl Default for bool as
     func default() -> bool do false
 end
 
-impl Default for num as
-    func default() -> num do 0
-end
-
 impl Default for nat as
     func default() -> nat do 0
 end
@@ -66,6 +62,10 @@ impl Default for flo as
     func default() -> flo do 0.0
 end
 
+impl Default for flo16 as
+    func default() -> flo16 do 0.0
+end
+
 impl Default for flo32 as
     func default() -> flo32 do 0.0
 end
@@ -83,7 +83,7 @@ impl Default for str as
 end
 
 impl Default for [T] as
-    func default() -> [] do []
+    func default() -> [T] do []
 end
 
 impl Default for [K: V] as
