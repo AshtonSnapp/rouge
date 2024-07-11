@@ -932,6 +932,12 @@ pub enum TokenKind {
     /// Ends a block of code.
     #[token("end")]
     WordEnd,
+    #[token("skip")]
+    WordSkip,
+    #[token("break")]
+    WordBreak,
+    #[token("return")]
+    WordReturn,
     /// Indicates packages, modules, and items used by the current module.
     #[token("use")]
     WordUse,
