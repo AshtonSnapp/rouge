@@ -33,12 +33,19 @@ pub trait Iterable is
         val
     end
 
-    func chain(`U, self, other: `U) -> Chain(Self, (U as IntoIterable)::IntoIter) where
-        U: IntoIterable(Item = Self::Item)
+    func find(`F, mut self, f: F) -> Option(Self::Item) -< `E where
+        F: Func(Self::Item) -> bool
     do
-        Chain(
-            first: self
-            second: other
-        )
+        func check(`T, mut predicate: Func(T) -> bool) -> Func((), T) -> ControlFlow(T) do
+            ((), x) do if predicate(x) then ControlFlow.break(x) else ControlFlow.continue(())
+        end
+
+        self.try_fold((), check(f)).break_value()
     end
+end
+
+pub trait ToIterable is
+    type Iter: Iterable
+
+    func to_iter(self) -> Self::Iter
 end

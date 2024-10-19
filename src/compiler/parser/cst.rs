@@ -43,7 +43,7 @@ pub enum ErrorKind {
 //--> Functions & Impls <--
 
 impl ConcreteSyntaxTree {
-    pub(crate) fn generate<'source>(mut scanner: Scanner<'source>, filename: PathBuf) -> Result<ConcreteSyntaxTree, Error> {
+    pub(crate) fn generate_from_scanner<'source>(mut scanner: Scanner<'source>, filename: PathBuf) -> Result<ConcreteSyntaxTree, Error> {
         
         let mut node_stack = Vec::new();
         let mut errors = Vec::new();

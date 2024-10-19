@@ -1,4 +1,16 @@
-use super::Exn
+use super::[
+    Error
+    Exn
+    Option
+]
+
+##
+pub type Unwrapped(`E: !Error) is
+    error: E
+
+    impl Error as
+    end
+end
 
 ##
 pub type Result(`T, `E) is
@@ -8,7 +20,7 @@ pub type Result(`T, `E) is
     | err(E)
 
     ##
-    pub func wrap(F, f: F) -> Result(T, E) where
+    pub func wrap(`F, f: F) -> Result(T, E) -< `E where
         F: Func() -> T -< Exn(E), `E
     do
         when raise(err: E) do
@@ -18,6 +30,7 @@ pub type Result(`T, `E) is
         Ok(f())
     end
 
+    ##
     pub func unwrap(take self) -> T -< Exn(E) where
         E: Error
     do
@@ -27,5 +40,122 @@ pub type Result(`T, `E) is
         end
     end
 
-    
+    ##
+    pub func unwrap(take self) -> T -< Exn(Unwrapped(E)) where
+        E: !Error
+    do
+        if self matches
+            Result.ok(t) then t
+            Result.err(e) then perform raise(Unwrapped(e))
+        end
+    end
+
+    ##
+    pub func unwrap_or(take self, default: T) -> T do if self matches Result.ok(t) then t else default
+
+    ##
+    pub func unwrap_or_else(`F, take self, default: F) -> T where
+        F: Func(E) -> T
+    do if self matches
+        Result.ok(t) then t
+        Result.err(e) then default(e)
+    end
+
+    ##
+    pub func unwrap_or_default(take self) -> T where
+        T: Default
+    do if self matches Result.ok(t) then t else T::default()
+
+    ##
+    pub func is_ok(self) -> bool do if self matches Result.ok(_) then true else false
+
+    ##
+    pub func is_ok_and(`F, self, f: F) -> bool -< `E where
+        F: Func(T) -> bool -< `E
+    do if self matches Result.ok(t) then f(t) else false
+
+    ##
+    pub func is_err(self) -> bool do if self matches Result.err(_) then true else false
+
+    ##
+    pub func is_err_and(`F, self, f: F) -> bool -< `E where
+        F: Func(E) -> bool -< `E
+    do if self matches Result.err(e) then f(e) else false
+
+    ##
+    pub func ok(self) -> Option(T) do if self matches Result.ok(t) then Option.some(t) else Option.none
+
+    ##
+    pub func err(self) -> Option(E) do if self matches Result.err(e) then Option.some(e) else Option.none
+
+    ##
+    pub func map(`U, `F, self, op: F) -> Result(U, E) -< `E where
+        F: Func(T) -> U -< `E
+    do if self matches Result.ok(t) then Result.ok(op(t)) else self
+
+    ##
+    pub func map_or(`U, `F, self, default: U, op: F) -> U -< `E where
+        F: Func(T) -> U -< `E
+    do if self matches Result.ok(t) then op(t) else default
+
+    ##
+    pub func map_or_else(`U, `D, `F, self, default: D, op: F) -> U -< `E where
+        D: Func(E) -> U -< `E
+        F: Func(T) -> U -< `E
+    do if self matches
+        Result.ok(t) then op(t)
+        Reuslt.err(e) then default(e)
+    end
+
+    ##
+    pub func map_err(`F, `O, self, op: O) -> Result(T, F) -< `E where
+        O: Func(E) -> F
+    do if self matches Result.err(e) then op(e) else self
+
+    ##
+    pub func inspect(`F, self, op: F) -> Result(T, E) -< `E where
+        F: Func(T)
+    do if self matches Result.ok(t) then
+        op(t)
+        self
+    else self
+
+    ##
+    pub func inspect_err(`F, self, op: F) -> Result(T, E) -> `E where
+        F: Func(E)
+    do if self matches Result.err(e) then
+        op(e)
+        self
+    else self
+
+    ##
+    pub func expect(take self, msg: str) -> T -< Exn(Unexpected(E)) do if selc matches
+        Result.ok(t) then t
+        Result.err(e) then perform raise(Unexpected(err: e, msg))
+    end
+
+    ##
+    pub func transpose(take self) -> Option(Result(T, E)) where
+        self = Result(Option(T), E)
+    do if self matches
+        Result.ok(Option.some(t)) then Option.some(Result.ok(t))
+        Result.ok(Option.none) then Option.none
+        Result.err(e) then Option.some(Result.err(e))
+    end
+
+    ##
+    pub func and(`U, self, res: Result(U, E)) -> Result(U,E) do if self matches Result.ok(_) then res else self
+
+    ##
+    pub func and_then(`U, `F, self, op: F) -> Result(U, E) where
+        F: Func(T) -> Result(U, E)
+    do if self matches Result.ok(t) then op(t) else self
+
+    ##
+    pub func or(`F, self, res: Result(T, F)) -> Result(T,F) do if self matches Result.err(_) then res else self
+
+    ##
+    pub func or_else(`F, `O, self, op: O) -> Result(U, F) where
+        O: Func(E) -> Result(T,F)
+    do if self matches Result.err(e) then op(e) else self
 end

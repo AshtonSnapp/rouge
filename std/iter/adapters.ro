@@ -1,0 +1,27 @@
+use super::Iterable
+
+type Filter(`I: Iterable, `F: Func(I::Item) -> bool) is
+    inner: I
+    filter: F
+
+    impl Iterable as
+        type Item = inner::Item
+
+        func next(mut self) -> Option(inner::Item) -< `E do
+            self.inner.find(self.filter)
+        end
+    end
+end
+
+type Map(`I: Iterable, `U, `F: Func(I::Item) -> U) is
+    inner: I
+    map: F
+
+    impl Iterable as
+        type Item = U
+
+        func next(mut self) -> Option(U) -< `E do
+            self.map(self.inner.next()?)
+        end
+    end
+end

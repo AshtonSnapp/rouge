@@ -43,6 +43,7 @@ pub struct Error {
 #[logos(error = Error)]
 #[logos(skip r"[ \t]")]
 pub enum TokenKind {
+    /// A UTF-8 character literal.
     #[regex(r"'([^']|\\')'", callback = |l| {
         
         let chars: Vec<char> = l.slice()
@@ -177,6 +178,7 @@ pub enum TokenKind {
 
     })]
     LitChar(char),
+    /// A UTF-8 string literal.
     #[regex(r#""([^"]|\\")*""#, callback = |l| {
         
         let mut chars: Vec<char> = l.slice()
@@ -349,6 +351,7 @@ pub enum TokenKind {
 
     })]
     LitStr(String),
+    /// A byte character literal.
     #[regex(r"b'([^']|\\')'", callback = |l| {
         let chars: Vec<char> = l.slice()
             .strip_prefix("b'").unwrap()
@@ -447,6 +450,7 @@ pub enum TokenKind {
         }
     })]
     LitByte(u8),
+    /// A byte string literal.
     #[regex(r#"b"([^"]|\\")*""#, callback = |l| {
                 
         let mut chars: Vec<char> = l.slice()
@@ -587,6 +591,7 @@ pub enum TokenKind {
 
     })]
     LitByteStr(Vec<u8>),
+    /// An integer literal.
     #[regex(r"0[bB][01][01_]*", callback = |l| {
         u128::from_str_radix(l.slice().to_lowercase().strip_prefix("0b"), 2).map_err(|e| Error {
             kind: ErrorKind::InvalidNumber(e),
@@ -620,6 +625,7 @@ pub enum TokenKind {
         })
     })]
     LitNum(u128),
+    /// A floating point literal.
     #[regex(r"[0-9][0-9_]*((\.[0-9][0-9_]*)|([eE][\+\-][0-9][0-9_]*)|(\.[0-9][0-9_]*[eE][\+\-][0-9][0-9_]*))", callback = |l| {
         f64::from_str(l.slice()).map_err(|e| Error {
             kind: ErrorKind::InvalidFloat(e),
@@ -932,12 +938,22 @@ pub enum TokenKind {
     /// Ends a block of code.
     #[token("end")]
     WordEnd,
+    /// Skips an iteration of a loop.
     #[token("skip")]
     WordSkip,
+    /// Breaks out of a loop.
     #[token("break")]
     WordBreak,
+    /// Ends a function and returns a value.
+    /// 
+    /// Tail return is implemented - this keyword is not necessary unless inside of an effect handler or if used before the end of a function or
+    /// code block.
     #[token("return")]
     WordReturn,
+    /// Ends an effect handler, returning a value to the resumed function - this keyword is not necessary unless used before the end of the effect
+    /// handler.
+    #[token("resume")]
+    WordResume,
     /// Indicates packages, modules, and items used by the current module.
     #[token("use")]
     WordUse,
@@ -961,8 +977,8 @@ pub enum TokenKind {
     /// A documentation comment. This is kept until after macro expansion (TODO), after which it is discarded.
     /// 
     /// `## ...` and `##[ ... ]##` are regular documentation comments. They document the item below them.
-    /// `##! ...` and `##![ ... ]!##` are top-level documentation comments. They document the item they are within, and are generally
-    /// only used for module documentation.
+    /// `##! ...` and `##![ ... ]!##` are top-level documentation comments. They document the item they are within, and should generally
+    /// only be used for module documentation.
     #[regex(r"##[^\n]", callback = |l| l.slice().strip_prefix("##").unwrap().to_string())]
     #[regex(r"##\[[^(\]#)]\]##", callback = |l| l.slice().strip_prefix("##[").unwrap().strip_suffix("]##").unwrap().to_string())]
     #[regex(r"##![^\n]", callback = |l| l.slice().strip_prefix("##!").unwrap().to_string())]

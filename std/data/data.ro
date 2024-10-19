@@ -1,0 +1,15 @@
+pub trait Serialize is
+
+end
+
+pub trait Serializer is
+
+end
+
+pub trait Deserialize is
+
+end
+
+pub trait Deserializer is
+
+end

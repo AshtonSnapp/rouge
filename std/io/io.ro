@@ -95,9 +95,9 @@ pub type Error is
     kind: Kind
     inner: Option(any ErrorTrait)
 
-    pub func new(`E: ErrorTrait, kind: Error::Kind, error: E) -> Error do (kind, inner: Option.some(error))
+    pub func new(`E: ErrorTrait, kind: Error::Kind, error: Option(E)) -> Error do (kind, inner: error)
 
-    pub func other(`E: ErrorTrait, error: E) -> Error do (Error::Kind.other, inner: Option.some(error))
+    pub func other(`E: ErrorTrait, error: Option(E)) -> Error do (Error::Kind.other, inner: error)
 
     pub func kind(self) -> Error::Kind do self.kind
 

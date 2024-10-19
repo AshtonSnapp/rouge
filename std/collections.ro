@@ -1,0 +1,49 @@
+
+##
+@builtin
+pub type T[] is
+    ##
+    @builtin
+    pub func new() -> T[]
+
+    ##
+    @builtin
+    pub func with_capacity() -> T[]
+
+    ##
+    @builtin
+    pub func push_back(mut self, value: T)
+
+    ##
+    @builtin
+    pub func push_front(mut self, value: T)
+
+    ##
+    @builtin
+    pub func pop_back(mut self) -> Option(T)
+
+    ##
+    @builtin
+    pub func pop_front(mut self) -> Option(T)
+
+    ##
+    @builtin
+    pub func insert(mut self, value: T, index: nat)
+
+    ##
+    @builtin
+    pub func get(self, index: nat) -> Option(T)
+
+    ##
+    @builtin
+    pub func remove(mut self, index: nat) -> Option(T)
+end
+
+##
+@builtin
+pub type V[K] is
+
+end
+
+##
+pub type Dataframe(`T) = T[][str]

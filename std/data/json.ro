@@ -1,0 +1,16 @@
+use super::[
+    Serializer,
+    Deserializer,
+]
+
+type JsonSerializer
+
+impl Serializer for JsonSerializer as
+
+end
+
+type JsonDeserializer
+
+impl Deserializer for JsonDeserializer as
+
+end

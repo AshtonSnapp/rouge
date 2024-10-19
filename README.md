@@ -301,7 +301,7 @@ Functions _can be passed around and stored as if they were data_. Wonder what th
 
 #### `with` Expressions
 
-A `with` expression, outside of its use with effect handlers, is an immediately executed closure. Now, you might ask, why do that instead of using a plain code block? The answer is simple: unlike regular closures, a `with` expression will **only allow you to use values that are expressly passed in.** This was inspired by a small comment from Brian Will's [Object-Oriented Programming is Bad](https://youtu.be/QM1iUe6IofM?si=J5BJmp1fu8ZWy3Hu&t=2460) at around 41 minutes in:
+A `with` expression, outside of its use in effect handlers, is an immediately executed closure. Now, you might ask, why do that instead of using a plain code block? The answer is simple: unlike regular closures, a `with` expression will **only allow you to use values that are expressly passed in.** This was inspired by a small comment from Brian Will's [Object-Oriented Programming is Bad](https://youtu.be/QM1iUe6IofM?si=J5BJmp1fu8ZWy3Hu&t=2460) at around 41 minutes in:
 
 > Unfortunately, what I often really want when creating subsections of longer functions is a feature that doesn't exist in any language I know of. It's an idea I've only seen in one other place, it was Jonathan Blow and his talks about his programming language that he's making. And the idea is that we want something like an anonymous function which doesn't see anything of its enclosing scope. The virtue of extracting a section of code out to a truly separate function is that everything that comes into the function must be explicitly passed through a parameter. It would be great if we could write inline anonymous functions with this same virtue.
 >
@@ -318,7 +318,7 @@ end
 But, the parameters passed in don't have to be existing variables. You could also call a function or perform an effect and pass in its output with a name:
 
 ```rouge
-contents := with (f: perform open("data.txt")?) do
+contents := with (f := perform open("data.txt")?) do
     f.read_all_chars()?
 end
 ```
@@ -326,7 +326,7 @@ end
 Realistically though, we don't need the multiple lines here and can just do it as:
 
 ```rouge
-contents := with (f: perform open("data.txt")?) do f.read_all_chars()?
+contents := with (f := perform open("data.txt")?) do f.read_all_chars()?
 ```
 
 > **Note:** If you're coming from Python, yes the use of the `with` keyword was inspired by Python. A lot of things in Rouge are inspired by other languages. 'Nothing is original, everything is derived from what came before' :D
@@ -385,7 +385,7 @@ worker_status := Status.idle
 
 Complex types can have things other than fields or variants - things like constants, functions, or even other types, can be associated with a type. This can be done in one of two ways: either you can write the thing your associating the type with directly in the type definition, or you can write it within an `impl` (implementation) block. Which one you go with is really just a code style question.
 
-The first thing you'll likely want to do, at least for product types, is create a factory function. This is an associate function that creates instances of your type. A common name for it is `new`:
+The first thing you'll likely want to do, at least for product types, is create a factory function. This is an associated function that creates instances of your type. A common name for it is `new`:
 ```rouge
 type Person is
     name: str
@@ -440,9 +440,9 @@ type Result(`T, `E: Error) is
     | err(E)
 end
 
-func filter(`T, `F, in: T, f: F) -> bool where
+func filter(`T, `F, in: T, f: F) -> Option(T) where
     F: Func(T) -> bool
-do f(in)
+do if f(in) then Some(in) else None
 ```
 
 #### Aliases
@@ -489,4 +489,4 @@ One useful trait is the `Default` trait, which defines a factory function called
 
 #### Effects
 
-TBW
+An effect is 
